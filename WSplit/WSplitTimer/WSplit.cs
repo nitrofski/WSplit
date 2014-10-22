@@ -1,0 +1,3947 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using WSplitTimer.Properties;
+using System.Diagnostics;
+
+namespace WSplitTimer
+{
+    public class WSplit : Form
+    {
+        private ContextMenuStrip timerMenu;
+
+        private ToolStripMenuItem newButton;
+        private ToolStripMenuItem openButton;
+        private ToolStripMenuItem openRecent;
+        private ToolStripMenuItem saveButton;
+        private ToolStripMenuItem saveAsButton;
+        private ToolStripMenuItem reloadButton;
+        private ToolStripMenuItem closeButton;
+
+        private ToolStripSeparator toolStripSeparator1;
+
+        private ToolStripMenuItem menuItemStartAt;
+        private ToolStripMenuItem resetButton;
+        private ToolStripMenuItem stopButton;
+        private ToolStripMenuItem newOldButton;
+
+        private ToolStripSeparator toolStripSeparator2;
+
+        private ToolStripMenuItem menuItemSettings;
+
+        private ToolStripMenuItem displaySettingsMenu;
+        private ToolStripMenuItem alwaysOnTop;
+        private ToolStripMenuItem showRunTitleButton;
+        private ToolStripMenuItem showAttemptCount;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem displayTimerOnlyButton;
+        private ToolStripMenuItem displayCompactButton;
+        private ToolStripMenuItem displayDetailedButton;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem displayWideButton;
+        private ToolStripMenuItem clockAppearanceToolStripMenuItem;
+        private ToolStripMenuItem showDecimalSeparator;
+        private ToolStripMenuItem digitalClockButton;
+        private ToolStripMenuItem clockAccent;
+        private ToolStripMenuItem plainBg;
+        private ToolStripMenuItem blackBg;
+        private ToolStripMenuItem menuItemAdvancedDisplay;
+        private ToolStripMenuItem setColorsButton;
+        private ToolStripSeparator toolStripSeparator5;
+        public ToolStripMenuItem advancedDetailButton;
+
+        private ToolStripMenuItem compareMenu;
+        private ToolStripMenuItem compareOldButton;
+        private ToolStripMenuItem compareBestButton;
+        private ToolStripMenuItem compareFastestButton;
+        private ToolStripMenuItem compareSumBestButton;
+
+        private ToolStripMenuItem trackBestMenu;
+        private ToolStripMenuItem bestAsOverallButton;
+        private ToolStripMenuItem bestAsSplitsButton;
+
+        private ToolStripSeparator toolStripSeparator6;
+
+        private ToolStripMenuItem aboutButton;
+        private ToolStripMenuItem exitButton;
+
+        public Font digitLarge;
+        public Font digitMed;
+        public Font clockLarge;
+        public Font clockMed;
+        public Font displayFont;
+        public Font timeFont;
+        private PrivateFontCollection privateFontCollection = new PrivateFontCollection();
+
+        private SaveFileDialog saveFileDialog;
+        private OpenFileDialog openFileDialog;
+        private SettingsDialog settingsDialog;
+
+        private int attemptCount;
+        private Size clockMinimumSize = new Size(120, 25);
+        private Size clockMinimumSizeAbsolute = new Size(120, 25);
+        private Rectangle clockRect;
+        private bool clockResize;
+        private IContainer components;
+        private DisplayMode currentDispMode = DisplayMode.Null;
+        private string decimalChar = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+        private Size detailPreferredSize = new Size(120, 0x19);
+        private bool detailResizing;
+        private int detailResizingY;
+        private Timer doubleTapDelay;
+        private DetailedView dview;
+        private Timer flashDelay;
+        private int offsetStart;
+        private DateTime offsetStartTime = new DateTime();
+        private string runFile;
+        private string runTitle = "";
+        private int segHeight = 14;
+        public Split split = new Split();
+        private Timer startDelay;
+        private Timer stopwatch;
+        public DualStopwatch timer = new DualStopwatch(false);
+        private bool wideResizing;
+        private int wideResizingX;
+        private int wideSegResizeWidth;
+        private bool wideSegResizing;
+        private int wideSegWidth = 100;
+        private int wideSegWidthBase = 100;
+        private int wideSegX;
+
+        public bool unsavedSplits;
+        public bool modalWindowOpened;
+
+        // Apparently unused variables...
+        public const int HOTKEY_ID = 0x9d82;
+        public KeyModifiers hotkeyMod;
+
+        // The painter object is a sub object that has for only purpose to separate
+        // the drawing code from the logic code, including the variables used for drawing.
+        // The fact that all the drawing code is in a different object makes it possible to
+        // have a modular drawing code without messing up this object more than it already was.
+        //
+        // NOTE: Currently, the painter object need access to the WSplit object it paints into
+        // to be able to paint it correctly. Eventually, it would be a good thing to remove that
+        // dependancy and have the WSplit object parameter the Painter object rather than have the
+        // Painter object take values from the WSplit members.
+        private Painter painter;
+
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr AddFontMemResourceEx(byte[] pbFont, int cbFont, IntPtr pdv, out uint pcFonts);
+        [DllImport("user32.dll")]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, KeyModifiers fsModifiers, uint vk);
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll")]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        // If the Settings Dialog has not been created yet, this property will take care of creating it:
+        // It has for a purpose to try and speed up the startup by not loading the window yet,
+        // but to also speed up the opening of the settings window after the first time.
+        // It is not known yet if it fulfills its purpose or if it is completely useless.
+        private SettingsDialog SettingsDialog
+        {
+            get
+            {
+                if (this.settingsDialog == null)
+                    this.settingsDialog = new SettingsDialog();
+                return this.settingsDialog;
+            }
+        }
+
+        public WSplit()
+        {
+            this.InitializeComponent();
+            base.Paint += new PaintEventHandler(this.clockPaint);
+            base.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            base.ResizeRedraw = true;
+
+            // Eventually, the painter should not be dependant of the WSplit object...
+            this.painter = new Painter(this);
+
+            this.dview = new DetailedView(this.split, this);
+            this.Initialize();
+        }
+
+        private void aboutButton_Click(object sender, EventArgs e)
+        {
+            string str = Assembly.GetExecutingAssembly().GetName().Name + " v" + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion/*Assembly.GetExecutingAssembly().GetName().Version*/;
+            DateTime buildDateTime = GetBuildDateTime(Assembly.GetExecutingAssembly());
+            double driftMilliseconds = this.timer.driftMilliseconds;
+            string str2 = "Current fallback timer: " + string.Format("{0:+0.000;-0.000}", driftMilliseconds / 1000.0) + "s";
+            string str3 = "";
+            if (this.timer.useFallback)
+                str3 = " [Using Fallback]";
+
+            MessageBoxEx.Show(this, str + Environment.NewLine +
+                            "by Wodanaz@SDA untill 1.4.4" + Environment.NewLine +
+                            "further developed by Nitrofski (twitch.tv/Nitrofski)" + Environment.NewLine +
+                            Environment.NewLine +
+                            "Compiled: " + buildDateTime.ToString() +
+                            Environment.NewLine +
+                            Environment.NewLine +
+                            str2 + str3 + Environment.NewLine +
+                            "(difference between fallback and standard timing methods)",
+                            "About", MessageBoxButtons.OK);
+        }
+
+        private void advancedDetailButton_Click(object sender, EventArgs e)
+        {
+            if (this.advancedDetailButton.Checked)
+            {
+                if (this.split.LiveRun)
+                    this.dview.Show();
+            }
+            else
+
+                this.dview.Hide();
+        }
+
+        private void alwaysOnTop_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.OnTop = !Settings.Profile.OnTop;
+            this.alwaysOnTop.Checked = Settings.Profile.OnTop;
+            base.TopMost = Settings.Profile.OnTop;
+        }
+
+        private void bestAsOverallButton_Click(object sender, EventArgs e)
+        {
+            this.bestAsOverallButton.Checked = true;
+            this.bestAsSplitsButton.Checked = false;
+            Settings.Profile.BestAsOverall = true;
+        }
+
+        private void bestAsSplitsButton_Click(object sender, EventArgs e)
+        {
+            this.bestAsOverallButton.Checked = false;
+            this.bestAsSplitsButton.Checked = true;
+            Settings.Profile.BestAsOverall = false;
+        }
+
+        private void blackBg_Click(object sender, EventArgs e)
+        {
+            this.plainBg.Checked = false;
+            Settings.Profile.BackgroundPlain = false;
+            Settings.Profile.BackgroundBlack = !Settings.Profile.BackgroundBlack;
+            this.blackBg.Checked = Settings.Profile.BackgroundBlack;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void clear_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.RecentFiles.Clear();
+            this.populateRecentFiles();
+        }
+
+        private void clearHotkeys()
+        {
+            for (int i = 0; i < 7; i++)
+                UnregisterHotKey(base.Handle, 0x9d82 + i);
+        }
+
+        private void clockAccent_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.ClockAccent = !Settings.Profile.ClockAccent;
+            this.clockAccent.Checked = Settings.Profile.ClockAccent;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void clockPaint(object sender, PaintEventArgs e)
+        {
+            // The painter object will take care of drawing the clock
+            this.painter.PaintAll(e.Graphics);
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            if (this.promptForSave())
+            {
+                this.closeFile();
+            }
+        }
+
+        private void closeFile()
+        {
+            this.split.Clear();
+            this.runTitle = "";
+            this.attemptCount = 0;
+            this.offsetStart = 0;
+            this.detailPreferredSize = this.clockMinimumSize;
+            this.InitializeDisplay();
+        }
+
+        private void compareOldButton_Click(object sender, EventArgs e)
+        {
+            this.SetCompareOld();
+        }
+
+        private void compareBestButton_Click(object sender, EventArgs e)
+        {
+            this.SetCompareBest();
+        }
+
+        private void compareFastestButton_Click(object sender, EventArgs e)
+        {
+            this.SetCompareFastest();
+        }
+
+        private void compareSumBestButton_Click(object sender, EventArgs e)
+        {
+            this.SetCompareSoB();
+        }
+
+        private void SetCompareOld()
+        {
+            Settings.Profile.CompareAgainst = 1;
+            this.compareOldButton.Checked = true;
+            this.compareBestButton.Checked = false;
+            this.compareFastestButton.Checked = false;
+            this.compareSumBestButton.Checked = false;
+            this.updateDisplay();
+        }
+
+        private void SetCompareBest()
+        {
+            Settings.Profile.CompareAgainst = 2;
+            this.compareOldButton.Checked = false;
+            this.compareBestButton.Checked = true;
+            this.compareFastestButton.Checked = false;
+            this.compareSumBestButton.Checked = false;
+            this.updateDisplay();
+        }
+
+        private void SetCompareFastest()
+        {
+            Settings.Profile.CompareAgainst = 0;
+            this.compareOldButton.Checked = false;
+            this.compareBestButton.Checked = false;
+            this.compareFastestButton.Checked = true;
+            this.compareSumBestButton.Checked = false;
+            this.updateDisplay();
+        }
+
+        private void SetCompareSoB()
+        {
+            Settings.Profile.CompareAgainst = 3;
+            this.compareOldButton.Checked = false;
+            this.compareBestButton.Checked = false;
+            this.compareFastestButton.Checked = false;
+            this.compareSumBestButton.Checked = true;
+            this.updateDisplay();
+        }
+
+        private void SwitchComparisonType()
+        {
+            switch (Settings.Profile.CompareAgainst)
+            {
+                case 1: // Old
+                    SetCompareBest();
+                    break;
+                case 3: // Sum of Bests
+                    SetCompareOld();
+                    break;
+                default: // Fastest & Best
+                    SetCompareSoB();
+                    break;
+            }
+        }
+
+        private void configure(int startingPage)
+        {
+            // Prepares the Main and DView Windows:
+            this.clearHotkeys();
+
+            base.TopMost = false;
+            this.dview.TopMost = false;
+            this.modalWindowOpened = true;
+
+            // A few settings are necessary before calling the custom ShowDialog method
+            this.SettingsDialog.StartDelay = this.timeFormatter(((double)this.offsetStart) / 1000.0, TimeFormat.Seconds);
+            this.SettingsDialog.DetailedWidth = this.clockRect.Width;
+
+            // Costum ShowDialog method...
+            if (this.SettingsDialog.ShowDialog(this, startingPage) == DialogResult.OK)
+            {
+                this.SettingsDialog.ApplyChanges();
+
+                this.offsetStart = Convert.ToInt32((double)(this.timeParse(this.SettingsDialog.StartDelay) * 1000.0));
+                this.clockRect.Width = this.SettingsDialog.DetailedWidth;
+                this.updateDetailed();
+                this.InitializeSettings();
+                this.InitializeFonts();
+            }
+
+            if (this.SettingsDialog.BackgroundSettingsChanged)
+                this.InitializeBackground();
+
+            // Some changes need to be applied live:
+            base.Opacity = Settings.Profile.Opacity;
+            base.TopMost = Settings.Profile.OnTop;
+            this.dview.TopMost = Settings.Profile.DViewOnTop;
+
+            this.modalWindowOpened = false;
+            this.setHotkeys();
+        }
+
+        private void menuItemSettings_Click(object sender, EventArgs e)
+        {
+            this.configure(0);
+        }
+
+        private Color DarkenColor(Color original, double lightness)
+        {
+            lightness = Math.Max(Math.Min(lightness, 255.0), 0.0);
+            return Color.FromArgb((int)(original.R * lightness), (int)(original.G * lightness), (int)(original.B * lightness));
+        }
+
+        private int detailSegCount()
+        {
+            int displaySegs = Settings.Profile.DisplaySegs;
+            if (!Settings.Profile.DisplayBlankSegs)
+            {
+                displaySegs = Math.Min(this.split.Count, displaySegs);
+            }
+            return displaySegs;
+        }
+
+        private void digitalClockButton_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.DigitalClock = !Settings.Profile.DigitalClock;
+            this.digitalClockButton.Checked = Settings.Profile.DigitalClock;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void displayCompact()
+        {
+            this.clockRect.Location = new Point(0, 15);
+            this.clockMinimumSize = this.clockMinimumSizeAbsolute;
+            if (Settings.Profile.SegmentIcons > 1)
+            {
+                this.clockMinimumSize.Width = (this.clockMinimumSizeAbsolute.Width + ((Settings.Profile.SegmentIcons + 1) * 8)) + 6;
+            }
+            if (this.currentDispMode != DisplayMode.Compact)
+            {
+                this.clockRect.Size = Settings.Profile.ClockSize;
+                this.clockRect.Width += this.clockMinimumSize.Width - this.clockMinimumSizeAbsolute.Width;
+            }
+            if ((this.clockRect.Height < this.clockMinimumSize.Height) || (this.clockRect.Width < this.clockMinimumSize.Width))
+            {
+                this.clockRect.Size = this.clockMinimumSize;
+            }
+            this.currentDispMode = DisplayMode.Compact;
+            base.Size = new Size(this.clockRect.Width, this.clockRect.Height + 0x1f);
+        }
+
+        private void displayCompactButton_Click(object sender, EventArgs e)
+        {
+            this.setDisplay(DisplayMode.Compact);
+        }
+
+        private void displayDetail()
+        {
+            this.segHeight = Math.Max(14, (Settings.Profile.SegmentIcons + 1) * 8);
+            this.clockMinimumSize = this.clockMinimumSizeAbsolute;
+            if (this.currentDispMode != DisplayMode.Detailed)
+            {
+                this.clockRect.Size = this.detailPreferredSize;
+            }
+            if ((this.clockRect.Height < this.clockMinimumSize.Height) || (this.clockRect.Width < this.clockMinimumSize.Width))
+            {
+                this.clockRect.Size = this.clockMinimumSize;
+            }
+            int height = (this.clockRect.Height + (this.detailSegCount() * this.segHeight)) + 0x15;
+            if ((this.runTitle != "") && Settings.Profile.ShowTitle)
+            {
+                height += 0x12;
+            }
+            this.clockRect.Location = new Point(0, (height - this.clockRect.Height) - 0x12);
+            this.currentDispMode = DisplayMode.Detailed;
+            base.Size = new Size(this.clockRect.Width, height);
+        }
+
+        private void displayDetailedButton_Click(object sender, EventArgs e)
+        {
+            this.setDisplay(DisplayMode.Detailed);
+        }
+
+        private int displaySegsWide()
+        {
+            int wideSegs = Settings.Profile.WideSegs;
+            if (!Settings.Profile.WideSegBlanks)
+            {
+                wideSegs = Math.Min(this.split.Count, wideSegs);
+            }
+            return wideSegs;
+        }
+
+        private void displayTimer()
+        {
+            this.clockRect.Location = new Point(0, 0);
+            this.clockMinimumSize = this.clockMinimumSizeAbsolute;
+            if (this.currentDispMode != DisplayMode.Timer)
+            {
+                this.clockRect.Size = Settings.Profile.ClockSize;
+            }
+            if ((this.clockRect.Height < this.clockMinimumSize.Height) || (this.clockRect.Width < this.clockMinimumSize.Width))
+            {
+                this.clockRect.Size = this.clockMinimumSize;
+            }
+            this.currentDispMode = DisplayMode.Timer;
+            base.Size = this.clockRect.Size;
+        }
+
+        private void displayTimerOnlyButton_Click(object sender, EventArgs e)
+        {
+            this.setDisplay(DisplayMode.Timer);
+        }
+
+        private void displayWide()
+        {
+            if (Settings.Profile.SegmentIcons >= 1)
+            {
+                this.wideSegWidth = this.wideSegWidthBase + ((Settings.Profile.SegmentIcons + 1) * 8);
+            }
+            else
+            {
+                this.wideSegWidth = this.wideSegWidthBase;
+            }
+            this.clockMinimumSize.Width = this.clockMinimumSizeAbsolute.Width;
+            if (Settings.Profile.SegmentIcons == 3)
+            {
+                this.clockMinimumSize.Height = 0x20;
+            }
+            else
+            {
+                this.clockMinimumSize.Height = 26;
+            }
+            this.clockRect.Location = new Point(0, 0);
+            if (((this.currentDispMode != DisplayMode.Wide) || (this.clockRect.Height != this.clockMinimumSize.Height)) || (this.clockRect.Width < this.clockMinimumSize.Width))
+            {
+                this.clockRect.Size = this.clockMinimumSize;
+            }
+            this.currentDispMode = DisplayMode.Wide;
+            base.Size = new Size((this.clockRect.Width + 124) + (this.displaySegsWide() * this.wideSegWidth), this.clockRect.Height);
+        }
+
+        private void displayWideButton_Click(object sender, EventArgs e)
+        {
+            this.setDisplay(DisplayMode.Wide);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (this.components != null))
+            {
+                this.components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void doSplit()
+        {
+            double time = Math.Truncate(this.timer.Elapsed.TotalSeconds * 100) / 100;
+            this.split.DoSplit(time);
+            if (!this.split.Done)
+            {
+                this.flashClock();
+            }
+            else
+            {
+                this.stopwatch.Enabled = false;
+                this.newOldButton.Enabled = true;
+            }
+            this.updateDisplay();
+        }
+
+        private void doubleTapDelay_Tick(object sender, EventArgs e)
+        {
+            this.doubleTapDelay.Dispose();
+            this.doubleTapDelay = null;
+        }
+
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            if (this.promptForSave())
+            {
+                base.Close();
+            }
+        }
+
+        private void flashClock()
+        {
+            if (this.flashDelay == null)
+            {
+                this.flashDelay = new Timer();
+                this.flashDelay.Tick += new EventHandler(this.unflashClock);
+                this.flashDelay.Interval = 750;
+                this.flashDelay.Enabled = true;
+                base.Invalidate();
+            }
+        }
+
+        private static DateTime GetBuildDateTime(Assembly assembly)
+        {
+            if (File.Exists(assembly.Location))
+            {
+                byte[] buffer = new byte[Math.Max(Marshal.SizeOf(typeof(_IMAGE_FILE_HEADER)), 4)];
+                using (FileStream stream = new FileStream(assembly.Location, FileMode.Open, FileAccess.Read))
+                {
+                    stream.Position = 60L;
+                    stream.Read(buffer, 0, 4);
+                    stream.Position = BitConverter.ToUInt32(buffer, 0);
+                    stream.Read(buffer, 0, 4);
+                    stream.Read(buffer, 0, buffer.Length);
+                }
+                GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+                try
+                {
+                    _IMAGE_FILE_HEADER _image_file_header = (_IMAGE_FILE_HEADER)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(_IMAGE_FILE_HEADER));
+                    DateTime time2 = new DateTime(0x7b2, 1, 1);
+                    return TimeZone.CurrentTimeZone.ToLocalTime(time2.AddSeconds((double)_image_file_header.TimeDateStamp));
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+            return new DateTime();
+        }
+
+        private Color getDViewDeltaColor(double newDelta, double oldDelta)
+        {
+            if (newDelta > 0.0)
+            {
+                if (newDelta > oldDelta)
+                {
+                    return ColorSettings.Profile.UsedDViewSegBehindLoss;
+                }
+                return ColorSettings.Profile.UsedDViewSegBehindGain;
+            }
+            if (newDelta > oldDelta)
+            {
+                return ColorSettings.Profile.UsedDViewSegAheadLoss;
+            }
+            return ColorSettings.Profile.UsedDViewSegAheadGain;
+        }
+
+        private void InitializeComponent()
+        {
+            this.components = new Container();
+            this.timerMenu = new ContextMenuStrip(this.components);
+            this.newButton = new ToolStripMenuItem();
+            this.openButton = new ToolStripMenuItem();
+            this.openRecent = new ToolStripMenuItem();
+            this.saveButton = new ToolStripMenuItem();
+            this.saveAsButton = new ToolStripMenuItem();
+            this.reloadButton = new ToolStripMenuItem();
+            this.closeButton = new ToolStripMenuItem();
+            this.toolStripSeparator2 = new ToolStripSeparator();
+            this.resetButton = new ToolStripMenuItem();
+            this.stopButton = new ToolStripMenuItem();
+            this.newOldButton = new ToolStripMenuItem();
+            this.toolStripSeparator1 = new ToolStripSeparator();
+            this.menuItemSettings = new ToolStripMenuItem();
+            this.displaySettingsMenu = new ToolStripMenuItem();
+            this.alwaysOnTop = new ToolStripMenuItem();
+            this.showRunTitleButton = new ToolStripMenuItem();
+            this.showAttemptCount = new ToolStripMenuItem();
+            this.toolStripSeparator3 = new ToolStripSeparator();
+            this.displayTimerOnlyButton = new ToolStripMenuItem();
+            this.displayCompactButton = new ToolStripMenuItem();
+            this.displayWideButton = new ToolStripMenuItem();
+            this.displayDetailedButton = new ToolStripMenuItem();
+            this.toolStripSeparator5 = new ToolStripSeparator();
+            this.clockAppearanceToolStripMenuItem = new ToolStripMenuItem();
+            this.showDecimalSeparator = new ToolStripMenuItem();
+            this.digitalClockButton = new ToolStripMenuItem();
+            this.clockAccent = new ToolStripMenuItem();
+            this.plainBg = new ToolStripMenuItem();
+            this.blackBg = new ToolStripMenuItem();
+            this.menuItemAdvancedDisplay = new ToolStripMenuItem();
+            this.setColorsButton = new ToolStripMenuItem();
+            this.toolStripSeparator6 = new ToolStripSeparator();
+            this.advancedDetailButton = new ToolStripMenuItem();
+            this.compareMenu = new ToolStripMenuItem();
+            this.compareOldButton = new ToolStripMenuItem();
+            this.compareBestButton = new ToolStripMenuItem();
+            this.compareSumBestButton = new ToolStripMenuItem();
+            this.compareFastestButton = new ToolStripMenuItem();
+            this.trackBestMenu = new ToolStripMenuItem();
+            this.bestAsOverallButton = new ToolStripMenuItem();
+            this.bestAsSplitsButton = new ToolStripMenuItem();
+            this.toolStripSeparator4 = new ToolStripSeparator();
+            this.aboutButton = new ToolStripMenuItem();
+            this.exitButton = new ToolStripMenuItem();
+            this.stopwatch = new Timer(this.components);
+            this.openFileDialog = new OpenFileDialog();
+            this.saveFileDialog = new SaveFileDialog();
+            this.menuItemStartAt = new ToolStripMenuItem();
+
+            this.timerMenu.SuspendLayout();
+            base.SuspendLayout();
+            this.timerMenu.Items.AddRange(new ToolStripItem[] { 
+                this.newButton, this.openButton, this.openRecent, this.saveButton, this.saveAsButton, this.reloadButton, this.closeButton, this.toolStripSeparator2, this.menuItemStartAt, this.resetButton, this.stopButton, this.newOldButton, this.toolStripSeparator1, this.menuItemSettings, this.displaySettingsMenu, this.compareMenu, this.trackBestMenu, 
+                this.toolStripSeparator4, this.aboutButton, this.exitButton
+             });
+            this.timerMenu.Name = "timerMenu";
+            this.timerMenu.Size = new Size(0xae, 0x18c);
+            this.newButton.Name = "newButton";
+            this.newButton.Size = new Size(0xad, 0x16);
+            this.newButton.Text = "New/Edit";
+            this.newButton.Click += new EventHandler(this.newButton_Click);
+            this.openButton.Name = "openButton";
+            this.openButton.Size = new Size(0xad, 0x16);
+            this.openButton.Text = "Open...";
+            this.openButton.Click += new EventHandler(this.openButton_Click);
+            this.openRecent.Name = "openRecent";
+            this.openRecent.Size = new Size(0xad, 0x16);
+            this.openRecent.Text = "Open recent...";
+            this.saveButton.Enabled = false;
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new Size(0xad, 0x16);
+            this.saveButton.Text = "Save";
+            this.saveButton.Click += new EventHandler(this.saveButton_Click);
+            this.saveAsButton.Enabled = false;
+            this.saveAsButton.Name = "saveAsButton";
+            this.saveAsButton.Size = new Size(0xad, 0x16);
+            this.saveAsButton.Text = "Save as...";
+            this.saveAsButton.Click += new EventHandler(this.saveAsButton_Click);
+            this.reloadButton.Enabled = false;
+            this.reloadButton.Name = "reloadButton";
+            this.reloadButton.Size = new Size(0xad, 0x16);
+            this.reloadButton.Text = "Reload";
+            this.reloadButton.Click += new EventHandler(this.reloadButton_Click);
+            this.closeButton.Enabled = false;
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new Size(0xad, 0x16);
+            this.closeButton.Text = "Close";
+            this.closeButton.Click += new EventHandler(this.closeButton_Click);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new Size(170, 6);
+            this.menuItemStartAt.Name = "menuItemStartAt";
+            this.menuItemStartAt.Size = new Size(0xad, 0x16);
+            this.menuItemStartAt.Text = "Start at...";
+            this.menuItemStartAt.Click += new EventHandler(this.menuItemStartAt_Click);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new Size(0xad, 0x16);
+            this.resetButton.Text = "Reset";
+            this.resetButton.Click += new EventHandler(this.resetButton_Click);
+            this.stopButton.Name = "stopButton";
+            this.stopButton.Size = new Size(0xad, 0x16);
+            this.stopButton.Text = "Stop";
+            this.stopButton.Click += new EventHandler(this.stopButton_Click);
+            this.newOldButton.Enabled = false;
+            this.newOldButton.Name = "newOldButton";
+            this.newOldButton.Size = new Size(0xad, 0x16);
+            this.newOldButton.Text = "Set this run as old";
+            this.newOldButton.Click += new EventHandler(this.newOldButton_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new Size(170, 6);
+            this.menuItemSettings.Name = "menuItemSettings";
+            this.menuItemSettings.Size = new Size(0xad, 0x16);
+            this.menuItemSettings.Text = "Settings...";
+            this.menuItemSettings.Click += new EventHandler(this.menuItemSettings_Click);
+            this.displaySettingsMenu.DropDownItems.AddRange(new ToolStripItem[] { 
+                this.alwaysOnTop, this.showRunTitleButton, this.showAttemptCount, this.toolStripSeparator3, this.displayTimerOnlyButton, this.displayCompactButton, this.displayWideButton, this.displayDetailedButton, this.toolStripSeparator5, this.clockAppearanceToolStripMenuItem, this.plainBg, this.blackBg, this.menuItemAdvancedDisplay, this.setColorsButton, this.toolStripSeparator6, 
+                this.advancedDetailButton
+             });
+            this.displaySettingsMenu.Name = "displaySettingsMenu";
+            this.displaySettingsMenu.Size = new Size(0xad, 0x16);
+            this.displaySettingsMenu.Text = "Display settings";
+            this.alwaysOnTop.Name = "alwaysOnTop";
+            this.alwaysOnTop.Size = new Size(0xcc, 0x16);
+            this.alwaysOnTop.Text = "Always on top";
+            this.alwaysOnTop.Click += new EventHandler(this.alwaysOnTop_Click);
+            this.showRunTitleButton.Name = "showRunTitleButton";
+            this.showRunTitleButton.Size = new Size(0xcc, 0x16);
+            this.showRunTitleButton.Text = "Show run title";
+            this.showRunTitleButton.Click += new EventHandler(this.showRunTitleButton_Click);
+            this.showAttemptCount.Name = "showAttemptCount";
+            this.showAttemptCount.Size = new Size(0xcc, 0x16);
+            this.showAttemptCount.Text = "Show attempt count";
+            this.showAttemptCount.Click += new EventHandler(this.showAttemptCount_Click);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new Size(0xc9, 6);
+            this.displayTimerOnlyButton.Name = "displayTimerOnlyButton";
+            this.displayTimerOnlyButton.Size = new Size(0xcc, 0x16);
+            this.displayTimerOnlyButton.Text = "Timer only";
+            this.displayTimerOnlyButton.Click += new EventHandler(this.displayTimerOnlyButton_Click);
+            this.displayCompactButton.Name = "displayCompactButton";
+            this.displayCompactButton.Size = new Size(0xcc, 0x16);
+            this.displayCompactButton.Text = "Compact";
+            this.displayCompactButton.Click += new EventHandler(this.displayCompactButton_Click);
+            this.displayWideButton.Name = "displayWideButton";
+            this.displayWideButton.Size = new Size(0xcc, 0x16);
+            this.displayWideButton.Text = "Wide";
+            this.displayWideButton.Click += new EventHandler(this.displayWideButton_Click);
+            this.displayDetailedButton.Name = "displayDetailedButton";
+            this.displayDetailedButton.Size = new Size(0xcc, 0x16);
+            this.displayDetailedButton.Text = "Detailed";
+            this.displayDetailedButton.Click += new EventHandler(this.displayDetailedButton_Click);
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new Size(0xc9, 6);
+            this.clockAppearanceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.showDecimalSeparator, this.digitalClockButton, this.clockAccent });
+            this.clockAppearanceToolStripMenuItem.Name = "clockAppearanceToolStripMenuItem";
+            this.clockAppearanceToolStripMenuItem.Size = new Size(0xcc, 0x16);
+            this.clockAppearanceToolStripMenuItem.Text = "Clock appearance";
+            this.showDecimalSeparator.Name = "showDecimalSeparator";
+            this.showDecimalSeparator.Size = new Size(0xd0, 0x16);
+            this.showDecimalSeparator.Text = "Show decimal separator";
+            this.showDecimalSeparator.Click += new EventHandler(this.showDecimalSeparator_Click);
+            this.digitalClockButton.Name = "digitalClockButton";
+            this.digitalClockButton.Size = new Size(0xd0, 0x16);
+            this.digitalClockButton.Text = "Digital clock font";
+            this.digitalClockButton.Click += new EventHandler(this.digitalClockButton_Click);
+            this.clockAccent.Name = "clockAccent";
+            this.clockAccent.Size = new Size(0xd0, 0x16);
+            this.clockAccent.Text = "Accent on vertical modes";
+            this.clockAccent.Click += new EventHandler(this.clockAccent_Click);
+            this.plainBg.Name = "plainBg";
+            this.plainBg.Size = new Size(0xcc, 0x16);
+            this.plainBg.Text = "Plain background";
+            this.plainBg.Click += new EventHandler(this.plainBg_Click);
+            this.blackBg.Name = "blackBg";
+            this.blackBg.Size = new Size(0xcc, 0x16);
+            this.blackBg.Text = "Black background";
+            this.blackBg.Click += new EventHandler(this.blackBg_Click);
+            this.menuItemAdvancedDisplay.Name = "menuItemAdvancedDisplay";
+            this.menuItemAdvancedDisplay.Size = new Size(0xcc, 0x16);
+            this.menuItemAdvancedDisplay.Text = "Advanced...";
+            this.menuItemAdvancedDisplay.Click += new EventHandler(this.menuItemAdvancedDisplay_Click);
+            this.setColorsButton.Name = "setColorsButton";
+            this.setColorsButton.Size = new Size(0xcc, 0x16);
+            this.setColorsButton.Text = "Set colors...";
+            this.setColorsButton.Click += new EventHandler(this.setColorsButton_Click);
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new Size(0xc9, 6);
+            this.advancedDetailButton.CheckOnClick = true;
+            this.advancedDetailButton.Name = "advancedDetailButton";
+            this.advancedDetailButton.Size = new Size(0xcc, 0x16);
+            this.advancedDetailButton.Text = "Advanced detail window";
+            this.advancedDetailButton.Click += new EventHandler(this.advancedDetailButton_Click);
+            this.compareMenu.DropDownItems.AddRange(new ToolStripItem[] { this.compareOldButton, this.compareBestButton, this.compareFastestButton, this.compareSumBestButton });
+            this.compareMenu.Name = "compareMenu";
+            this.compareMenu.Size = new Size(0xad, 0x16);
+            this.compareMenu.Text = "Compare against...";
+            this.compareOldButton.Name = "compareOldButton";
+            this.compareOldButton.Size = new Size(0x90, 0x16);
+            this.compareOldButton.Text = "Old run";
+            this.compareOldButton.Click += new EventHandler(this.compareOldButton_Click);
+            this.compareBestButton.Name = "compareBestButton";
+            this.compareBestButton.Size = new Size(0x90, 0x16);
+            this.compareBestButton.Text = "Personal best";
+            this.compareBestButton.Click += new EventHandler(this.compareBestButton_Click);
+            this.compareFastestButton.Name = "compareFastestButton";
+            this.compareFastestButton.Size = new Size(0x90, 0x16);
+            this.compareFastestButton.Text = "Fastest";
+            this.compareFastestButton.Click += new EventHandler(this.compareFastestButton_Click);
+            this.compareSumBestButton.Name = "compareSumBestButton";
+            this.compareSumBestButton.Size = new Size(0x90, 0x16);
+            this.compareSumBestButton.Text = "Sum of best segments";
+            this.compareSumBestButton.Click += new EventHandler(this.compareSumBestButton_Click);
+            this.trackBestMenu.DropDownItems.AddRange(new ToolStripItem[] { this.bestAsOverallButton, this.bestAsSplitsButton });
+            this.trackBestMenu.Name = "trackBestMenu";
+            this.trackBestMenu.Size = new Size(0xad, 0x16);
+            this.trackBestMenu.Text = "Track best as...";
+            this.bestAsOverallButton.Name = "bestAsOverallButton";
+            this.bestAsOverallButton.Size = new Size(0xb1, 0x16);
+            this.bestAsOverallButton.Text = "Fastest overall run";
+            this.bestAsOverallButton.Click += new EventHandler(this.bestAsOverallButton_Click);
+            this.bestAsSplitsButton.Name = "bestAsSplitsButton";
+            this.bestAsSplitsButton.Size = new Size(0xb1, 0x16);
+            this.bestAsSplitsButton.Text = "Fastest to each split";
+            this.bestAsSplitsButton.Click += new EventHandler(this.bestAsSplitsButton_Click);
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new Size(170, 6);
+            this.aboutButton.Name = "aboutButton";
+            this.aboutButton.Size = new Size(0xad, 0x16);
+            this.aboutButton.Text = "About";
+            this.aboutButton.Click += new EventHandler(this.aboutButton_Click);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new Size(0xad, 0x16);
+            this.exitButton.Text = "Exit";
+            this.exitButton.Click += new EventHandler(this.exitButton_Click);
+            this.stopwatch.Interval = 15;
+            this.stopwatch.Tick += new EventHandler(this.stopwatch_Tick);
+            this.AllowDrop = true;
+            base.AutoScaleMode = AutoScaleMode.None;
+            this.BackColor = Color.Black;
+            base.ClientSize = new Size(0x7c, 0x1a);
+            this.ContextMenuStrip = this.timerMenu;
+            base.ControlBox = false;
+            this.ForeColor = Color.White;
+            base.FormBorderStyle = FormBorderStyle.None;
+            base.MaximizeBox = false;
+            base.MinimizeBox = false;
+            this.MinimumSize = new Size(0x7c, 0x1a);
+            base.Name = "WSplit";
+            this.Text = "WSplit";
+            this.timerMenu.ResumeLayout(false);
+            base.ResumeLayout(false);
+            base.Icon = Resources.AppIcon;
+        }
+
+        private void Initialize()
+        {
+            if (Settings.Profile.FirstRun)
+            {
+                Settings.Profile.Upgrade();
+                ColorSettings.Profile.Upgrade();
+                Settings.Profile.FirstRun = false;
+            }
+
+            this.InitializeSettings();
+            this.InitializeBackground();
+            this.InitializeFonts();
+
+            this.clockRect.Location = new Point(0, 0);
+            this.clockRect.Size = base.Size;
+
+            string[] commandLineArgs = Environment.GetCommandLineArgs();
+            for (int i = 1; (i < commandLineArgs.Length) && !this.split.LiveRun; i++)
+            {
+                this.runFile = commandLineArgs[i];
+                this.loadFile();
+            }
+
+            if ((this.runFile == null) && Settings.Profile.LoadMostRecent)
+            {
+                this.runFile = Settings.Profile.LastFile;
+                this.loadFile();
+            }
+
+            if (Settings.Profile.SaveWindowPos)
+            {
+                bool flag = false;
+                Rectangle rectangle = new Rectangle(Settings.Profile.WindowPosition, base.Size);
+                foreach (Screen screen in Screen.AllScreens)
+                {
+                    if (rectangle.IntersectsWith(screen.WorkingArea))
+                    {
+                        flag = true;
+                    }
+                }
+                if (flag)
+                {
+                    base.StartPosition = FormStartPosition.Manual;
+                    base.Location = Settings.Profile.WindowPosition;
+                }
+            }
+
+            this.modalWindowOpened = false;
+        }
+
+        private void InitializeSettings()
+        {
+            // Initialize every item to the correct setting value
+            this.stopwatch.Interval = Settings.Profile.RefreshRate;
+
+            base.TopMost = Settings.Profile.OnTop;
+            this.alwaysOnTop.Checked = Settings.Profile.OnTop;
+
+            this.showRunTitleButton.Checked = Settings.Profile.ShowTitle;
+            this.digitalClockButton.Checked = Settings.Profile.DigitalClock;
+            this.showAttemptCount.Checked = Settings.Profile.ShowAttempts;
+
+            if (Settings.Profile.BestAsOverall)
+                this.bestAsOverallButton.Checked = true;
+            else
+                this.bestAsSplitsButton.Checked = true;
+
+            if (Settings.Profile.CompareAgainst == 0)
+                this.compareFastestButton.Checked = true;
+            else if (Settings.Profile.CompareAgainst == 1)
+                this.compareOldButton.Checked = true;
+            else if (Settings.Profile.CompareAgainst == 2)
+                this.compareBestButton.Checked = true;
+            else
+                this.compareSumBestButton.Checked = true;
+
+            this.populateRecentFiles();
+
+            this.timer.useFallback = Settings.Profile.FallbackPreference == 3;
+            this.showDecimalSeparator.Checked = Settings.Profile.ShowDecimalSeparator;
+            this.clockAccent.Checked = Settings.Profile.ClockAccent;
+            base.Opacity = Math.Min(Math.Abs(Settings.Profile.Opacity), 1.0);
+
+            this.setHotkeys();
+            this.setDisplay((DisplayMode)Settings.Profile.DisplayMode);
+        }
+
+        private void InitializeBackground()
+        {
+            this.plainBg.Checked = Settings.Profile.BackgroundPlain;
+            this.blackBg.Checked = Settings.Profile.BackgroundBlack;
+            this.painter.PrepareBackground();
+            this.Invalidate();
+        }
+
+        private void InitializeFonts()
+        {
+            // Initialize fonts according to settings
+
+            // Loads clockFont from file:
+            if (this.digitLarge == null || this.digitMed == null)
+            {
+                uint num;   // Necessary, as AddFontMemResourceEx needs a uint as a out parameter
+
+                byte[] clockFont = Resources.ClockFont;
+                IntPtr destination = Marshal.AllocCoTaskMem(clockFont.Length);
+                AddFontMemResourceEx(clockFont, clockFont.Length, IntPtr.Zero, out num);
+                Marshal.Copy(clockFont, 0, destination, clockFont.Length);
+                privateFontCollection.AddMemoryFont(destination, clockFont.Length);
+                Marshal.FreeCoTaskMem(destination);
+
+                // Once the digital font is loaded in memory, we instanciate the Font objects:
+                this.digitLarge = new Font(privateFontCollection.Families[0], 24f, GraphicsUnit.Pixel);
+                this.digitMed = new Font(privateFontCollection.Families[0], 17.33333f, GraphicsUnit.Pixel);
+            }
+
+            FontFamily family = FontFamily.Families.FirstOrDefault(f => f.Name == Settings.Profile.FontFamilySegments);
+
+            if (family == null || !family.IsStyleAvailable(FontStyle.Bold) || !family.IsStyleAvailable(FontStyle.Regular))
+                family = FontFamily.GenericSansSerif;
+
+            this.displayFont = new Font(family, 10.66667f * Settings.Profile.FontMultiplierSegments, GraphicsUnit.Pixel);
+            this.timeFont = new Font(family, 12f * Settings.Profile.FontMultiplierSegments, FontStyle.Bold, GraphicsUnit.Pixel);
+            this.clockLarge = new Font(family, 22.66667f, FontStyle.Bold, GraphicsUnit.Pixel);
+            this.clockMed = new Font(family, 18.66667f, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            this.dview.InitializeFonts();
+        }
+
+        public void InitializeDisplay()
+        {
+            if (this.startDelay != null)
+            {
+                this.startDelay.Dispose();
+                this.startDelay = null;
+            }
+            this.split.Reset();
+
+            this.newOldButton.Enabled = false;
+            this.menuItemStartAt.Enabled = true;
+            this.stopButton.Enabled = false;
+            this.resetButton.Enabled = false;
+
+            if (this.split.LastIndex < 0)
+            {
+                this.dview.Hide();
+                this.runFile = null;
+                this.closeButton.Enabled = false;
+                this.saveButton.Enabled = false;
+                this.saveAsButton.Enabled = false;
+                this.reloadButton.Enabled = false;
+            }
+            else
+            {
+                if (this.advancedDetailButton.Checked)
+                {
+                    this.dview.Show();
+                }
+                this.closeButton.Enabled = true;
+                if (this.runFile != null)
+                {
+                    this.saveButton.Enabled = true;
+                    this.reloadButton.Enabled = true;
+                }
+                else
+                {
+                    this.saveButton.Enabled = false;
+                    this.reloadButton.Enabled = false;
+                }
+                this.saveAsButton.Enabled = true;
+            }
+            this.stopwatch.Enabled = false;
+            this.timer.Reset();
+            this.populateDetailed();
+            this.updateDisplay();
+            this.setDisplay((DisplayMode)Settings.Profile.DisplayMode);
+        }
+
+        public static bool IsTextFile(string fileName)
+        {
+            using (FileStream stream = File.OpenRead(fileName))
+            {
+                byte[] buffer = new byte[0x400];
+                char[] chArray = new char[0x400];
+                bool flag = true;
+                int num = stream.Read(buffer, 0, buffer.Length);
+                stream.Seek(0L, SeekOrigin.Begin);
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    reader.Read(chArray, 0, chArray.Length);
+                }
+                using (MemoryStream stream2 = new MemoryStream())
+                {
+                    using (StreamWriter writer = new StreamWriter(stream2))
+                    {
+                        writer.Write(chArray);
+                        writer.Flush();
+                        byte[] buffer2 = stream2.GetBuffer();
+                        for (int i = 0; (i < num) && flag; i++)
+                        {
+                            flag = buffer[i] == buffer2[i];
+                        }
+                    }
+                }
+                return flag;
+            }
+        }
+
+        private KeyModifiers keyMods(Keys key)
+        {
+            KeyModifiers none = KeyModifiers.None;
+            if ((key & Keys.Alt) == Keys.Alt)
+            {
+                none |= KeyModifiers.Alt;
+            }
+            if ((key & Keys.Shift) == Keys.Shift)
+            {
+                none |= KeyModifiers.Shift;
+            }
+            if ((key & Keys.Control) == Keys.Control)
+            {
+                none |= KeyModifiers.Control;
+            }
+            return none;
+        }
+
+        private void loadFile()
+        {
+            if ((File.Exists(this.runFile) && (new FileInfo(this.runFile).Length < (10.0 * Math.Pow(1024.0, 2.0)))) && IsTextFile(this.runFile))
+            {
+                this.split.Clear();
+                this.offsetStart = 0;
+                this.runTitle = "";
+                this.attemptCount = 0;
+                this.detailPreferredSize = this.clockMinimumSize;
+                using (StreamReader reader = new StreamReader(this.runFile))
+                {
+                    string str;
+                    List<string> list = new List<string>();
+                    while ((str = reader.ReadLine()) != null)
+                    {
+                        if (str.StartsWith("Title="))
+                        {
+                            this.runTitle = str.Substring(6);
+                        }
+                        else
+                        {
+                            if (str.StartsWith("Attempts="))
+                            {
+                                int.TryParse(str.Substring(9), out this.attemptCount);
+                                continue;
+                            }
+                            if (str.StartsWith("Offset="))
+                            {
+                                int.TryParse(str.Substring(7), out this.offsetStart);
+                                continue;
+                            }
+                            if (str.StartsWith("Width="))
+                            {
+                                int result = 0;
+                                int.TryParse(str.Substring(6), out result);
+                                this.detailPreferredSize = this.clockMinimumSize;
+                                this.detailPreferredSize.Width = Math.Max(this.clockMinimumSize.Width, result);
+                                continue;
+                            }
+                            if (str.StartsWith("Size=") && (str.Split(new char[] { ',' }).Length == 2))
+                            {
+                                int num2 = 0;
+                                int num3 = 0;
+                                int.TryParse(str.Split(new char[] { ',' })[0].Substring(5), out num2);
+                                int.TryParse(str.Split(new char[] { ',' })[1], out num3);
+                                int width = Math.Max(this.clockMinimumSize.Width, num2);
+                                this.detailPreferredSize = new Size(width, Math.Max(this.clockMinimumSize.Height, num3));
+                                continue;
+                            }
+                            if (str.StartsWith("Icons="))
+                            {
+                                foreach (string str2 in Regex.Split(str.Substring(6), "\","))
+                                {
+                                    list.Add(str2.Replace("\"", ""));
+                                }
+                                continue;
+                            }
+                            if (str.Split(new char[] { ',' }).Length == 4)
+                            {
+                                string[] strArray2 = str.Split(new char[] { ',' });
+                                string name = strArray2[0];
+                                double num4 = 0.0;
+                                double num5 = 0.0;
+                                double num6 = 0.0;
+                                double.TryParse(strArray2[1], NumberStyles.AllowDecimalPoint, CultureInfo.CreateSpecificCulture(""), out num4);
+                                double.TryParse(strArray2[2], NumberStyles.AllowDecimalPoint, CultureInfo.CreateSpecificCulture(""), out num5);
+                                double.TryParse(strArray2[3], NumberStyles.AllowDecimalPoint, CultureInfo.CreateSpecificCulture(""), out num6);
+                                this.split.Add(new Segment(name, num4, num5, num6));
+                            }
+                        }
+                    }
+                    for (int i = 0; i < this.split.Count; i++)
+                    {
+                        if (i < list.Count)
+                        {
+                            this.split.segments[i].IconPath = list[i];
+                            try
+                            {
+                                this.split.segments[i].Icon = Image.FromFile(list[i]);
+                            }
+                            catch
+                            {
+                                this.split.segments[i].Icon = Resources.MissingIcon;
+                            }
+                        }
+                        else
+                        {
+                            this.split.segments[i].Icon = Resources.MissingIcon;
+                            this.split.segments[i].IconPath = "";
+                        }
+                    }
+                    this.currentDispMode = DisplayMode.Null;
+                    this.InitializeDisplay();
+                    if (this.runFile != null)
+                    {
+                        if (Settings.Profile.RecentFiles != null)
+                        {
+                            if (Settings.Profile.RecentFiles.Contains(this.runFile))
+                            {
+                                Settings.Profile.RecentFiles.Remove(this.runFile);
+                            }
+                            else if (Settings.Profile.RecentFiles.Count > 9)
+                            {
+                                Settings.Profile.RecentFiles.RemoveAt(Settings.Profile.RecentFiles.Count - 1);
+                            }
+                            Settings.Profile.RecentFiles.Insert(0, this.runFile);
+                        }
+                        this.populateRecentFiles();
+                    }
+
+                    unsavedSplits = false;
+                    return;
+                }
+            }
+            this.closeFile();
+        }
+
+        public static int MeasureDisplayStringWidth(string text, Font font)
+        {
+            if (text.Length < 1)
+                return 0;
+
+            Bitmap image = new Bitmap(1, 1);
+            Graphics g = Graphics.FromImage(image);
+            StringFormat stringFormat = new StringFormat();
+            RectangleF layoutRect = new RectangleF(0f, 0f, 1000f, 1000f);
+            CharacterRange[] ranges = new CharacterRange[] { new CharacterRange(0, text.Length) };
+            Region[] regionArray = new Region[1];
+            stringFormat.SetMeasurableCharacterRanges(ranges);
+            layoutRect = g.MeasureCharacterRanges(text, font, layoutRect, stringFormat)[0].GetBounds(g);
+            g.Dispose();
+            image.Dispose();
+            return (int)(layoutRect.Right + 1f);
+        }
+
+        private void newButton_Click(object sender, EventArgs e)
+        {
+            this.split.UpdateBest(Settings.Profile.BestAsOverall);
+            RunEditorDialog editor = new RunEditorDialog(this.split)
+            {
+                titleBox = { Text = this.runTitle },
+                attemptsBox = { Text = this.attemptCount.ToString() }
+            };
+            base.TopMost = false;
+            this.dview.TopMost = false;
+            this.modalWindowOpened = true;
+            if (editor.ShowDialog() == DialogResult.OK)
+            {
+                this.split.Clear();
+                foreach (Segment segment in editor.editList)
+                {
+                    this.split.Add(segment);
+                }
+                this.runTitle = editor.titleBox.Text;
+                int.TryParse(editor.attemptsBox.Text, out this.attemptCount);
+                this.InitializeDisplay();
+                this.unsavedSplits = true;
+            }
+            else
+            {
+                this.split.RestoreBest();
+            }
+            base.TopMost = Settings.Profile.OnTop;
+            this.dview.TopMost = Settings.Profile.DViewOnTop;
+            this.modalWindowOpened = false;
+        }
+
+        private void newOldButton_Click(object sender, EventArgs e)
+        {
+            this.split.LiveToOld();
+        }
+
+        public void nextStage()
+        {
+            this.split.Next();
+            this.updateDisplay();
+        }
+
+        private void menuItemAdvancedDisplay_Click(object sender, EventArgs e)
+        {
+            // Used to be opacity button
+            /*ChangeOpacity opacity = new ChangeOpacity(this);
+            base.TopMost = false;
+            this.dview.TopMost = false;
+            this.modalWindowOpened = true;
+            if (opacity.ShowDialog() == DialogResult.OK)
+            {
+                Settings.Profile.Opacity = base.Opacity;
+            }
+            else
+            {
+                base.Opacity = Math.Min(Math.Abs(Settings.Profile.Opacity), 1.0);
+            }
+            base.TopMost = Settings.Profile.OnTop;
+            this.dview.TopMost = Settings.Profile.DViewOnTop;
+            this.modalWindowOpened = false;*/
+
+            this.configure(3);
+        }
+
+        private void openButton_Click(object sender, EventArgs e)
+        {
+            if (this.promptForSave())
+            {
+                this.modalWindowOpened = true;
+                if (this.openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    this.runFile = this.openFileDialog.FileName;
+                    this.loadFile();
+                }
+                this.modalWindowOpened = false;
+            }
+        }
+
+        public void pauseResume()
+        {
+            // If the refreshing stopwatch is running
+            if (this.stopwatch.Enabled)
+            {
+                this.stopwatch.Enabled = false;
+                if (this.startDelay != null)
+                {
+                    /*this.startDelay.Dispose();
+                    this.startDelay = null;
+
+                    this.menuItemStartAt.Enabled = true;
+                    this.resetButton.Enabled = false;
+                    this.stopButton.Enabled = false;*/
+
+                    InitializeDisplay();
+                }
+                this.timer.Stop();
+                base.Invalidate();
+            }
+
+            // If the split aren't done, so if the timer isn't running
+            else if (!this.split.Done && (this.startDelay == null))
+            {
+                // If the timer had not been started yet
+                if (this.timer.ElapsedTicks == 0L)
+                {
+                    // If it wasn't running
+                    if (!this.timer.IsRunning)
+                        this.InitializeDisplay();
+
+                    this.startTimer();
+
+                    this.menuItemStartAt.Enabled = false;
+                    this.resetButton.Enabled = true;
+                    this.stopButton.Enabled = true;
+                }
+
+                // If the timer was paused
+                else
+                    this.timer.Start();
+
+                this.stopwatch.Enabled = true;
+            }
+        }
+
+        private void plainBg_Click(object sender, EventArgs e)
+        {
+            this.blackBg.Checked = false;
+            Settings.Profile.BackgroundBlack = false;
+            Settings.Profile.BackgroundPlain = !Settings.Profile.BackgroundPlain;
+            this.plainBg.Checked = Settings.Profile.BackgroundPlain;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        public void populateDetailed()
+        {
+            this.dview.segs.Rows.Clear();
+            this.dview.segs.Rows.Add(new object[] { "Segment", "Old", "Best", "SoB", "Live", "+/-" });
+            this.dview.segs.Rows[0].Frozen = true;
+            this.dview.finalSeg.Rows.Clear();
+            this.dview.finalSeg.Rows.Add();
+
+            foreach (Segment segment in this.split.segments)
+            {
+                this.dview.segs.Rows.Add(new object[] { segment.Name });
+                if (this.dview.finalSeg.RowCount > 1)
+                    this.dview.finalSeg.Rows.RemoveAt(1);
+
+                this.dview.finalSeg.Rows.Add(new object[] { segment.Name });
+            }
+
+            if (this.dview.segs.RowCount >= 2)
+                this.dview.segs.Rows.RemoveAt(this.dview.segs.RowCount - 1);
+
+            this.dview.finalSeg.Rows[0].Height = 0;
+            this.dview.finalSeg.Height = (this.dview.finalSeg.RowCount - 1) * this.dview.finalSeg.RowTemplate.Height;
+        }
+
+        private void populateRecentFiles()
+        {
+            this.openRecent.DropDownItems.Clear();
+            if ((Settings.Profile.RecentFiles != null) && (Settings.Profile.RecentFiles.Count > 0))
+            {
+                foreach (string str in Settings.Profile.RecentFiles)
+                {
+                    ToolStripMenuItem item = new ToolStripMenuItem
+                    {
+                        Name = str,
+                        Text = Path.GetFileName(str),
+                        ToolTipText = str
+                    };
+                    item.Click += new EventHandler(this.recent_Click);
+                    this.openRecent.DropDownItems.Add(item);
+                }
+                this.openRecent.DropDownItems.Add(new ToolStripSeparator());
+                ToolStripMenuItem item2 = new ToolStripMenuItem
+                {
+                    Text = "Clear History"
+                };
+                item2.Click += new EventHandler(this.clear_Click);
+                this.openRecent.DropDownItems.Add(item2);
+            }
+            else
+            {
+                ToolStripMenuItem item3 = new ToolStripMenuItem
+                {
+                    Text = "None",
+                    Enabled = false
+                };
+                this.openRecent.DropDownItems.Add(item3);
+            }
+        }
+
+        public void prevStage()
+        {
+            if (this.split.LiveIndex >= 1)
+            {
+                if (this.split.LiveIndex > this.split.LastIndex)
+                {
+                    this.stopwatch.Enabled = true;
+                }
+                this.split.Previous();
+                this.updateDisplay();
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            return this.timerHotkey(keyData);
+        }
+
+        private void recent_Click(object sender, EventArgs e)
+        {
+            if (this.promptForSave())
+            {
+                this.runFile = ((ToolStripMenuItem)sender).Name;
+                this.loadFile();
+            }
+        }
+
+        private void reloadButton_Click(object sender, EventArgs e)
+        {
+            this.loadFile();
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            this.ResetSplits();
+        }
+
+        private void saveAsButton_Click(object sender, EventArgs e)
+        {
+            this.saveAs();
+        }
+
+        private void saveAs()
+        {
+            this.modalWindowOpened = true;
+            if (this.saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                this.runFile = this.saveFileDialog.FileName;
+                this.saveFile();
+            }
+            this.modalWindowOpened = false;
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            this.saveFile();
+        }
+
+        private void saveFile()
+        {
+            if (this.runFile == null)
+            {
+                this.saveButton.Enabled = false;
+            }
+            else
+            {
+                this.split.UpdateBest(Settings.Profile.BestAsOverall);
+                new FileInfo(this.runFile);
+                StreamWriter writer = null;
+                try
+                {
+                    writer = new StreamWriter(this.runFile);
+                    writer.WriteLine("Title=" + this.runTitle);
+                    writer.WriteLine("Attempts=" + this.attemptCount);
+                    writer.WriteLine("Offset=" + this.offsetStart);
+                    writer.WriteLine(string.Concat(new object[] { "Size=", this.detailPreferredSize.Width, ",", this.detailPreferredSize.Height }));
+                    List<string> list = new List<string>();
+                    foreach (Segment segment in this.split.segments)
+                    {
+                        if (segment.Name != null)
+                        {
+                            list.Add("\"" + segment.IconPath + "\"");
+                            string[] strArray = new string[] { segment.Name, segment.OldTime.ToString(CultureInfo.GetCultureInfo("").NumberFormat), segment.BestTime.ToString(CultureInfo.GetCultureInfo("").NumberFormat), segment.BestSegment.ToString(CultureInfo.GetCultureInfo("").NumberFormat) };
+                            string str = string.Join(",", strArray);
+                            writer.WriteLine(str);
+                        }
+                    }
+                    writer.WriteLine("Icons=" + string.Join(",", list.ToArray()));
+                    writer.Close();
+                    unsavedSplits = false;
+                }
+                catch (Exception exception)
+                {
+                    MessageBoxEx.Show(this, exception.Message, "Save error");
+                }
+                finally
+                {
+                    if (writer != null)
+                    {
+                        if (Settings.Profile.RecentFiles != null)
+                        {
+                            if (Settings.Profile.RecentFiles.Contains(this.runFile))
+                            {
+                                Settings.Profile.RecentFiles.Remove(this.runFile);
+                            }
+                            else if (Settings.Profile.RecentFiles.Count > 9)
+                            {
+                                Settings.Profile.RecentFiles.RemoveAt(Settings.Profile.RecentFiles.Count - 1);
+                            }
+                            Settings.Profile.RecentFiles.Insert(0, this.runFile);
+                        }
+                        this.populateRecentFiles();
+                    }
+                }
+            }
+        }
+
+        private void setColorsButton_Click(object sender, EventArgs e)
+        {
+            CustomizeColors colors = new CustomizeColors();
+            base.TopMost = false;
+            this.dview.TopMost = false;
+            this.modalWindowOpened = true;
+            if (colors.ShowDialog(this) == DialogResult.OK)
+                this.updateDetailed();
+
+            base.TopMost = Settings.Profile.OnTop;
+            this.dview.TopMost = Settings.Profile.DViewOnTop;
+            this.modalWindowOpened = false;
+        }
+
+        private void setDisplay(DisplayMode mode)
+        {
+            Settings.Profile.DisplayMode = (int)mode;
+            this.clockResize = false;
+            this.MinimumSize = new Size(0, 0);
+            this.displayTimerOnlyButton.Checked = false;
+            this.displayCompactButton.Checked = false;
+            this.displayWideButton.Checked = false;
+            this.displayDetailedButton.Checked = false;
+            if (mode == DisplayMode.Compact)
+            {
+                this.displayCompactButton.Checked = true;
+            }
+            else if (mode == DisplayMode.Wide)
+            {
+                this.displayWideButton.Checked = true;
+            }
+            else if (mode == DisplayMode.Detailed)
+            {
+                this.displayDetailedButton.Checked = true;
+            }
+            else
+            {
+                this.displayTimerOnlyButton.Checked = true;
+            }
+            if (this.split.LiveRun)
+            {
+                if (mode == DisplayMode.Compact)
+                {
+                    this.displayCompact();
+                }
+                else if (mode == DisplayMode.Wide)
+                {
+                    this.displayWide();
+                }
+                else if (mode == DisplayMode.Detailed)
+                {
+                    this.displayDetail();
+                }
+                else
+                {
+                    this.displayTimer();
+                }
+            }
+            else
+            {
+                this.displayTimer();
+            }
+
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void setHotkeys()
+        {
+            this.clearHotkeys();
+            if (Settings.Profile.EnabledHotkeys)
+            {
+                RegisterHotKey(base.Handle, 0x9d82, this.keyMods(Settings.Profile.SplitKey), this.stripkeyMods(Settings.Profile.SplitKey));
+                RegisterHotKey(base.Handle, 0x9d83, this.keyMods(Settings.Profile.PauseKey), this.stripkeyMods(Settings.Profile.PauseKey));
+                RegisterHotKey(base.Handle, 0x9d84, this.keyMods(Settings.Profile.StopKey), this.stripkeyMods(Settings.Profile.StopKey));
+                RegisterHotKey(base.Handle, 0x9d85, this.keyMods(Settings.Profile.ResetKey), this.stripkeyMods(Settings.Profile.ResetKey));
+                RegisterHotKey(base.Handle, 0x9d86, this.keyMods(Settings.Profile.PrevKey), this.stripkeyMods(Settings.Profile.PrevKey));
+                RegisterHotKey(base.Handle, 0x9d87, this.keyMods(Settings.Profile.NextKey), this.stripkeyMods(Settings.Profile.NextKey));
+                RegisterHotKey(base.Handle, 0x9d88, this.keyMods(Settings.Profile.CompTypeKey), this.stripkeyMods(Settings.Profile.CompTypeKey));
+            }
+            RegisterHotKey(base.Handle, 0x9d89, this.keyMods(Settings.Profile.HotkeyToggleKey), this.stripkeyMods(Settings.Profile.HotkeyToggleKey));
+        }
+
+        private void showAttemptCount_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.ShowAttempts = !Settings.Profile.ShowAttempts;
+            this.showAttemptCount.Checked = Settings.Profile.ShowAttempts;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void showDecimalSeparator_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.ShowDecimalSeparator = !Settings.Profile.ShowDecimalSeparator;
+            this.showDecimalSeparator.Checked = Settings.Profile.ShowDecimalSeparator;
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+        }
+
+        private void showRunTitleButton_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.ShowTitle = !Settings.Profile.ShowTitle;
+            this.showRunTitleButton.Checked = Settings.Profile.ShowTitle;
+            this.setDisplay((DisplayMode)Settings.Profile.DisplayMode);
+        }
+
+        private void showSegsDec()
+        {
+            if (Settings.Profile.DisplaySegs > 2)
+            {
+                Settings.Profile.DisplaySegs--;
+            }
+            this.setDisplay(this.currentDispMode);
+            this.updateDetailed();
+        }
+
+        private void showSegsInc()
+        {
+            if (Settings.Profile.DisplaySegs < 40)
+            {
+                Settings.Profile.DisplaySegs++;
+            }
+            this.setDisplay(this.currentDispMode);
+            this.updateDetailed();
+        }
+
+        private void startDelay_Tick(object sender, EventArgs e, long startingTicks = 0)
+        {
+            this.startDelay.Dispose();
+            this.startDelay = null;
+            this.attemptCount++;
+            this.timer.StartAt(new TimeSpan(startingTicks));
+        }
+
+        private void startTimer(long startingTicks = 0, bool useDelay = true)
+        {
+            if (this.startDelay == null)
+            {
+                if (useDelay && this.offsetStart > 0)
+                {
+                    this.offsetStartTime = DateTime.UtcNow;
+                    this.startDelay = new Timer();
+                    this.startDelay.Interval = this.offsetStart;
+                    this.startDelay.Tick += (sender, e) => startDelay_Tick(sender, e, startingTicks);
+                    this.startDelay.Enabled = true;
+                    base.Invalidate();
+                }
+                else
+                {
+                    if (this.split.LiveRun)
+                    {
+                        this.attemptCount++;
+                    }
+                    this.timer.StartAt(new TimeSpan(startingTicks));
+                    this.painter.RequestBackgroundRedraw();
+                    base.Invalidate();
+                }
+            }
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+            StopSplits();
+        }
+
+        private void stopwatch_Tick(object sender, EventArgs e)
+        {
+            if (this.flashDelay == null)
+            {
+                base.Invalidate();
+            }
+        }
+
+        private uint stripkeyMods(Keys key)
+        {
+            return (uint)(key & Keys.KeyCode);
+        }
+
+        private string timeFormatter(double secs, TimeFormat format)
+        {
+            TimeSpan span = TimeSpan.FromSeconds(Math.Abs(Math.Truncate(secs * 10) / 10));
+
+            string str = "";
+            if (((format == TimeFormat.Delta) || (format == TimeFormat.DeltaShort)) && (secs >= 0.0))
+                str = str + "+";
+            else if (secs < 0.0)
+                str = str + "-";
+
+            if (format == TimeFormat.Seconds)
+                return (Math.Truncate(secs * 100) / 100).ToString();
+
+            if (format == TimeFormat.Long)
+            {
+                if (span.TotalHours >= 1.0)
+                    return (str + string.Format("{0}:{1:00}:{2:00.0}", Math.Floor(span.TotalHours), span.Minutes, span.Seconds + (((double)span.Milliseconds) / 1000.0)));
+                return (str + string.Format("{0}:{1:00.0}", span.Minutes, span.Seconds + (((double)span.Milliseconds) / 1000.0)));
+            }
+
+            if ((span.TotalMinutes >= 1.0) || (format == TimeFormat.Short))
+                span = TimeSpan.FromSeconds(Math.Abs(Math.Truncate(secs)));
+
+            if ((span.TotalMinutes >= 100.0) && (format == TimeFormat.DeltaShort))
+                span = new TimeSpan(0, 0x63, 0x3b);
+
+            if (span.TotalHours >= 100.0)
+                span = TimeSpan.FromMinutes(Math.Truncate(span.TotalMinutes));
+
+            if ((span.TotalHours >= 100.0) && (format != TimeFormat.DeltaShort))
+                return (str + string.Format("{0}h{1:00}", Math.Floor(span.TotalHours), span.Minutes));
+
+            if ((span.TotalHours >= 1.0) && (format != TimeFormat.DeltaShort))
+                return (str + string.Format("{0}:{1:00}:{2:00}", Math.Floor(span.TotalHours), span.Minutes, span.Seconds));
+
+            if ((span.TotalMinutes >= 1.0) || (format == TimeFormat.Short))
+                return (str + string.Format("{0}:{1:00}", Math.Floor(span.TotalMinutes), span.Seconds));
+
+            return (str + string.Format("{0:0.0}", span.TotalSeconds));
+        }
+
+        private double timeParse(string timeString)
+        {
+            double num = 0.0;
+            foreach (string str in timeString.Split(new char[] { ':' }))
+            {
+                double num2;
+                if (double.TryParse(str, out num2))
+                {
+                    num = (num * 60.0) + num2;
+                }
+            }
+            return num;
+        }
+
+        public void timerControl()
+        {
+            if (this.doubleTapDelay == null)
+            {
+                if (Settings.Profile.DoubleTapGuard > 0)
+                {
+                    this.doubleTapDelay = new Timer();
+                    this.doubleTapDelay.Tick += new EventHandler(this.doubleTapDelay_Tick);
+                    this.doubleTapDelay.Interval = Math.Min(0x1388, Settings.Profile.DoubleTapGuard);
+                    this.doubleTapDelay.Enabled = true;
+                }
+                if (this.split.LiveRun)
+                {
+                    if (this.stopwatch.Enabled && (this.startDelay == null))
+                    {
+                        this.doSplit();
+                    }
+                    else if (this.split.Done)
+                    {
+                        this.StopSplits();
+                    }
+                    else
+                    {
+                        this.pauseResume();
+                    }
+                }
+                else
+                {
+                    this.pauseResume();
+                }
+            }
+        }
+
+        // Checks for local hotkeys
+        public bool timerHotkey(Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Space:
+                case Keys.Enter:    // Split
+                    this.timerControl();
+                    return true;
+
+                case Keys.Left:     // Previous
+                    this.prevStage();
+                    return true;
+
+                case Keys.Up:       // Expand splits
+                    this.showSegsInc();
+                    return true;
+
+                case Keys.Right:    // Next
+                    this.nextStage();
+                    return true;
+
+                case Keys.Down:     // Unexpand splits
+                    this.showSegsDec();
+                    return true;
+
+                case Keys.D0:       // Switch to timer display
+                    this.setDisplay(DisplayMode.Timer);
+                    return true;
+
+                case Keys.D1:       // Switch to compact display
+                    this.setDisplay(DisplayMode.Compact);
+                    return true;
+
+                case Keys.D2:       // Switch to wide display
+                    this.setDisplay(DisplayMode.Wide);
+                    return true;
+
+                case Keys.D3:       // Switch to detailed display
+                    this.setDisplay(DisplayMode.Detailed);
+                    return true;
+
+                // Got removed for being more annoying than useful
+                /*case Keys.C:        // Configure
+                    this.configure(0);
+                    return true;*/
+
+                case Keys.P:        // Pause
+                    this.pauseResume();
+                    return true;
+
+                case Keys.R:        // Reset
+                    this.ResetSplits();
+                    return true;
+
+                case Keys.S:        // Stop
+                    this.StopSplits();
+                    return true;
+
+                case Keys.Tab:      // Switch comparison type
+                    this.SwitchComparisonType();
+                    return true;
+            }
+            return false;
+        }
+
+        private void unflashClock(object sender, EventArgs e)
+        {
+            this.flashDelay.Dispose();
+            this.flashDelay = null;
+        }
+
+        // Detailed Update (Updates some stuff, not necessarely in the detailed window or detailed view.
+        public void updateDetailed()
+        {
+            ColorSettings colors = ColorSettings.Profile;
+            // For every split, checks conditions set the time string, the color and the width of the split time
+            for (int i = 0; i <= this.split.LastIndex; i++)
+            {
+                if ((i < this.split.LiveIndex) && (this.timer.ElapsedTicks > 0L))
+                {
+                    double num2 = this.split.SegDelta(this.split.segments[i].LiveTime, i);
+                    double num3 = this.split.RunDelta(this.split.segments[i].LiveTime, i);
+
+                    // If there is a Delta to write...
+                    if ((this.split.segments[i].LiveTime > 0.0) && (this.split.CompTime(i) > 0.0))
+                    {
+                        this.split.segments[i].TimeString = this.timeFormatter(this.split.RunDeltaAt(i), TimeFormat.Delta);
+                        if (this.split.LiveSegment(i) != 0.0 && (this.split.segments[i].BestSegment == 0.0 || this.split.LiveSegment(i) < this.split.segments[i].BestSegment))
+                        {
+                            this.split.segments[i].TimeColor = colors.SegBestSegment;
+                        }
+                        else if (num3 < 0.0)
+                        {
+                            if (num2 < 0.0)
+                            {
+                                this.split.segments[i].TimeColor = colors.SegAheadGain;
+                            }
+                            else
+                            {
+                                this.split.segments[i].TimeColor = colors.SegAheadLoss;
+                            }
+                        }
+                        else if (num2 > 0.0)
+                        {
+                            this.split.segments[i].TimeColor = colors.SegBehindLoss;
+                        }
+                        else
+                        {
+                            this.split.segments[i].TimeColor = colors.SegBehindGain;
+                        }
+                    }
+                    // If the split was missed...
+                    else if (this.split.segments[i].LiveTime == 0.0)
+                    {
+                        this.split.segments[i].TimeString = "-";
+                        this.split.segments[i].TimeColor = colors.SegMissingTime;
+                    }
+                    // If there was no live time to compare splits to...
+                    else if (this.split.CompTime(i) == 0.0)
+                    {
+                        this.split.segments[i].TimeString = this.timeFormatter(this.split.segments[i].LiveTime, TimeFormat.Short);
+                        if (/*(i == 0 || this.split.segments[i - 1].LiveTime > 0.0) &&
+                            (this.split.segments[i].BestSegment == 0.0) || this.split.LiveSegment(i) < this.split.segments[i].BestSegment*/
+                            this.split.LiveSegment(i) != 0.0 && (this.split.segments[i].BestSegment == 0.0 || this.split.LiveSegment(i) < this.split.segments[i].BestSegment))
+                        {
+                            this.split.segments[i].TimeColor = colors.SegBestSegment;
+                        }
+                        else
+                        {
+                            this.split.segments[i].TimeColor = colors.SegNewTime;
+                        }
+                    }
+                }
+                else if (i == this.split.LiveIndex)
+                {
+                    this.split.segments[i].TimeColor = colors.LiveSeg;
+                    if (this.split.CompTime(i) > 0.0)
+                    {
+                        this.split.segments[i].TimeString = this.timeFormatter(this.split.CompTime(i), TimeFormat.Long);
+                    }
+                    else
+                    {
+                        this.split.segments[i].TimeString = "-";
+                    }
+                }
+                else
+                {
+                    this.split.segments[i].TimeColor = colors.FutureSegTime;
+                    if (this.split.CompTime(i) > 0.0)
+                    {
+                        this.split.segments[i].TimeString = this.timeFormatter(this.split.CompTime(i), TimeFormat.Short);
+                    }
+                    else
+                    {
+                        this.split.segments[i].TimeString = "-";
+                    }
+                }
+                this.split.segments[i].TimeWidth = MeasureDisplayStringWidth(this.split.segments[i].TimeString, this.timeFont);
+            }
+
+            this.painter.RequestBackgroundRedraw();
+            base.Invalidate();
+
+            // Updates the detailed view window columns things...
+            // 
+            if ((this.dview.segs.RowCount > 0) && (this.dview.finalSeg.RowCount > 1))
+            {
+                this.dview.Deltas.Clear();
+                for (int j = 0; j < this.dview.segs.RowCount; ++j)
+                {
+                    DataGridViewRow row;
+                    if (j < (this.dview.segs.RowCount - 1))
+                        row = this.dview.segs.Rows[j + 1];
+                    else
+                        row = this.dview.finalSeg.Rows[1];
+
+                    DataGridViewCell oldTimeCell = row.Cells[1];
+                    DataGridViewCell bestTimeCell = row.Cells[2];
+                    DataGridViewCell sumOfBestsTimeCell = row.Cells[3];
+                    DataGridViewCell liveTimeCell = row.Cells[4];
+                    DataGridViewCell deltaCell = row.Cells[5];
+
+                    double oldTime = this.split.segments[j].OldTime;
+                    double bestTime = this.split.segments[j].BestTime;
+                    double sumOfBestsTime = this.split.SumOfBests(j);
+                    double liveTime = this.split.segments[j].LiveTime;
+                    double oldDelta = this.split.LastDelta(j);
+
+                    double secs = this.split.RunDeltaAt(j);
+
+                    // Puts oldTime in the "Old" column
+                    if (oldTime > 0.0)
+                        oldTimeCell.Value = this.timeFormatter(oldTime, TimeFormat.Short);
+                    else if (this.split.LastSegment.OldTime > 0.0)
+                        oldTimeCell.Value = "-";
+                    else
+                        oldTimeCell.Value = null;
+
+                    // Puts bestTime in "Best" column
+                    if (bestTime > 0.0)
+                    {
+                        bestTimeCell.Value = this.timeFormatter(bestTime, TimeFormat.Short);
+                        if ((this.split.segments[j].BestSegment > 0.0) && Settings.Profile.DViewShowSegs)
+                        {
+                            object obj2 = bestTimeCell.Value;
+                            bestTimeCell.Value = string.Concat(new object[] { obj2, " [", this.timeFormatter(this.split.segments[j].BestSegment, TimeFormat.Short), "]" });
+                        }
+                    }
+                    else if (this.split.LastSegment.BestTime > 0.0)
+                        bestTimeCell.Value = "-";
+                    else
+                        bestTimeCell.Value = null;
+
+                    // Puts sumOfBestsTime in "Sum of Bests" column
+                    if (sumOfBestsTime > 0.0)
+                        sumOfBestsTimeCell.Value = this.timeFormatter(sumOfBestsTime, TimeFormat.Short);
+                    else if (this.split.SumOfBests(this.split.LastIndex) > 0.0)
+                        sumOfBestsTimeCell.Value = "-";
+                    else
+                        sumOfBestsTimeCell.Value = null;
+
+                    // Puts liveTime in "Live" column
+                    if (liveTime > 0.0)
+                    {
+                        liveTimeCell.Value = this.timeFormatter(liveTime, TimeFormat.Short);
+                        if ((this.split.LiveSegment(j) > 0.0) && Settings.Profile.DViewShowSegs)
+                        {
+                            object obj3 = liveTimeCell.Value;
+                            liveTimeCell.Value = string.Concat(new object[] { obj3, " [", this.timeFormatter(this.split.LiveSegment(j), TimeFormat.Short), "]" });
+                        }
+                    }
+                    else if ((j < this.split.LiveIndex) && (this.timer.ElapsedTicks > 0L))
+                        liveTimeCell.Value = "-";
+                    else
+                        liveTimeCell.Value = null;
+
+                    // If the current row corresponds to the current split
+                    if (j == this.split.LiveIndex)
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = ColorSettings.Profile.UsedDViewSegHighlight;
+                            cell.Style.ForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
+                        }
+                        deltaCell.Value = null;
+                    }
+                    else    // Else, apply general style...
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = Color.Black;
+                            cell.Style.ForeColor = row.DefaultCellStyle.ForeColor;
+                        }
+
+                        // If the current row is before the current split and the timer is running
+                        if ((j < this.split.LiveIndex) && (this.timer.ElapsedTicks > 0L))
+                        {
+                            if ((liveTime > 0.0) && (this.split.CompTime(j) > 0.0))
+                            {
+                                deltaCell.Value = this.timeFormatter(secs, TimeFormat.Delta);
+
+                                liveTimeCell.Style.ForeColor = this.getDViewDeltaColor(secs, secs);
+                                if (this.split.LiveSegment(j) > 0.0 && (this.split.segments[j].BestSegment == 0.0 || this.split.LiveSegment(j) < this.split.segments[j].BestSegment))
+                                    deltaCell.Style.ForeColor = ColorSettings.Profile.UsedDViewSegBestSegment;
+                                else
+                                    deltaCell.Style.ForeColor = this.getDViewDeltaColor(secs, oldDelta);
+                            }
+                            else
+                            {
+                                deltaCell.Value = "n/a";
+                                deltaCell.Style.ForeColor = ColorSettings.Profile.UsedDViewSegMissingTime;
+                            }
+                        }
+                        else
+                            deltaCell.Value = null;
+                    }
+
+                    if (secs != 0.0)
+                        this.dview.Deltas.Add(secs);
+                    else
+                        this.dview.Deltas.Add(0.0);
+                }
+
+                if (this.runTitle != "")
+                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle;
+                else
+                    this.dview.segs.Rows[0].Cells[0].Value = "Segment";
+                this.dview.segs.DefaultCellStyle.SelectionForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
+
+                if (this.split.ComparingType == Split.CompareType.Old)
+                {
+                    this.dview.segs.Columns[1].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
+                    this.dview.segs.Columns[2].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                    this.dview.segs.Columns[3].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                }
+                else if (this.split.ComparingType == Split.CompareType.Best)
+                {
+                    this.dview.segs.Columns[1].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                    this.dview.segs.Columns[2].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
+                    this.dview.segs.Columns[3].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                }
+                else
+                {
+                    this.dview.segs.Columns[1].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                    this.dview.segs.Columns[2].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                    this.dview.segs.Columns[3].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
+                }
+                this.dview.segs.Columns[0].DefaultCellStyle.ForeColor = ColorSettings.Profile.UsedDViewSegDefaultText;
+                this.dview.finalSeg.Columns[0].DefaultCellStyle.ForeColor = this.dview.segs.Columns[0].DefaultCellStyle.ForeColor;
+                this.dview.finalSeg.Columns[1].DefaultCellStyle.ForeColor = this.dview.segs.Columns[1].DefaultCellStyle.ForeColor;
+                this.dview.finalSeg.Columns[2].DefaultCellStyle.ForeColor = this.dview.segs.Columns[2].DefaultCellStyle.ForeColor;
+                this.dview.finalSeg.Columns[3].DefaultCellStyle.ForeColor = this.dview.segs.Columns[3].DefaultCellStyle.ForeColor;
+
+                this.dview.setDeltaPoints();
+                this.dview.updateColumns();
+
+                int num10 = Math.Max(Settings.Profile.DisplaySegs, 2);
+                int liveIndex = this.split.LiveIndex;
+                if (num10 < 3)
+                {
+                    int num13 = this.split.LiveIndex;
+                }
+                this.dview.segs.Height = Math.Max(2, Math.Min(num10, this.dview.segs.RowCount)) * this.dview.segs.RowTemplate.Height;
+                if (this.dview.segs.RowCount > 1)
+                {
+                    int num11 = 3;
+                    if (Settings.Profile.DisplaySegs < 4)
+                    {
+                        num11 = 2;
+                    }
+                    this.dview.segs.FirstDisplayedScrollingRowIndex = Math.Min((int)(this.dview.segs.RowCount - 1), (int)(1 + Math.Max(0, (this.split.LiveIndex - num10) + num11)));
+                }
+                this.dview.finalSeg.FirstDisplayedScrollingRowIndex = 1;
+                for (int k = 1; k < this.dview.finalSeg.Columns.Count; k++)
+                {
+                    this.dview.segs.AutoResizeColumn(k, DataGridViewAutoSizeColumnMode.AllCellsExceptHeader);
+                    this.dview.finalSeg.AutoResizeColumn(k, DataGridViewAutoSizeColumnMode.AllCellsExceptHeader);
+                    this.dview.segs.Columns[k].Width = Math.Max(this.dview.segs.Columns[k].Width, this.dview.finalSeg.Columns[k].Width);
+                    this.dview.finalSeg.Columns[k].Width = this.dview.segs.Columns[k].Width;
+                }
+            }
+            this.dview.resetHeight();
+        }
+
+        private void updateDisplay()
+        {
+            if (Settings.Profile.CompareAgainst == 0)
+                this.split.CompType = Split.CompareType.Fastest;
+            else if (Settings.Profile.CompareAgainst == 1)
+                this.split.CompType = Split.CompareType.Old;
+            else if (Settings.Profile.CompareAgainst == 2)
+                this.split.CompType = Split.CompareType.Best;
+            else if (Settings.Profile.CompareAgainst == 3)
+                this.split.CompType = Split.CompareType.SumOfBests;
+            this.updateDetailed();
+            base.Invalidate();
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x312 && !this.modalWindowOpened)
+            {
+                switch (m.WParam.ToInt32())
+                {
+                    case 0x9d82:    // Split
+                        this.timerControl();
+                        break;
+
+                    case 0x9d83:    // Pause
+                        this.pauseResume();
+                        break;
+
+                    case 0x9d84:    // Stop
+                        this.StopSplits();
+                        break;
+
+                    case 0x9d85:    // Reset
+                        this.ResetSplits();
+                        break;
+
+                    case 0x9d86:    // Previous
+                        this.prevStage();
+                        break;
+
+                    case 0x9d87:    // Next
+                        this.nextStage();
+                        break;
+
+                    case 0x9d88:    // Switch Comparison Type
+                        this.SwitchComparisonType();
+                        break;
+
+                    case 0x9d89:    // Toggle Global Hotkeys
+                        Settings.Profile.EnabledHotkeys = !Settings.Profile.EnabledHotkeys;
+                        this.setHotkeys();
+                        this.painter.RequestBackgroundRedraw();
+                        base.Invalidate();
+                        break;
+                }
+            }
+            base.WndProc(ref m);
+        }
+
+        protected override void OnDragDrop(DragEventArgs drgevent)
+        {
+            if (!this.modalWindowOpened)
+            {
+                this.runFile = ((string[])drgevent.Data.GetData(DataFormats.FileDrop, false)).First<string>();
+                this.loadFile();
+            }
+            base.OnDragDrop(drgevent);
+        }
+
+        protected override void OnDragEnter(DragEventArgs drgevent)
+        {
+            if (!this.modalWindowOpened)
+            {
+                if (drgevent.Data.GetDataPresent(DataFormats.FileDrop))
+                    drgevent.Effect = DragDropEffects.Copy;
+                else
+                    drgevent.Effect = DragDropEffects.None;
+            }
+
+            base.OnDragEnter(drgevent);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            this.clearHotkeys();
+            Settings.Profile.WindowPosition = base.Location;
+            Settings.Profile.LastFile = this.runFile;
+            Settings.Profile.Save();
+            ColorSettings.Profile.Save();
+            base.OnFormClosed(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                int wParam = 0;
+                int x = e.X;
+                int y = e.Y;
+                /*if (sender != this)
+                {
+                    x += ((Control)sender).Location.X;
+                    y += ((Control)sender).Location.Y;
+                }*/
+                if ((this.currentDispMode == DisplayMode.Wide) && (Math.Abs((int)(x - ((this.clockRect.Right + this.wideSegWidth) - 3))) < 4))
+                {
+                    this.wideSegResizing = true;
+                    this.wideSegResizeWidth = this.wideSegWidthBase;
+                    this.wideSegX = x;
+                    Cursor.Current = Cursors.SizeWE;
+                }
+                else if ((this.currentDispMode == DisplayMode.Wide) && (Math.Abs((int)(x - (base.Width - 0x75))) < 4))
+                {
+                    this.wideResizing = true;
+                    this.wideResizingX = x;
+                    Cursor.Current = Cursors.SizeWE;
+                }
+                else if ((this.currentDispMode == DisplayMode.Detailed) && (Math.Abs((int)(y - (this.clockRect.Top - 1))) < 4))
+                {
+                    this.detailResizing = true;
+                    this.detailResizingY = y;
+                    Cursor.Current = Cursors.SizeNS;
+                }
+                else if ((x >= (this.clockRect.Right - 5)) && (x <= this.clockRect.Right))
+                {
+                    if (((y >= (this.clockRect.Bottom - 5)) && (y <= this.clockRect.Bottom)) && (this.currentDispMode != DisplayMode.Wide))
+                    {
+                        Cursor.Current = Cursors.SizeNWSE;
+                        wParam = 0x11;
+                    }
+                    else if (((y <= (this.clockRect.Top + 5)) && (y >= this.clockRect.Top)) && (this.currentDispMode != DisplayMode.Wide))
+                    {
+                        Cursor.Current = Cursors.SizeNESW;
+                        wParam = 14;
+                    }
+                    else
+                    {
+                        Cursor.Current = Cursors.SizeWE;
+                        wParam = 11;
+                    }
+                    this.MinimumSize = new Size((base.Width - this.clockRect.Width) + this.clockMinimumSize.Width, (base.Height - this.clockRect.Height) + this.clockMinimumSize.Height);
+                    this.clockResize = true;
+                }
+                else if ((x <= (this.clockRect.Left + 5)) && (x >= this.clockRect.Left))
+                {
+                    if (((y >= (this.clockRect.Bottom - 5)) && (y <= this.clockRect.Bottom)) && (this.currentDispMode != DisplayMode.Wide))
+                    {
+                        Cursor.Current = Cursors.SizeNESW;
+                        wParam = 0x10;
+                    }
+                    else if (((y <= (this.clockRect.Top + 5)) && (y >= this.clockRect.Top)) && (this.currentDispMode != DisplayMode.Wide))
+                    {
+                        Cursor.Current = Cursors.SizeNWSE;
+                        wParam = 13;
+                    }
+                    else
+                    {
+                        Cursor.Current = Cursors.SizeWE;
+                        wParam = 10;
+                    }
+                    this.MinimumSize = new Size((base.Width - this.clockRect.Width) + this.clockMinimumSize.Width, (base.Height - this.clockRect.Height) + this.clockMinimumSize.Height);
+                    this.clockResize = true;
+                }
+                else if (((this.currentDispMode != DisplayMode.Wide) && (y >= (this.clockRect.Bottom - 5))) && (y <= this.clockRect.Bottom))
+                {
+                    Cursor.Current = Cursors.SizeNS;
+                    wParam = 15;
+                    this.MinimumSize = new Size((base.Width - this.clockRect.Width) + this.clockMinimumSize.Width, (base.Height - this.clockRect.Height) + this.clockMinimumSize.Height);
+                    this.clockResize = true;
+                }
+                else if (((this.currentDispMode != DisplayMode.Wide) && (y <= (this.clockRect.Top + 5))) && (y >= this.clockRect.Top))
+                {
+                    Cursor.Current = Cursors.SizeNS;
+                    wParam = 12;
+                    this.MinimumSize = new Size((base.Width - this.clockRect.Width) + this.clockMinimumSize.Width, (base.Height - this.clockRect.Height) + this.clockMinimumSize.Height);
+                    this.clockResize = true;
+                }
+                else
+                    wParam = 2;
+
+                if (wParam > 0)
+                {
+                    ReleaseCapture();
+                    SendMessage(base.Handle, 0xa1, wParam, 0);
+                }
+            }
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if ((Control.MouseButtons & MouseButtons.Left) != MouseButtons.None)
+                this.clockResize = false;
+
+            int x = e.X;
+            int y = e.Y;
+            /*if (sender != this)
+            {
+                x += ((Control)sender).Location.X;
+                y += ((Control)sender).Location.Y;
+            }*/
+
+            if (this.wideSegResizing)
+            {
+                this.wideSegWidthBase = Math.Max(60, this.wideSegResizeWidth + (x - this.wideSegX));
+                this.setDisplay(DisplayMode.Wide);
+            }
+
+            else if (this.detailResizing)
+            {
+                if (y < (this.detailResizingY + this.segHeight))
+                {
+                    if ((y <= (this.detailResizingY - this.segHeight)) && (Settings.Profile.DisplaySegs > 2))
+                    {
+                        if (!Settings.Profile.DisplayBlankSegs && (Settings.Profile.DisplaySegs > this.split.Count))
+                        {
+                            Settings.Profile.DisplaySegs = Math.Min(this.split.Count - 1, 40);
+                            this.updateDetailed();
+                        }
+                        else
+                            this.showSegsDec();
+
+                        this.detailResizingY -= this.segHeight;
+                    }
+                }
+                else
+                {
+                    int num3;
+                    if (Settings.Profile.DisplayBlankSegs)
+                        num3 = 40;
+                    else
+                        num3 = Math.Min(this.split.Count, 40);
+
+                    if (Settings.Profile.DisplaySegs < num3)
+                    {
+                        this.showSegsInc();
+                        this.detailResizingY += this.segHeight;
+                    }
+                }
+            }
+
+            else if (this.wideResizing)
+            {
+                if (x < (this.wideResizingX + this.wideSegWidth))
+                {
+                    if ((x <= (this.wideResizingX - this.wideSegWidth)) && (Settings.Profile.WideSegs > 1))
+                    {
+                        if (!Settings.Profile.WideSegBlanks && (Settings.Profile.WideSegs > this.split.Count))
+                        {
+                            Settings.Profile.WideSegs = Math.Min(this.split.Count - 1, 20);
+                        }
+                        else
+                        {
+                            Settings settings2 = Settings.Profile;
+                            settings2.WideSegs--;
+                        }
+                        this.setDisplay(DisplayMode.Wide);
+                        this.wideResizingX -= this.wideSegWidth;
+                    }
+                }
+                else
+                {
+                    int num4;
+                    if (Settings.Profile.WideSegBlanks)
+                    {
+                        num4 = 20;
+                    }
+                    else
+                    {
+                        num4 = Math.Min(this.split.Count, 20);
+                    }
+                    if (Settings.Profile.WideSegs < num4)
+                    {
+                        Settings settings1 = Settings.Profile;
+                        settings1.WideSegs++;
+                        this.wideResizingX += this.wideSegWidth;
+                        this.setDisplay(DisplayMode.Wide);
+                    }
+                }
+            }
+
+            else if ((this.currentDispMode == DisplayMode.Wide) && (Math.Abs((int)(x - ((this.clockRect.Right + this.wideSegWidth) - 3))) < 4))
+                Cursor.Current = Cursors.SizeWE;
+
+            else if ((this.currentDispMode == DisplayMode.Wide) && (Math.Abs((int)(x - (base.Width - 0x75))) < 4))
+                Cursor.Current = Cursors.SizeWE;
+
+            else if ((this.currentDispMode == DisplayMode.Detailed) && (Math.Abs((int)(y - (this.clockRect.Top - 1))) < 4))
+                Cursor.Current = Cursors.SizeNS;
+
+            else if ((x >= (this.clockRect.Right - 5)) && (x <= this.clockRect.Right))
+            {
+                if (((y >= (this.clockRect.Bottom - 5)) && (y <= this.clockRect.Bottom)) && (this.currentDispMode != DisplayMode.Wide))
+                    Cursor.Current = Cursors.SizeNWSE;
+                else if (((y <= (this.clockRect.Top + 5)) && (y >= this.clockRect.Top)) && (this.currentDispMode != DisplayMode.Wide))
+                    Cursor.Current = Cursors.SizeNESW;
+                else
+                    Cursor.Current = Cursors.SizeWE;
+            }
+
+            else if ((x <= (this.clockRect.Left + 5)) && (x >= this.clockRect.Left))
+            {
+                if (((y >= (this.clockRect.Bottom - 5)) && (y <= this.clockRect.Bottom)) && (this.currentDispMode != DisplayMode.Wide))
+                    Cursor.Current = Cursors.SizeNESW;
+                else if (((y <= (this.clockRect.Top + 5)) && (y >= this.clockRect.Top)) && (this.currentDispMode != DisplayMode.Wide))
+                    Cursor.Current = Cursors.SizeNWSE;
+                else
+                    Cursor.Current = Cursors.SizeWE;
+            }
+
+            else if (((y >= (this.clockRect.Bottom - 5)) && (y <= this.clockRect.Bottom)) && (this.currentDispMode != DisplayMode.Wide))
+                Cursor.Current = Cursors.SizeNS;
+
+            else if (((this.currentDispMode != DisplayMode.Wide) && (y <= (this.clockRect.Top + 5))) && (y >= this.clockRect.Top))
+                Cursor.Current = Cursors.SizeNS;
+
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            this.clockResize = false;
+            this.wideSegResizing = false;
+            this.detailResizing = false;
+            this.wideResizing = false;
+            this.MinimumSize = new Size(0, 0);
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (this.clockResize)
+                this.clockRect.Size = (base.Size - this.MinimumSize) + this.clockMinimumSize;
+
+            if (this.currentDispMode == DisplayMode.Detailed)
+                this.detailPreferredSize = this.clockRect.Size;
+            else if ((this.currentDispMode != DisplayMode.Wide) && (this.currentDispMode != DisplayMode.Null))
+            {
+                int width = this.clockRect.Width;
+                if ((Settings.Profile.SegmentIcons > 1) && (this.currentDispMode == DisplayMode.Compact))
+                    width -= this.clockMinimumSize.Width - this.clockMinimumSizeAbsolute.Width;
+
+                Settings.Profile.ClockSize = new Size(width, this.clockRect.Height);
+            }
+
+            if (base.WindowState == FormWindowState.Maximized)
+                base.WindowState = FormWindowState.Normal;
+
+            base.OnResize(e);
+        }
+
+
+        // Functions created by Nitrofski
+        // ------------------------------
+
+        private void menuItemStartAt_Click(object sender, EventArgs e)
+        {
+            if (this.timer.IsRunning)
+            {
+                menuItemStartAt.Enabled = false;
+                return;
+            }
+
+            StartAtDialog dialog = new StartAtDialog();
+            base.TopMost = false;
+            this.dview.TopMost = false;
+            this.modalWindowOpened = true;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                StartAt(Convert.ToInt64(this.timeParse(dialog.StartingTime) * 10000000.0), dialog.UseDelay);
+                //      Not changed... Possible problems with locale settings...
+            }
+
+            base.TopMost = Settings.Profile.OnTop;
+            this.dview.TopMost = Settings.Profile.DViewOnTop;
+            this.modalWindowOpened = false;
+        }
+
+        private bool promptForSave()
+        {
+            if (this.unsavedSplits)
+            {
+                this.modalWindowOpened = true;
+                DialogResult result = MessageBoxEx.Show(
+                    "Your splits have been updated but not yet saved.\n" +
+                    "Do you want to save your splits now?",
+                    "Save splits?", MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                this.modalWindowOpened = false;
+
+                if (result == DialogResult.Cancel)
+                    return false;
+                if (result == DialogResult.Yes)
+                {
+                    if (this.runFile == null)
+                        this.saveAs();
+                    else
+                        this.saveFile();
+                }
+                this.unsavedSplits = false;
+            }
+
+            else if (this.split.NeedUpdate(Settings.Profile.BestAsOverall))
+            {
+                this.modalWindowOpened = true;
+                DialogResult result = MessageBoxEx.Show(
+                    "You have beaten some of your best times.\n" +
+                    "Do you want to update and save your splits now?",
+                    "Save splits?", MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                this.modalWindowOpened = false;
+
+                if (result == DialogResult.Cancel)
+                    return false;
+                if (result == DialogResult.Yes)
+                {
+                    if (this.runFile == null)
+                        this.saveAs();
+                    else
+                        this.saveFile();
+                }
+            }
+            return true;
+        }
+
+        private void ResetSplits()
+        {
+            if (this.split.NeedUpdate(Settings.Profile.BestAsOverall))
+            {
+                this.modalWindowOpened = true;
+                DialogResult result = MessageBoxEx.Show(this,
+                    "You have beaten some of your best times.\n" +
+                    "Do you want to update them?",
+                    "Update times?", MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                this.modalWindowOpened = false;
+
+                if (result == DialogResult.Yes)
+                {
+                    this.split.UpdateBest(Settings.Profile.BestAsOverall);
+                    this.unsavedSplits = true;
+                }
+                if (result != DialogResult.Cancel)
+                {
+                    this.InitializeDisplay();
+                }
+            }
+            else
+                this.InitializeDisplay();
+        }
+
+        private void StopSplits()
+        {
+            if (this.split.NeedUpdate(Settings.Profile.BestAsOverall))
+            {
+                this.split.UpdateBest(Settings.Profile.BestAsOverall);
+                this.unsavedSplits = true;
+            }
+            this.InitializeDisplay();
+        }
+
+        private void StartAt(long startingTicks, bool useDelay)
+        {
+            // If the refreshing stopwatch is running
+            if (this.stopwatch.Enabled)
+            {
+                throw new InvalidOperationException(
+                    "Trying to start the timer with an starting time, but timer is already running.");
+            }
+
+            // If the split aren't done, so if the timer isn't running
+            else if (!this.split.Done && (this.startDelay == null))
+            {
+                // If the timer had not been started yet
+                if (this.timer.ElapsedTicks == 0L)
+                {
+                    // If it wasn't running
+                    if (!this.timer.IsRunning)
+                    {
+                        this.InitializeDisplay();
+                    }
+                    this.startTimer(startingTicks, useDelay);
+
+                    this.menuItemStartAt.Enabled = false;
+                    this.stopButton.Enabled = true;
+                    this.resetButton.Enabled = true;
+                }
+
+                // If the timer was paused
+                else
+                {
+                    throw new InvalidOperationException(
+                    "Trying to start the timer with an starting time, but timer is paused.");
+                }
+                this.stopwatch.Enabled = true;
+            }
+        }
+
+        public enum DisplayMode
+        {
+            Timer,
+            Compact,
+            Wide,
+            Detailed,
+            Null
+        }
+
+        public enum KeyModifiers
+        {
+            Alt = 1,
+            Control = 2,
+            None = 0,
+            Shift = 4,
+            Windows = 8
+        }
+
+        public enum TimeFormat
+        {
+            Seconds,
+            Short,
+            Long,
+            Delta,
+            DeltaShort
+        }
+
+        private class Painter
+        {
+            private WSplit wsplit;
+
+            private string timeStringAbsPart;
+            private string timeStringDecPart;
+
+            SizeF clockTimeAbsSize;
+            SizeF clockTimeDecSize;
+            SizeF clockTimeTotalSize;
+
+            float clockScale;
+
+            private Bitmap background;
+            private Bitmap bgImage;
+            private Timer animatedBgTimer;
+            private int currentAnimatedBackgroundFrame;
+
+            private Color clockColor = Color.White;
+            private Color clockGrColor = Color.White;
+            private Color clockGrColor2 = Color.White;
+            private Color clockPlainColor = Color.White;
+
+            private bool bgRedrawRequested;
+
+            private int runDelLength;
+            private int runDeltaWidth;
+            private bool runLosingTime;
+            private int segDelLength;
+            private int segDeltaWidth;
+            private bool segLosingTime;
+            private int segTimeLength;
+            private int segTimeWidth;
+
+            public Painter(WSplit wsplit)
+            {
+                this.wsplit = wsplit;
+            }
+
+            public void PrepareBackground()
+            {
+                this.bgImage = null;
+                if (this.animatedBgTimer != null)
+                {
+                    this.animatedBgTimer.Dispose();
+                    this.animatedBgTimer = null;
+                    this.currentAnimatedBackgroundFrame = 0;
+                }
+
+                if (Settings.Profile.BackgroundImage)
+                {
+                    try
+                    {
+                        using (Bitmap bmp = new Bitmap(Settings.Profile.BackgroundImageFilename))
+                        {
+                            this.bgImage = bmp.Clone(Settings.Profile.BackgroundImageSelection, bmp.PixelFormat);
+                        }
+
+                        if (this.bgImage.FrameDimensionsList.Any(fd => fd.Equals(FrameDimension.Time.Guid))
+                            && this.bgImage.GetFrameCount(FrameDimension.Time) > 1)
+                        {
+                            PropertyItem gifDelay = this.bgImage.GetPropertyItem(0x5100);
+
+                            this.animatedBgTimer = new Timer();
+                            this.animatedBgTimer.Interval = BitConverter.ToInt16(gifDelay.Value, 0) * 10;
+                            this.animatedBgTimer.Tick += (o, e) =>
+                                {
+                                    ++this.currentAnimatedBackgroundFrame;
+                                    if (this.currentAnimatedBackgroundFrame >= this.bgImage.GetFrameCount(FrameDimension.Time))
+                                        this.currentAnimatedBackgroundFrame = 0;
+
+                                    this.bgImage.SelectActiveFrame(FrameDimension.Time, currentAnimatedBackgroundFrame);
+                                    this.RequestBackgroundRedraw();
+                                };
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // If loading the image fails, we change de settings.
+                        Settings.Profile.BackgroundImage = false;
+                    }
+                }
+                // Prepare background
+                this.RequestBackgroundRedraw();
+            }
+
+            public void RequestBackgroundRedraw()
+            {
+                this.bgRedrawRequested = true;
+            }
+
+            private void DrawBackground(Graphics graphics, float angle, int num5, int num8, int num13, int x)
+            {
+                // What is "angle?"
+
+                // If there is a need to redraw the background
+                if (((this.background == null) || (this.background.Size != wsplit.Size)) || this.bgRedrawRequested)
+                {
+                    this.bgRedrawRequested = false;
+                    GC.Collect();   // Hardcoded Garbage Collection? Mmh...
+
+                    // Creating the bitmap
+                    if ((this.background == null) || (this.background.Size != wsplit.Size))
+                        this.background = new Bitmap(wsplit.Width, wsplit.Height);
+
+                    Graphics bgGraphics = Graphics.FromImage(this.background);
+                    bgGraphics.Clear(Color.Black);
+                    bgGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                    //
+                    // If display mode is NOT Timer Only
+                    //
+                    if (wsplit.currentDispMode != DisplayMode.Timer)
+                    {
+                        Rectangle statusBarEctangle;   
+                        Rectangle headerTextRectangle;
+                        Rectangle statusTextRectangle;
+
+                        if (wsplit.currentDispMode == DisplayMode.Wide)
+                        {
+                            statusBarEctangle = new Rectangle(wsplit.Width - 120, 0, 120, wsplit.Height);                       // Status bar
+                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 118, 12);          // Run title
+                            statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
+                        }
+                        else if (wsplit.currentDispMode == DisplayMode.Detailed)
+                        {
+                            statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 18);            // Status bar
+                            headerTextRectangle = new Rectangle(0, 0, 0, 0);                                            // Nothing? Why?
+                            statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 16);  // Run status
+                        }
+                        else
+                        {
+                            statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 16);            // Status bar
+                            headerTextRectangle = new Rectangle(1, 2, wsplit.Width - 2, 13);                            // Segment name
+                            statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 14);  // Run status
+
+                            // If the segment icon will be shown, the segment name have to be pushed right
+                            if ((Settings.Profile.SegmentIcons > 0) && !wsplit.split.Done)
+                            {
+                                headerTextRectangle.Width -= 4 + (8 * (Settings.Profile.SegmentIcons + 1));
+                                headerTextRectangle.X += 4 + (8 * (Settings.Profile.SegmentIcons + 1));
+                            }
+                        }
+
+                        // If the background isn't black
+                        if (!Settings.Profile.BackgroundBlack)
+                        {
+                            // Fill the status bar
+                            if (Settings.Profile.BackgroundPlain)
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), statusBarEctangle);
+                            else
+                                bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), statusBarEctangle);
+
+                            // Detailed mode - Draw the title bar
+                            if (wsplit.currentDispMode == DisplayMode.Detailed)
+                            {
+                                if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                                {
+                                    if (Settings.Profile.BackgroundPlain)
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, 0, wsplit.Width, 18);
+                                    else
+                                    {
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, 0, wsplit.Width, 18);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, 0, wsplit.Width, 9);
+                                    }
+                                }
+                            }
+
+                            // Compact mode - Draw the title bar
+                            else if (wsplit.currentDispMode == DisplayMode.Compact)
+                            {
+                                if (Settings.Profile.BackgroundPlain)
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, 0, wsplit.Width, 18);
+                                else
+                                {
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, 0, wsplit.Width, 15);
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, 0, wsplit.Width, 7);
+                                }
+                            }
+                        }
+
+                        // Refactor? Only used once, never changes
+                        StringFormat format3 = new StringFormat
+                        {
+                            LineAlignment = StringAlignment.Center,
+                            Trimming = StringTrimming.EllipsisCharacter
+                        };
+
+                        // Only used once, Alignment changes
+                        StringFormat format4 = (StringFormat)format3.Clone();
+
+                        if (wsplit.currentDispMode == DisplayMode.Compact)
+                            format4.Alignment = StringAlignment.Far;
+
+                        string s = "";
+                        string statusText = "";
+
+                        // The run is not started yet
+                        if (wsplit.timer.ElapsedTicks == 0L)
+                        {
+                            if (wsplit.currentDispMode != DisplayMode.Wide)
+                                format4.Alignment = StringAlignment.Far;
+
+                            if (wsplit.startDelay != null)
+                                statusText = "delay";
+                            else
+                            {
+                                statusText = "ready";
+                                if (Settings.Profile.ShowAttempts && ((wsplit.currentDispMode != DisplayMode.Detailed) || !Settings.Profile.ShowTitle))
+                                    statusText += ", attempt #" + (wsplit.attemptCount + 1);
+                            }
+                        }
+
+                        // The run is done
+                        else if (wsplit.split.Done)
+                        {
+                            if (wsplit.split.CompTime(wsplit.split.LastIndex) == 0.0)
+                            {
+                                if (wsplit.currentDispMode != DisplayMode.Wide)
+                                    format4.Alignment = StringAlignment.Far;
+
+                                statusText = "done";
+                            }
+                            else if (wsplit.split.LastSegment.LiveTime < wsplit.split.CompTime(wsplit.split.LastIndex))
+                                statusText = "new record";
+                            else
+                                statusText = "done";
+                        }
+
+                        // The run is going
+                        else if ((wsplit.currentDispMode == DisplayMode.Compact) && (wsplit.split.CompTime(wsplit.split.LiveIndex) != 0.0))
+                            statusText = wsplit.split.ComparingType.ToString() + ": " + wsplit.timeFormatter(wsplit.split.CompTime(wsplit.split.LiveIndex), TimeFormat.Long);
+                        else if (this.segLosingTime)
+                            statusText = "live segment";
+                        else if (((wsplit.split.LiveIndex > 0) && (wsplit.split.segments[wsplit.split.LiveIndex - 1].LiveTime > 0.0)) && (wsplit.split.CompTime(wsplit.split.LiveIndex - 1) != 0.0))
+                            statusText = "prev segment";
+
+                        // Detailed mode
+                        if (wsplit.currentDispMode == DisplayMode.Detailed)
+                        {
+                            if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                            {
+                                bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                                Rectangle rectangle7 = new Rectangle(0, 1, wsplit.Width, 17);
+
+                                // Draws the hotkey toggle indicator
+                                if (Settings.Profile.HotkeyToggleKey != Keys.None)
+                                {
+                                    if (Settings.Profile.EnabledHotkeys)
+                                    {
+                                        bgGraphics.FillRectangle(Brushes.GreenYellow, wsplit.Width - 10, 4, 6, 6);
+                                    }
+                                    else
+                                    {
+                                        bgGraphics.FillRectangle(Brushes.OrangeRed, wsplit.Width - 10, 4, 6, 6);
+                                    }
+                                    rectangle7.Width -= 10;
+                                }
+
+                                string str8 = "";
+                                if (Settings.Profile.ShowAttempts)
+                                {
+                                    if (wsplit.timer.IsRunning)
+                                    {
+                                        str8 = "#" + wsplit.attemptCount + " / ";
+                                    }
+                                    else
+                                    {
+                                        str8 = "#" + (wsplit.attemptCount + 1) + " / ";
+                                    }
+                                }
+
+                                StringFormat format5 = new StringFormat
+                                {
+                                    Alignment = StringAlignment.Center,
+                                    LineAlignment = StringAlignment.Center,
+                                    Trimming = StringTrimming.EllipsisCharacter
+                                };
+
+                                bgGraphics.DrawString(str8 + wsplit.runTitle, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), rectangle7, format5);
+                            }
+                        }
+
+                        else if (wsplit.split.Done)
+                        {
+                            if (wsplit.currentDispMode == DisplayMode.Wide)
+                            {
+                                s = statusText;
+                                statusText = "Final";
+                            }
+                            else
+                                s = "Final";
+                        }
+                        else if (wsplit.currentDispMode == DisplayMode.Compact)
+                            s = wsplit.split.CurrentSegment.Name;
+                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                            s = wsplit.runTitle;
+                        else
+                            s = "Run";
+
+                        if (wsplit.currentDispMode == DisplayMode.Compact)
+                        {
+                            headerTextRectangle.Width -= this.segDeltaWidth;
+                            statusTextRectangle.Width -= this.runDeltaWidth;
+                            statusTextRectangle.X += this.runDeltaWidth;
+                        }
+                        else
+                        {
+                            headerTextRectangle.Width -= this.runDeltaWidth;
+                            statusTextRectangle.Width -= this.segDeltaWidth;
+                        }
+
+                        bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                        bgGraphics.DrawString(s, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), headerTextRectangle, format3);   // To be verified, but it seems like this line writes fuck all in a negative rectangle when in Detailed mode...
+                        bgGraphics.DrawString(statusText, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), statusTextRectangle, format4);
+                    }
+
+                    //
+                    // Wide or detailed modes
+                    //
+                    if ((wsplit.currentDispMode == DisplayMode.Wide) || (wsplit.currentDispMode == DisplayMode.Detailed))
+                    {
+                        Rectangle rectangle8;   // Yet another unnamed rectangle
+                        int num16 = wsplit.clockRect.Right + 2;
+                        int y = 0;
+
+                        if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                            y += 18;
+
+                        if (wsplit.currentDispMode == DisplayMode.Wide)
+                        {
+                            rectangle8 = new Rectangle(num16, 0, (wsplit.Width - wsplit.clockRect.Width) - 122, wsplit.Height);
+                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBack2), wsplit.clockRect.Right, 0, 2, wsplit.Height);
+                        }
+
+                        else
+                            rectangle8 = new Rectangle(0, y, wsplit.Width, ((wsplit.Height - wsplit.clockRect.Height) - 19) - y);
+
+                        if (!Settings.Profile.BackgroundBlack)
+                        {
+                            if (Settings.Profile.BackgroundPlain)
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.SegBackPlain), rectangle8);
+                            else
+                                bgGraphics.FillRectangle(new LinearGradientBrush(rectangle8, ColorSettings.Profile.SegBack, ColorSettings.Profile.SegBack2, angle), rectangle8);
+                        }
+
+                        // Flag2 = Show last
+                        bool flag2 = false;
+                        if (((num5 > 3) && (((num13 + num5) - 1) < wsplit.split.LastIndex)) && (((wsplit.currentDispMode == DisplayMode.Detailed) && Settings.Profile.ShowLastDetailed) || ((wsplit.currentDispMode == DisplayMode.Wide) && Settings.Profile.ShowLastWide)))
+                            flag2 = true;
+
+                        if (wsplit.currentDispMode == DisplayMode.Wide)
+                        {
+                            if (flag2)
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBack2), (wsplit.Width - 0x7a) - wsplit.wideSegWidth, 0, 2, wsplit.Height);
+                            else
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBack2), wsplit.Width - 0x7a, 0, 2, wsplit.Height);
+                        }
+                        else if (flag2)
+                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), 0, (wsplit.clockRect.Y - 3) - wsplit.segHeight, wsplit.Width, 3);
+                        else if (Settings.Profile.BackgroundPlain || Settings.Profile.BackgroundBlack)
+                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), 0, wsplit.clockRect.Y - 3, wsplit.Width, 3);
+                        else
+                            bgGraphics.FillRectangle(new LinearGradientBrush(rectangle8, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, 0f), 0, wsplit.clockRect.Y - 3, wsplit.Width, 3);
+
+                        StringFormat format6 = new StringFormat
+                        {
+                            Trimming = StringTrimming.EllipsisCharacter,
+                            LineAlignment = StringAlignment.Center
+                        };
+
+                        StringFormat format7 = new StringFormat
+                        {
+                            LineAlignment = StringAlignment.Center
+                        };
+
+                        if (wsplit.currentDispMode != DisplayMode.Wide)
+                        {
+                            if (wsplit.segHeight > 24)
+                                format6.Alignment = StringAlignment.Far;
+
+                            format7.Alignment = StringAlignment.Far;
+                        }
+
+                        Rectangle rect = new Rectangle(0, 0, 0, 1);
+
+                        int num18 = 0;
+                        for (int i = num13; (num18 < num5) && (i <= wsplit.split.LastIndex); i++)
+                        {
+                            int segTimeWidth;
+                            Rectangle rectangle10;
+                            Rectangle rectangle11;
+                            Rectangle rectangle12;
+
+                            Image grayIcon;
+                            ImageAttributes attributes;
+
+                            if (((num18 + 1) >= num5) && flag2)
+                            {
+                                i = wsplit.split.LastIndex;
+                                y += 3;
+                                num16 += 2;
+                            }
+
+                            Brush brush3 = new SolidBrush(ColorSettings.Profile.FutureSegName);
+                            string str9 = wsplit.split.segments[i].TimeString;
+                            string name = wsplit.split.segments[i].Name;
+
+                            if ((i == wsplit.split.LiveIndex) && this.runLosingTime)
+                                segTimeWidth = this.segTimeWidth;
+                            else
+                                segTimeWidth = wsplit.split.segments[i].TimeWidth;
+
+                            ColorMatrix newColorMatrix = new ColorMatrix
+                            {
+                                Matrix33 = 0.65f
+                            };
+
+                            if (wsplit.currentDispMode == DisplayMode.Wide)
+                            {
+                                rectangle10 = new Rectangle(num16, 0, wsplit.wideSegWidth, wsplit.Height);
+                                rectangle11 = new Rectangle(num16 + 2, (wsplit.Height / 4) - 4, (wsplit.wideSegWidth - x) - 2, 12);
+                                rectangle12 = new Rectangle(rectangle11.Left, wsplit.Height / 2, rectangle11.Width, wsplit.Height / 2);
+                            }
+
+                            else
+                            {
+                                rectangle10 = new Rectangle(0, y, wsplit.Width, wsplit.segHeight);
+                                rectangle11 = new Rectangle(x, y + 2, wsplit.Width - x, wsplit.segHeight);
+                                rectangle12 = new Rectangle(x, y + 1, wsplit.Width - x, wsplit.segHeight);
+
+                                if (wsplit.segHeight <= 24)
+                                {
+                                    rectangle11.Width -= segTimeWidth + 2;
+                                    rectangle11.Y = (y + (wsplit.segHeight / 2)) - 5;
+                                    rectangle11.Height = 13;
+                                }
+                                else
+                                {
+                                    rectangle11.Y = y + 2;
+                                    rectangle11.Height /= 2;
+                                    rectangle12.Y = rectangle11.Bottom - 2;
+                                    rectangle12.Height /= 2;
+                                }
+                            }
+                            if ((i < wsplit.split.LiveIndex) && (wsplit.timer.ElapsedTicks > 0L))
+                            {
+                                brush3 = new SolidBrush(ColorSettings.Profile.PastSeg);
+                            }
+                            else if (i == wsplit.split.LiveIndex)
+                            {
+                                brush3 = new SolidBrush(ColorSettings.Profile.LiveSeg);
+                                rect = rectangle10;
+                                if (Settings.Profile.BackgroundPlain || Settings.Profile.BackgroundBlack)
+                                {
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.SegHighlightPlain), rectangle10);
+                                }
+                                else
+                                {
+                                    bgGraphics.FillRectangle(new LinearGradientBrush(rectangle10, ColorSettings.Profile.SegHighlight, ColorSettings.Profile.SegHighlight2, angle), rectangle10);
+                                }
+                                newColorMatrix.Matrix33 = 1f;
+                            }
+                            if (x == 0)
+                            {
+                                goto Label_1F67;
+                            }
+                            if ((i < wsplit.split.LiveIndex) && (wsplit.timer.ElapsedTicks > 0L))
+                            {
+                                newColorMatrix.Matrix33 = 0.85f;
+                                switch (x)
+                                {
+                                    case 0x10:
+                                        grayIcon = wsplit.split.segments[i].GrayIcon16;
+                                        goto Label_1EE9;
+
+                                    case 0x18:
+                                        grayIcon = wsplit.split.segments[i].GrayIcon24;
+                                        goto Label_1EE9;
+
+                                    case 0x20:
+                                        grayIcon = wsplit.split.segments[i].GrayIcon32;
+                                        goto Label_1EE9;
+                                }
+                                grayIcon = wsplit.split.segments[i].GrayIcon;
+                            }
+                            else
+                            {
+                                switch (x)
+                                {
+                                    case 0x10:
+                                        grayIcon = wsplit.split.segments[i].Icon16;
+                                        goto Label_1EE9;
+
+                                    case 0x18:
+                                        grayIcon = wsplit.split.segments[i].Icon24;
+                                        goto Label_1EE9;
+
+                                    case 0x20:
+                                        grayIcon = wsplit.split.segments[i].Icon32;
+                                        goto Label_1EE9;
+                                }
+                                grayIcon = wsplit.split.segments[i].Icon;
+                            }
+                        Label_1EE9:
+                            attributes = new ImageAttributes();
+                            attributes.SetColorMatrix(newColorMatrix);
+                            Rectangle destRect = new Rectangle(rectangle10.X, rectangle10.Y, x, x);
+                            if (wsplit.currentDispMode == DisplayMode.Wide)
+                            {
+                                destRect.X += wsplit.wideSegWidth - x;
+                                destRect.Y += wsplit.Height - x;
+                            }
+                            bgGraphics.DrawImage(grayIcon, destRect, 0, 0, grayIcon.Width, grayIcon.Height, GraphicsUnit.Pixel, attributes);
+                        Label_1F67:
+                            bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                            bgGraphics.DrawString(name, wsplit.displayFont, brush3, rectangle11, format6);
+                            if (i != wsplit.split.LiveIndex)
+                            {
+                                bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                bgGraphics.DrawString(str9, wsplit.timeFont, new SolidBrush(wsplit.split.segments[i].TimeColor), rectangle12, format7);
+                            }
+                            num16 += wsplit.wideSegWidth;
+                            y += wsplit.segHeight;
+                            num18++;
+                        }
+
+                        if (wsplit.split.LiveRun && !wsplit.split.Done)
+                        {
+                            Pen pen = new Pen(new SolidBrush(ColorSettings.Profile.SegHighlightBorder));
+                            if (wsplit.currentDispMode == DisplayMode.Wide)
+                            {
+                                rect.Height--;
+                                bgGraphics.DrawRectangle(pen, rect);
+                            }
+                            else
+                            {
+                                bgGraphics.DrawLine(pen, rect.Left, rect.Top, rect.Right, rect.Top);
+                                bgGraphics.DrawLine(pen, rect.Left, rect.Bottom, rect.Right, rect.Bottom);
+                            }
+                        }
+                    }
+
+                    // Code for drawing clock back has been moved to another function. Current method's signature is temporary
+                    this.DrawClockBack(angle, num8, bgGraphics);
+
+                    if (((x > 0) && (wsplit.currentDispMode == DisplayMode.Compact)) && (wsplit.split.LiveRun && !wsplit.split.Done))
+                    {
+                        Image icon;
+                        switch (x)
+                        {
+                            case 0x10:
+                                icon = wsplit.split.CurrentSegment.Icon16;
+                                break;
+
+                            case 0x18:
+                                icon = wsplit.split.CurrentSegment.Icon24;
+                                break;
+
+                            case 0x20:
+                                icon = wsplit.split.CurrentSegment.Icon32;
+                                break;
+
+                            default:
+                                icon = wsplit.split.CurrentSegment.Icon;
+                                break;
+                        }
+                        Rectangle rectangle14 = new Rectangle(3, 3, x, x);
+                        bgGraphics.DrawImage(icon, rectangle14, 0, 0, icon.Width, icon.Height, GraphicsUnit.Pixel);
+                        bgGraphics.DrawRectangle(new Pen(new SolidBrush(wsplit.DarkenColor(this.clockColor, 0.7))), 3, 3, icon.Width, icon.Height);
+                    }
+                }
+
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.DrawImage(this.background, 0, 0);
+                graphics.CompositingMode = CompositingMode.SourceOver;
+            }
+
+            public void PaintAll(Graphics graphics)
+            {
+                TimeSpan span2;
+                ColorSettings settings = ColorSettings.Profile;
+                bool flag = false;
+                double totalMilliseconds = wsplit.timer.Elapsed.TotalMilliseconds;
+
+                if (((Settings.Profile.FallbackPreference == 1) || (Settings.Profile.FallbackPreference == 2)) && (totalMilliseconds > 0.0))
+                {
+                    double num2 = Math.Abs(wsplit.timer.driftMilliseconds);
+
+                    if ((num2 > 500.0) && ((num2 / totalMilliseconds) > 5.5555555555555558E-05))
+                    {
+                        if (Settings.Profile.FallbackPreference == 2)
+                            wsplit.timer.useFallback = true;
+
+                        else
+                            flag = true;
+                    }
+
+                    else if (Settings.Profile.FallbackPreference == 2)
+                    {
+                        wsplit.timer.useFallback = false;
+                    }
+                }
+
+                TimeSpan elapsed = wsplit.timer.Elapsed;
+                double num3 = wsplit.split.SegDelta(elapsed.TotalSeconds, wsplit.split.LiveIndex);
+                double secs = wsplit.split.RunDelta(elapsed.TotalSeconds, wsplit.split.LiveIndex);
+                int num5 = 0;
+                float angle = 0f;
+
+                if (wsplit.currentDispMode == DisplayMode.Wide)
+                {
+                    num5 = wsplit.displaySegsWide();
+                    angle = 90f;
+                }
+                else
+                    num5 = wsplit.detailSegCount();
+
+                if ((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L))
+                {
+                    span2 = TimeSpan.FromMilliseconds((double)wsplit.offsetStart);
+                    if (wsplit.startDelay != null)
+                    {
+                        span2 -= DateTime.UtcNow - wsplit.offsetStartTime;
+                    }
+                }
+                else if (wsplit.split.Done)
+                    span2 = TimeSpan.FromSeconds(wsplit.split.LastSegment.LiveTime);
+                else
+                    span2 = elapsed;
+
+                if (span2.TotalHours >= 100.0)
+                {
+                    clockTimeAbsSize = MeasureTimeStringMax("888:88:88", (Settings.Profile.DigitalClock) ? wsplit.digitLarge : wsplit.clockLarge, graphics);
+                    this.timeStringAbsPart = string.Format("{0:000}:{1:00}:{2:00}", Math.Floor(span2.TotalHours) % 1000.0, span2.Minutes, span2.Seconds);
+                }
+                else
+                {
+                    clockTimeAbsSize = MeasureTimeStringMax("88:88:88", (Settings.Profile.DigitalClock) ? wsplit.digitLarge : wsplit.clockLarge, graphics);
+                    if (span2.TotalHours >= 1.0)
+                        this.timeStringAbsPart = string.Format("{0:0}:{1:00}:{2:00}", Math.Floor(span2.TotalHours), span2.Minutes, span2.Seconds);
+                    else if (span2.TotalMinutes >= 1.0)
+                        this.timeStringAbsPart = string.Format("{0}:{1:00}", span2.Minutes, span2.Seconds);
+                    else
+                        this.timeStringAbsPart = string.Format("{0}", span2.Seconds);
+                }
+
+                if (Settings.Profile.DigitalClock)
+                {
+                    // If the refresh interval is greater than 42, only 1 digit is shown after the decimal
+                    /*if (wsplit.stopwatch.Interval > 42)
+                        this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(9, ' ');*/
+
+                    this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(8, ' ');
+                    if (((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && (this.timeStringAbsPart.Substring(0, 1) == " "))
+                    {
+                        this.timeStringAbsPart = "-" + this.timeStringAbsPart.Substring(1, this.timeStringAbsPart.Length - 1);
+                    }
+                }
+                else if (((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && ((span2.TotalHours < 10.0) || ((span2.TotalHours < 100.0) && (wsplit.stopwatch.Interval > 42))))
+                    this.timeStringAbsPart = "-" + this.timeStringAbsPart;
+
+                // If the number of hours is greater or equal to 100 or the refresh interval is greater than 42, show only 1 digit after the decimal
+                if ((span2.TotalHours >= 100.0) || (wsplit.stopwatch.Interval > 42))
+                {
+                    this.clockTimeDecSize = MeasureTimeStringMax("8", (Settings.Profile.DigitalClock) ? wsplit.digitMed : wsplit.clockMed, graphics);
+                    this.timeStringDecPart = string.Format("{0:0}", Math.Floor((double)(((double)span2.Milliseconds) / 100.0)));
+                }
+                else
+                {
+                    this.clockTimeDecSize = MeasureTimeStringMax("88", (Settings.Profile.DigitalClock) ? wsplit.digitMed : wsplit.clockMed, graphics);
+                    this.timeStringDecPart = string.Format("{0:00}", Math.Floor((double)(((double)span2.Milliseconds) / 10.0)));
+                }
+
+                clockTimeTotalSize = new SizeF(clockTimeAbsSize.Width + clockTimeDecSize.Width,
+                    Math.Max(clockTimeAbsSize.Height, clockTimeDecSize.Height));
+
+                int x = 0;
+
+                if (Settings.Profile.SegmentIcons >= 1)
+                    x = (Settings.Profile.SegmentIcons + 1) * 8;
+
+                int num8 = 0;
+
+                if (((x > 16) && (wsplit.currentDispMode == DisplayMode.Compact)) && (wsplit.split.LiveRun && !wsplit.split.Done))
+                    num8 = x + 6;
+
+                //clockScale = Math.Min((float)(((float)(wsplit.clockRect.Width - num8)) / 124f), (float)(((float)wsplit.clockRect.Height) / 26f));
+                clockScale = Math.Min((wsplit.clockRect.Width - num8) / clockTimeTotalSize.Width, wsplit.clockRect.Height / clockTimeTotalSize.Height);
+
+                Color clockColor = this.clockColor;
+                Color dViewClockColor = new Color();
+                if (wsplit.timer.IsRunning)
+                {
+                    if (wsplit.split.LiveRun)
+                    {
+                        if (wsplit.split.Done)
+                        {
+                            if ((wsplit.split.LastSegment.LiveTime < wsplit.split.CompTime(wsplit.split.LastIndex)) || (wsplit.split.CompTime(wsplit.split.LastIndex) == 0.0))
+                            {
+                                clockColor = ColorSettings.Profile.RecordFore;
+                                this.clockGrColor = ColorSettings.Profile.RecordBack;
+                                this.clockGrColor2 = ColorSettings.Profile.RecordBack2;
+                                this.clockPlainColor = ColorSettings.Profile.RecordBackPlain;
+
+                                dViewClockColor = ColorSettings.Profile.UsedDViewRecord;
+                            }
+                            else
+                            {
+                                clockColor = ColorSettings.Profile.FinishedFore;
+                                this.clockGrColor = ColorSettings.Profile.FinishedBack;
+                                this.clockGrColor2 = ColorSettings.Profile.FinishedBack2;
+                                this.clockPlainColor = ColorSettings.Profile.FinishedBackPlain;
+
+                                dViewClockColor = ColorSettings.Profile.UsedDViewFinished;
+                            }
+                        }
+                        else if (wsplit.flashDelay != null)
+                        {
+                            clockColor = ColorSettings.Profile.Flash;
+                            dViewClockColor = ColorSettings.Profile.DViewFlash;
+                        }
+                        else if (wsplit.split.CompTime() == 0.0)
+                        {
+                            clockColor = ColorSettings.Profile.AheadFore;
+                            this.clockGrColor = ColorSettings.Profile.AheadBack;
+                            this.clockGrColor2 = ColorSettings.Profile.AheadBack2;
+                            this.clockPlainColor = ColorSettings.Profile.AheadBackPlain;
+
+                            dViewClockColor = ColorSettings.Profile.UsedDViewAhead;
+                        }
+                        else if (elapsed.TotalSeconds < wsplit.split.CompTime())
+                        {
+                            if (num3 < 0.0)
+                            {
+                                clockColor = ColorSettings.Profile.AheadFore;
+                                this.clockGrColor = ColorSettings.Profile.AheadBack;
+                                this.clockGrColor2 = ColorSettings.Profile.AheadBack2;
+                                this.clockPlainColor = ColorSettings.Profile.AheadBackPlain;
+
+                                dViewClockColor = ColorSettings.Profile.UsedDViewAhead;
+                            }
+                            else
+                            {
+                                clockColor = ColorSettings.Profile.AheadLosingFore;
+                                this.clockGrColor = ColorSettings.Profile.AheadLosingBack;
+                                this.clockGrColor2 = ColorSettings.Profile.AheadLosingBack2;
+                                this.clockPlainColor = ColorSettings.Profile.AheadLosingBackPlain;
+
+                                dViewClockColor = ColorSettings.Profile.UsedDViewAheadLosing;
+                            }
+                        }
+                        else if (num3 < 0.0)
+                        {
+                            clockColor = ColorSettings.Profile.BehindFore;
+                            this.clockGrColor = ColorSettings.Profile.BehindBack;
+                            this.clockGrColor2 = ColorSettings.Profile.BehindBack2;
+                            this.clockPlainColor = ColorSettings.Profile.BehindBackPlain;
+
+                            dViewClockColor = ColorSettings.Profile.UsedDViewBehind;
+                        }
+                        else
+                        {
+                            clockColor = ColorSettings.Profile.BehindLosingFore;
+                            this.clockGrColor = ColorSettings.Profile.BehindLosingBack;
+                            this.clockGrColor2 = ColorSettings.Profile.BehindLosingBack2;
+                            this.clockPlainColor = ColorSettings.Profile.BehindLosingBackPlain;
+
+                            dViewClockColor = ColorSettings.Profile.UsedDViewBehindLosing;
+                        }
+                    }
+                    else
+                    {
+                        clockColor = ColorSettings.Profile.WatchFore;
+                        this.clockGrColor = ColorSettings.Profile.WatchBack;
+                        this.clockGrColor2 = ColorSettings.Profile.WatchBack2;
+                        this.clockPlainColor = ColorSettings.Profile.WatchBackPlain;
+                    }
+                }
+                else if (wsplit.timer.ElapsedTicks > 0L)
+                {
+                    clockColor = ColorSettings.Profile.Paused;
+                    dViewClockColor = ColorSettings.Profile.UsedDViewPaused;
+                }
+                else if (wsplit.offsetStart != 0)
+                {
+                    clockColor = ColorSettings.Profile.DelayFore;
+                    this.clockGrColor = ColorSettings.Profile.DelayBack;
+                    this.clockGrColor2 = ColorSettings.Profile.DelayBack2;
+                    this.clockPlainColor = ColorSettings.Profile.DelayBackPlain;
+
+                    dViewClockColor = ColorSettings.Profile.UsedDViewDelay;
+                }
+                else if (wsplit.split.LiveRun)
+                {
+                    clockColor = ColorSettings.Profile.AheadFore;
+                    this.clockGrColor = ColorSettings.Profile.AheadBack;
+                    this.clockGrColor2 = ColorSettings.Profile.AheadBack2;
+                    this.clockPlainColor = ColorSettings.Profile.AheadBackPlain;
+
+                    dViewClockColor = ColorSettings.Profile.UsedDViewAhead;
+                }
+                else
+                {
+                    clockColor = ColorSettings.Profile.WatchFore;
+                    this.clockGrColor = ColorSettings.Profile.WatchBack;
+                    this.clockGrColor2 = ColorSettings.Profile.WatchBack2;
+                    this.clockPlainColor = ColorSettings.Profile.WatchBackPlain;
+
+                    dViewClockColor = ColorSettings.Profile.UsedDViewAhead;
+                }
+
+                if (clockColor != this.clockColor)
+                {
+                    this.RequestBackgroundRedraw();
+                    this.clockColor = clockColor;
+                }
+
+                Brush brush = new SolidBrush(this.clockColor);
+                wsplit.dview.clockColor = new SolidBrush(dViewClockColor);
+
+                if (span2.TotalHours >= 100.0)
+                    wsplit.dview.clockText = string.Format("{0:000}:{1:00}:{2:00.00}", Math.Floor((double)(span2.TotalHours % 1000.0)), span2.Minutes, span2.Seconds + (Math.Floor((double)(((float)span2.Milliseconds) / 10f)) / 100.0));
+                else if (span2.TotalHours >= 1.0)
+                    wsplit.dview.clockText = string.Format("{0:0}:{1:00}:{2:00.00}", Math.Floor((double)(span2.TotalHours % 1000.0)), span2.Minutes, span2.Seconds + (Math.Floor((double)(((float)span2.Milliseconds) / 10f)) / 100.0));
+                else
+                    wsplit.dview.clockText = string.Format("{0:00}:{1:00.00}", span2.Minutes, span2.Seconds + (Math.Floor((double)(((float)span2.Milliseconds) / 10f)) / 100.0));
+
+                wsplit.dview.Invalidate();
+
+                Rectangle layoutRectangle = new Rectangle();
+                Rectangle rectangle2 = new Rectangle();
+                StringFormat format = new StringFormat();
+                StringFormat format2 = new StringFormat();
+
+                string text = "";
+                string str4 = "";
+
+                double num10 = 0.0;
+                Brush white = Brushes.White;
+
+                if (wsplit.currentDispMode != DisplayMode.Timer)
+                {
+                    if (wsplit.currentDispMode == DisplayMode.Wide)
+                    {
+                        layoutRectangle = new Rectangle(wsplit.Width - 119, 2, 119, wsplit.Height / 2);
+                        rectangle2 = new Rectangle(wsplit.Width - 119, layoutRectangle.Bottom - 2, 119, wsplit.Height / 2);
+                    }
+                    else if (wsplit.currentDispMode == DisplayMode.Detailed)
+                    {
+                        layoutRectangle = new Rectangle(0, 0, 0, 0);
+                        rectangle2 = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 1, 16);
+                    }
+                    else
+                    {
+                        rectangle2 = new Rectangle(1, 2, wsplit.Width - 1, 13);
+                        layoutRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 1, 14);
+                        if ((Settings.Profile.SegmentIcons > 0) && !wsplit.split.Done)
+                        {
+                            rectangle2.Width -= 2 + x;
+                            rectangle2.X += 2 + x;
+                        }
+                    }
+
+                    format.LineAlignment = StringAlignment.Center;
+                    format.Trimming = StringTrimming.EllipsisCharacter;
+                    format.Alignment = StringAlignment.Far;
+                    format2 = (StringFormat)format.Clone();
+
+                    if (wsplit.currentDispMode == DisplayMode.Compact)
+                        format2.Alignment = StringAlignment.Near;
+
+                    if (num3 <= 0.0)
+                        this.segLosingTime = false;
+
+                    if (wsplit.timer.ElapsedTicks != 0L)
+                    {
+                        if (wsplit.split.Done)
+                        {
+                            if (wsplit.split.CompTime(wsplit.split.LastIndex) != 0.0)
+                            {
+                                num10 = wsplit.split.SegDelta(wsplit.split.LastSegment.LiveTime, wsplit.split.LastIndex);
+                                text = wsplit.timeFormatter(num10, TimeFormat.DeltaShort);
+                            }
+                        }
+                        // If we are losing time on the current segment...
+                        else if (num3 > 0.0)
+                        {
+                            num10 = num3;   // The number to be written becomes the current segment delta
+                            text = wsplit.timeFormatter(num10, TimeFormat.DeltaShort);
+
+                            // If we just started losing time, we indicate we are and we ask for a redraw of the timer background since color has changed
+                            if (!this.segLosingTime)
+                            {
+                                this.segLosingTime = true;
+                                this.RequestBackgroundRedraw();
+                            }
+                        }
+
+                        // If we aren't losing time on the current segment and if the current segment isn't the first segment...
+                        else if (wsplit.split.LiveIndex > 0)
+                        {
+                            // The number to be written becomes the previous segment delta:
+                            num10 = wsplit.split.SegDelta(wsplit.split.segments[wsplit.split.LiveIndex - 1].LiveTime, wsplit.split.LiveIndex - 1);
+
+                            // Though, if the previous split was skipped or if the previous split had no time, we don't write anything...
+                            // wsplit will probably change.
+                            if ((wsplit.split.segments[wsplit.split.LiveIndex - 1].LiveTime > 0.0) && (wsplit.split.CompTime(wsplit.split.LiveIndex - 1) != 0.0))
+                            {
+                                text = wsplit.timeFormatter(num10, TimeFormat.DeltaShort);
+                            }
+                        }
+                    }
+
+                    // If we're not in the Detailed display mode
+                    if (wsplit.currentDispMode != DisplayMode.Detailed)
+                    {
+                        // If splits are done
+                        if (wsplit.split.Done)
+                        {
+                            if (wsplit.split.CompTime(wsplit.split.LastIndex) != 0.0)
+                            {
+                                double num11 = wsplit.split.RunDeltaAt(wsplit.split.LastIndex);
+                                str4 = wsplit.timeFormatter(num11, TimeFormat.Delta);
+                                if (num11 < 0.0)
+                                {
+                                    white = new SolidBrush(ColorSettings.Profile.RecordFore);
+                                }
+                                else
+                                {
+                                    white = new SolidBrush(ColorSettings.Profile.FinishedFore);
+                                }
+                            }
+                        }
+
+                        // If we are losing time on the current segment...
+                        else if (num3 > 0.0)
+                        {
+                            // Format the run delta in str4
+                            str4 = wsplit.timeFormatter(secs, TimeFormat.Delta);
+
+                            if (secs < 0.0) // If ahead overall | Is wsplit part of the code even useful?
+                            {
+                                white = new SolidBrush(ColorSettings.Profile.SegAheadGain);
+                            }
+                            else            // If behind overall
+                            {
+                                white = new SolidBrush(ColorSettings.Profile.SegBehindLoss);
+                            }
+                        }
+
+                        // If there is a previous split time and there is a time to compare it to...
+                        else if (((wsplit.split.LiveIndex > 0) && (wsplit.split.segments[wsplit.split.LiveIndex - 1].LiveTime > 0.0)) && (wsplit.split.CompTime(wsplit.split.LiveIndex - 1) != 0.0))
+                        {
+                            // Stores the run delta at the previous split in num12
+                            double num12 = wsplit.split.RunDeltaAt(wsplit.split.LiveIndex - 1);
+                            str4 = wsplit.timeFormatter(num12, TimeFormat.Delta);
+                            if (num12 < 0.0)
+                            {
+                                white = new SolidBrush(ColorSettings.Profile.SegAheadLoss);
+                            }
+                            else
+                            {
+                                white = new SolidBrush(ColorSettings.Profile.SegBehindGain);
+                            }
+                        }
+                    }
+
+                    if (text.Length != this.segDelLength)
+                    {
+                        this.segDelLength = text.Length;
+                        this.segDeltaWidth = MeasureDisplayStringWidth(text, wsplit.timeFont);
+                        this.RequestBackgroundRedraw();
+                    }
+
+                    if (str4.Length != this.runDelLength)
+                    {
+                        this.runDelLength = str4.Length;
+                        this.runDeltaWidth = MeasureDisplayStringWidth(str4, wsplit.timeFont);
+                        this.RequestBackgroundRedraw();
+                    }
+                }
+
+                int num13 = 0;
+                int num14 = (wsplit.split.LiveIndex - num5) + 2;
+                int liveIndex = wsplit.split.LiveIndex;
+                if (num5 >= 2)
+                {
+                    liveIndex--;
+                }
+                if (((wsplit.currentDispMode == DisplayMode.Detailed) && Settings.Profile.ShowLastDetailed) || ((wsplit.currentDispMode == DisplayMode.Wide) && Settings.Profile.ShowLastWide))
+                {
+                    num14++;
+                }
+                num13 = Math.Max(0, Math.Min(liveIndex, Math.Min((wsplit.split.LastIndex - num5) + 1, num14)));
+                Rectangle rectangle3 = new Rectangle();
+                Color timeColor = wsplit.split.CurrentSegment.TimeColor;
+                string timeString = wsplit.split.CurrentSegment.TimeString;
+
+                // If in wide or detailed desplay mode and if not done...
+                if (((wsplit.currentDispMode == DisplayMode.Wide) || (wsplit.currentDispMode == DisplayMode.Detailed)) && !wsplit.split.Done)
+                {
+                    this.runLosingTime = false; // Not losing time... ?
+
+                    // If there is a time to compare to and one current segment delta or run delta is greater than 0.0
+                    if ((wsplit.split.CompTime() > 0.0) && ((num3 > 0.0) || (secs > 0.0)))
+                    {
+                        this.runLosingTime = true;  // Losing time...
+                        // Formats run delta in timeString:
+                        timeString = wsplit.timeFormatter(secs, TimeFormat.Delta);
+                    }
+                    // If losing time and in detailed display mode, and if Segment height (so Icon size) is smaller or equal to 24 pixels and length has changed...
+                    if ((this.runLosingTime && (wsplit.currentDispMode == DisplayMode.Detailed)) && ((wsplit.segHeight <= 0x18) && (timeString.Length != this.segTimeLength)))
+                    {
+                        this.segTimeLength = timeString.Length;
+                        this.segTimeWidth = MeasureDisplayStringWidth(timeString, wsplit.timeFont);
+                        this.RequestBackgroundRedraw();
+                    }
+
+                    // If in the Wide display mode...
+                    if (wsplit.currentDispMode == DisplayMode.Wide)
+                        rectangle3 = new Rectangle((wsplit.clockRect.Right + (wsplit.wideSegWidth * (wsplit.split.LiveIndex - num13))) + 4, wsplit.Height / 2, (wsplit.wideSegWidth - x) - 2, wsplit.Height / 2);
+                    // Otherwise...
+                    else
+                    {
+                        // Builds a rectangle for the live segment time
+                        rectangle3 = new Rectangle(x, wsplit.segHeight * (wsplit.split.LiveIndex - num13), wsplit.Width - x, wsplit.segHeight);
+                        // Moves the rectangle down if we have to show the run title
+                        if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        {
+                            rectangle3.Y += 0x12;
+                        }
+                        // If greater than 24 pixels icons
+                        if (wsplit.segHeight > 0x18)
+                        {
+                            // Goes to the second half of the rectangle
+                            rectangle3.Height /= 2;
+                            rectangle3.Y += rectangle3.Height;
+                        }
+                        // Otherwise, moves down 1 pixel.
+                        else
+                        {
+                            rectangle3.Y++;
+                        }
+                    }
+                }
+
+                // Temporary signature of the method
+                this.DrawBackground(graphics, angle, num5, num8, num13, x);
+
+                // Code for drawing clock fore has been moved to another function. Current method's signature is temporary
+                this.DrawClockFore(graphics, timeStringAbsPart, ref timeStringDecPart, flag, num8, ref brush);
+
+                if (wsplit.currentDispMode != DisplayMode.Timer)
+                {
+                    graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                    //graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+
+                    // At this point...
+                    // num3 -> Current segment delta
+                    // num10 -> What has to be written in the status bar
+
+                    // If the time to write in the status bar is a new best segment...
+                    if (!this.segLosingTime && wsplit.split.LiveIndex > 0 &&
+                        wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) != 0.0 && (wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment == 0.0 ||
+                        wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) < wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment))
+                    {
+                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBestSegment), rectangle2, format);
+                    }
+                    // Else, if The time to write in the status bar is a time loss...
+                    else if (num10 > 0.0)
+                    {
+                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBehindLoss), rectangle2, format);
+                    }
+                    // Otherwise (the time is a time gain but not a best segment), or there is not time to write...
+                    else
+                    {
+                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegAheadGain), rectangle2, format);
+                    }
+                    if (wsplit.currentDispMode != DisplayMode.Detailed)
+                    {
+                        graphics.DrawString(str4, wsplit.timeFont, white, layoutRectangle, format2);
+                    }
+                }
+                if (((wsplit.currentDispMode == DisplayMode.Wide) || (wsplit.currentDispMode == DisplayMode.Detailed)) && !wsplit.split.Done)
+                {
+                    StringFormat format9 = new StringFormat
+                    {
+                        LineAlignment = StringAlignment.Center
+                    };
+
+                    if (wsplit.currentDispMode == DisplayMode.Wide)
+                        format9.Alignment = StringAlignment.Near;
+                    else
+                        format9.Alignment = StringAlignment.Far;
+
+                    graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                    //graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    graphics.DrawString(timeString, wsplit.timeFont, new SolidBrush(timeColor), rectangle3, format9);
+                }
+            }
+
+            private void DrawClockBack(float angle, int num8, Graphics bgGraphics)
+            {
+                if (!Settings.Profile.BackgroundBlack)
+                {
+                    if (Settings.Profile.BackgroundPlain)
+                        bgGraphics.FillRectangle(new SolidBrush(this.clockPlainColor), wsplit.clockRect);
+                    else
+                    {
+                        bgGraphics.FillRectangle(new LinearGradientBrush(wsplit.clockRect, this.clockGrColor, this.clockGrColor2, angle), wsplit.clockRect);
+                        if ((angle == 0f) && Settings.Profile.ClockAccent)
+                            bgGraphics.FillRectangle(new SolidBrush(Color.FromArgb(0x56, this.clockGrColor2)), wsplit.clockRect.X, wsplit.clockRect.Y, wsplit.clockRect.Width, wsplit.clockRect.Height / 2);
+
+                        if (Settings.Profile.DigitalClock)
+                        {
+                            bgGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                            bgGraphics.SmoothingMode = SmoothingMode.HighQuality;
+
+                            // Change according to what was done in that DrawClockFore method
+                            //bgGraphics.TranslateTransform(num8 + (((wsplit.clockRect.Width - (clockScale * 124f)) - num8) / 2f), wsplit.clockRect.Top + ((wsplit.clockRect.Height - (clockScale * 26f)) / 2f));
+                            //bgGraphics.ScaleTransform(clockScale, clockScale);
+
+
+                            bgGraphics.TranslateTransform(num8 + ((wsplit.clockRect.Width - (this.clockScale * this.clockTimeTotalSize.Width) - num8) / 2f),
+                                wsplit.clockRect.Top + ((wsplit.clockRect.Height - (this.clockScale * this.clockTimeTotalSize.Height)) / 2f));
+                            bgGraphics.ScaleTransform(clockScale, clockScale);
+
+                            Brush brush4 = new SolidBrush(Color.FromArgb(86, this.clockGrColor2));
+                            bgGraphics.DrawString("88:88:88".PadLeft(timeStringAbsPart.Length, '8'), wsplit.digitLarge, brush4, 0f, 0.15f);
+
+                            if (Settings.Profile.ShowDecimalSeparator)
+                            {
+                                bgGraphics.DrawString(wsplit.decimalChar, wsplit.digitMed, brush4, (112 - clockTimeDecSize.Width), 4.5f);
+                                bgGraphics.DrawString("".PadRight(this.timeStringDecPart.Length, '8'), wsplit.digitMed, brush4, (119 - clockTimeDecSize.Width), 4.5f);
+                            }
+
+                            else
+                                bgGraphics.DrawString("".PadRight(this.timeStringDecPart.Length, '8'), wsplit.digitMed, brush4, (117.5f - clockTimeDecSize.Width), 4.5f);
+
+                            bgGraphics.ResetTransform();
+                        }
+                    }
+                }
+            }
+
+            // Current methods signature is temporary. Most of the parameters will temporary become class members or properties.
+            private void DrawClockFore(Graphics graphics, string timeStringAbsPart, ref string timeStringDecPart, bool inaccuraciesDetected, int num8, ref Brush brush)
+            {
+                // Transforms the Graphics object in order to draw the clock time full-sized
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+                //graphics.TranslateTransform(num8 + (((wsplit.clockRect.Width - (clockScale * 124f)) - num8) / 2f), wsplit.clockRect.Top + ((wsplit.clockRect.Height - (clockScale * 26f)) / 2f));
+                graphics.TranslateTransform(num8 + ((wsplit.clockRect.Width - (this.clockScale * this.clockTimeTotalSize.Width) - num8) / 2f),
+                    wsplit.clockRect.Top + ((wsplit.clockRect.Height - (this.clockScale * this.clockTimeTotalSize.Height)) / 2f));
+                graphics.ScaleTransform(clockScale, clockScale);
+
+                // If using DigitalClock font
+                if (Settings.Profile.DigitalClock)
+                {
+                    // The drawing of the digital clock font could have been done dynamically, but since the result wasn't
+                    // exactly centered vertically, I decided to hardcode values that give the best looking result.
+                    // Since this option is used by many, I had to make sure it looked nice.
+                    graphics.DrawString(timeStringAbsPart, wsplit.digitLarge, brush, 0f, 0.15f);
+
+                    if (inaccuraciesDetected)
+                    {
+                        timeStringDecPart = "".PadRight(timeStringDecPart.Length, '?');
+                        brush = new SolidBrush(ColorSettings.Profile.Flash);
+                    }
+
+                    if (Settings.Profile.ShowDecimalSeparator)
+                    {
+                        graphics.DrawString(wsplit.decimalChar, wsplit.digitMed, brush, clockTimeAbsSize.Width - 7, 4.5f);
+                        graphics.DrawString(timeStringDecPart, wsplit.digitMed, brush, clockTimeAbsSize.Width, 4.5f);
+                        /*graphics.DrawString(wsplit.decimalChar, wsplit.digitMed, brush, (112 - clockTimeDecSize.Width), 4.5f);
+                        graphics.DrawString(timeStringDecPart, wsplit.digitMed, brush, (119 - clockTimeDecSize.Width), 4.5f);*/
+
+                    }
+                    else
+                        graphics.DrawString(timeStringDecPart, wsplit.digitMed, brush, (clockTimeAbsSize.Width), 4.5f);
+                    //graphics.DrawString(timeStringDecPart, wsplit.digitMed, brush, (117.5f - clockTimeDecSize.Width), 4.5f);
+                }
+
+                // If the font used for the clock is any font but the default digital clock font, the display is done dynamically, according to font measurements. 
+                else
+                {
+                    // Calculates de relative baseline height of both fonts used in the display so that they can be aligned correctly
+                    float largeBaseline = wsplit.clockLarge.Size * wsplit.clockLarge.FontFamily.GetCellAscent(wsplit.clockLarge.Style) / wsplit.clockLarge.FontFamily.GetEmHeight(wsplit.clockLarge.Style);
+                    float mediumBaseline = wsplit.clockMed.Size * wsplit.clockMed.FontFamily.GetCellAscent(wsplit.clockMed.Style) / wsplit.clockMed.FontFamily.GetEmHeight(wsplit.clockMed.Style);
+
+                    RectangleF clockTimeAbsRectF = new RectangleF(0f, 0f, this.clockTimeAbsSize.Width, this.clockTimeAbsSize.Height);
+                    RectangleF clockTimeDecRectF;
+
+                    if (Settings.Profile.ShowDecimalSeparator)
+                    {
+                        clockTimeDecRectF = new RectangleF(clockTimeAbsRectF.Right - 7, clockTimeAbsRectF.Top + (largeBaseline - mediumBaseline), this.clockTimeDecSize.Width, this.clockTimeDecSize.Height);
+
+                        graphics.DrawString(wsplit.decimalChar, wsplit.clockMed, brush, clockTimeDecRectF);
+                        clockTimeDecRectF.X = clockTimeAbsRectF.Right;
+                    }
+                    else
+                        clockTimeDecRectF = new RectangleF(clockTimeAbsRectF.Right - 2, clockTimeAbsRectF.Top + (largeBaseline - mediumBaseline), this.clockTimeDecSize.Width, this.clockTimeDecSize.Height);
+
+                    StringFormat format = new StringFormat { Alignment = StringAlignment.Far };
+                    graphics.DrawString(timeStringAbsPart, wsplit.clockLarge, brush, clockTimeAbsRectF, format);
+
+                    if (inaccuraciesDetected)
+                    {
+                        timeStringDecPart = "".PadRight(timeStringDecPart.Length, '?');
+                        brush = new SolidBrush(ColorSettings.Profile.Flash);
+                    }
+
+                    format.Alignment = StringAlignment.Near;
+                    graphics.DrawString(timeStringDecPart, wsplit.clockMed, brush, clockTimeDecRectF, format);
+                }
+
+                graphics.ResetTransform();
+            }
+
+            private static SizeF MeasureTimeStringMax(string timeString, Font font, Graphics graphics)
+            {
+                SizeF max = new SizeF(0, font.Height);
+                for (int i = 0; i <= 9; ++i)
+                {
+                    SizeF temp = graphics.MeasureString(timeString.Replace('8', (char)(i + '0')), font);
+                    if (temp.Width > max.Width)
+                        max.Width = temp.Width;
+                }
+
+                return max;
+            }
+        }
+    }
+}
+

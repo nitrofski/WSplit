@@ -1,0 +1,59 @@
+WSplit options:
+
+- "General"
+	#-Double Tap Guard
+	#-Fallback options
+	#-Load most recent
+	-(Always on top?)
+	#-Refresh Rate
+	#-Save window position
+	
+	
+- "Hotkeys" (Put in "General" to take more space?)
+	#-Enabled/Disabled
+	#-Toggle Key
+	#-Next Key
+	#-Previous Key
+	#-Pause Key
+	#-Reset Key
+	#-Split Key
+	#-Stop Key
+	
+- "Display" (Split into more to take less place?)
+	#-(Display mode?)
+	#-Show blanks (Detailed)
+	#-Show blanks (Wide)
+	#-Show last (Detailed)
+	#-Show last (Wide)
+	#-Nb of segments displayed (will be more specific)
+	#-Opacity
+	#-Icons
+	#-Show attempt count
+	#-Show title
+	#-Background type
+	
+- "Font"
+	#-Clock font (Digital or default/chosen)
+	#-Clock font (Choice)
+	
+
+- Contextual menu
+	-Track best as...
+	-Background type
+	-Clock accent
+	-Clock font (Digital or default/chosen)
+	-Clock decimal separator
+	-Compare against
+	-Display mode
+	-Always on top
+	-(Opacity? Is it worth keeping it here since I'll put it in the setting window anyways)
+	-Recent files list
+	-Show attempt count
+	-Show title
+	
+	
+- Other
+	-Clock size
+	-First run
+	-Window position
+	
