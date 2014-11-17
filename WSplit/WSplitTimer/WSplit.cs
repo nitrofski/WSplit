@@ -2910,12 +2910,12 @@ namespace WSplitTimer
                                 format4.Alignment = StringAlignment.Far;
 
                             if (wsplit.startDelay != null)
-                                statusText = "delay";
+                                statusText = "Delay";
                             else
                             {
-                                statusText = "ready";
+                                statusText = "Ready";
                                 if (Settings.Profile.ShowAttempts && ((wsplit.currentDispMode != DisplayMode.Detailed) || !Settings.Profile.ShowTitle))
-                                    statusText += ", attempt #" + (wsplit.attemptCount + 1);
+                                    statusText += ", Attempt #" + (wsplit.attemptCount + 1);
                             }
                         }
 
@@ -2927,21 +2927,21 @@ namespace WSplitTimer
                                 if (wsplit.currentDispMode != DisplayMode.Wide)
                                     format4.Alignment = StringAlignment.Far;
 
-                                statusText = "done";
+                                statusText = "Done";
                             }
                             else if (wsplit.split.LastSegment.LiveTime < wsplit.split.CompTime(wsplit.split.LastIndex))
-                                statusText = "new record";
+                                statusText = "New Record";
                             else
-                                statusText = "done";
+                                statusText = "Done";
                         }
 
                         // The run is going
                         else if ((wsplit.currentDispMode == DisplayMode.Compact) && (wsplit.split.CompTime(wsplit.split.LiveIndex) != 0.0))
                             statusText = wsplit.split.ComparingType.ToString() + ": " + wsplit.timeFormatter(wsplit.split.CompTime(wsplit.split.LiveIndex), TimeFormat.Long);
                         else if (this.segLosingTime)
-                            statusText = "live segment";
+                            statusText = "Live Segment";
                         else if (((wsplit.split.LiveIndex > 0) && (wsplit.split.segments[wsplit.split.LiveIndex - 1].LiveTime > 0.0)) && (wsplit.split.CompTime(wsplit.split.LiveIndex - 1) != 0.0))
-                            statusText = "prev segment";
+                            statusText = "Previous Segment";
 
                         // Detailed mode
                         if (wsplit.currentDispMode == DisplayMode.Detailed)
