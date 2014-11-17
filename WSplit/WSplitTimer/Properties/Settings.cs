@@ -167,7 +167,7 @@
             set { this["LastFile"] = value; }
         }
 
-        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        [DebuggerNonUserCode, DefaultSettingValue("True"), UserScopedSetting]
         public bool LoadMostRecent
         {
             get { return (bool) this["LoadMostRecent"]; }
@@ -223,7 +223,7 @@
             set { this["ShowAttempts"] = value; }
         }
 
-        [DefaultSettingValue("False"), UserScopedSetting, DebuggerNonUserCode]
+        [DefaultSettingValue("True"), UserScopedSetting, DebuggerNonUserCode]
         public bool ShowDecimalSeparator
         {
             get { return (bool) this["ShowDecimalSeparator"]; }
