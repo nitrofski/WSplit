@@ -11,6 +11,7 @@
     using System.Windows.Forms;
     using Properties;
     using System.Text;
+    using System.Globalization;
 
     public class RunEditorDialog : Form
     {
@@ -241,7 +242,7 @@
             this.menuItemImportLlanfair.Text = "Import from Llanfair";
             this.menuItemImportLlanfair.Click += this.menuItemImportLlanfair_Click;
 
-            this.menuItemImportSplitterZ.Enabled = false;
+            //this.menuItemImportSplitterZ.Enabled = false;
             this.menuItemImportSplitterZ.Name = "menuItemImportSplitterZ";
             this.menuItemImportSplitterZ.Text = "Import from SplitterZ";
             this.menuItemImportSplitterZ.Click += this.menuItemImportSplitterZ_Click;
@@ -347,7 +348,43 @@
         private void menuItemImportSplitterZ_Click(object sender, EventArgs e)
         {
             // Imports a file from a SplitterZ run file
-            this.openFileDialog.ShowDialog(this);
+            if (this.openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                try
+                {
+                    using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
+                    {
+                        var reader = new StreamReader(stream);
+
+                        var newLine = reader.ReadLine();
+                        var title = newLine.Split(',');
+                        titleBox.Text = title[0].Replace(@"‡", @",");
+
+                        List<Segment> segmentList = new List<Segment>();
+
+                        while ((newLine = reader.ReadLine()) != null)
+                        {
+                            var segmentInfo = newLine.Split(',');
+                            var name = segmentInfo[0].Replace(@"‡", @",");
+                            double splitTime = timeParse(segmentInfo[1]);
+                            double bestSegment = timeParse(segmentInfo[2]);
+
+                            var newSegment = new Segment(name, 0.0, splitTime, bestSegment);
+                            if (segmentInfo.Length > 3)
+                            {
+                                newSegment.IconPath = segmentInfo[3].Replace(@"‡", @",");
+                                newSegment.Icon = Image.FromFile(newSegment.IconPath);
+                            }
+                            segmentList.Add(newSegment);
+                        }
+                        populateList(segmentList);
+                    }
+                }
+                catch (Exception)
+                {
+                    // An error has occured...
+                }
+            }
         }
 
         private void menuItemImportLlanfair_Click(object sender, EventArgs e)
