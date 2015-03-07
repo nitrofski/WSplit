@@ -2148,7 +2148,7 @@ namespace WSplitTimer
                 }
 
                 if (this.runTitle != "")
-                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle + "   Goal : " + this.runGoal;
+                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle + "   Goal: " + this.runGoal;
                 else
                     this.dview.segs.Rows[0].Cells[0].Value = "Segment";
                 this.dview.segs.DefaultCellStyle.SelectionForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
@@ -3071,7 +3071,7 @@ namespace WSplitTimer
                                     LineAlignment = StringAlignment.Center,
                                     Trimming = StringTrimming.EllipsisCharacter
                                 };
-                                bgGraphics.DrawString("Goal : " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
+                                bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
                             }
                         }
 
@@ -3109,7 +3109,7 @@ namespace WSplitTimer
                         bgGraphics.DrawString(statusText, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), statusTextRectangle, format4);
                         if (wsplit.currentDispMode != DisplayMode.Detailed)
                         {
-                            bgGraphics.DrawString("Goal : " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
+                            bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
                         }
                     }
 

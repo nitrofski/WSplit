@@ -389,7 +389,7 @@
             this.lblGoal.Name = "lblGoal";
             this.lblGoal.Size = new System.Drawing.Size(35, 13);
             this.lblGoal.TabIndex = 15;
-            this.lblGoal.Text = "Goal :";
+            this.lblGoal.Text = "Goal:";
 
             base.AutoScaleDimensions = new SizeF(6f, 13f);
             base.AutoScaleMode = AutoScaleMode.Font;
