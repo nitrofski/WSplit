@@ -2148,7 +2148,7 @@ namespace WSplitTimer
                 }
 
                 if (this.runTitle != "")
-                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle;
+                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle + "   Goal : " + this.runGoal;
                 else
                     this.dview.segs.Rows[0].Cells[0].Value = "Segment";
                 this.dview.segs.DefaultCellStyle.SelectionForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
