@@ -105,6 +105,7 @@ namespace WSplitTimer
         private int offsetStart;
         private DateTime offsetStartTime = new DateTime();
         private string runFile;
+        private string runGoal;
         private string runTitle = "";
         private int segHeight = 14;
         public Split split = new Split();
@@ -468,6 +469,10 @@ namespace WSplitTimer
             }
             int height = (this.clockRect.Height + (this.detailSegCount() * this.segHeight)) + 0x15;
             if ((this.runTitle != "") && Settings.Profile.ShowTitle)
+            {
+                height += 0x12;
+            }
+            if ((this.runGoal != "") && Settings.Profile.ShowGoal)
             {
                 height += 0x12;
             }
@@ -1265,7 +1270,9 @@ namespace WSplitTimer
             RunEditorDialog editor = new RunEditorDialog(this.split)
             {
                 titleBox = { Text = this.runTitle },
-                attemptsBox = { Text = this.attemptCount.ToString() }
+                attemptsBox = { Text = this.attemptCount.ToString() },
+                txtGoal = { Text = this.runGoal}
+                
             };
             base.TopMost = false;
             this.dview.TopMost = false;
@@ -1278,6 +1285,7 @@ namespace WSplitTimer
                     this.split.Add(segment);
                 }
                 this.runTitle = editor.titleBox.Text;
+                this.runGoal = editor.txtGoal.Text;
                 int.TryParse(editor.attemptsBox.Text, out this.attemptCount);
                 this.InitializeDisplay();
                 this.unsavedSplits = true;
@@ -2872,6 +2880,18 @@ namespace WSplitTimer
                                         bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, 0, wsplit.Width, 9);
                                     }
                                 }
+                                if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                                {
+                                    if (Settings.Profile.BackgroundPlain)
+                                    {
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, 18, wsplit.Width, 18);
+                                    }
+                                    else
+                                    {
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, 18, wsplit.Width, 18);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, 18, wsplit.Width, 9);
+                                    }
+                                }
                             }
 
                             // Compact mode - Draw the title bar
@@ -2987,6 +3007,25 @@ namespace WSplitTimer
 
                                 bgGraphics.DrawString(str8 + wsplit.runTitle, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), rectangle7, format5);
                             }
+
+                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            {
+                                bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                                Rectangle goalRectangle = new Rectangle(0, 19, wsplit.Width, 17);
+
+                                if (Settings.Profile.HotkeyToggleKey != Keys.None)
+                                {
+                                    goalRectangle.Width -= 10;
+                                }
+
+                                StringFormat format5 = new StringFormat
+                                {
+                                    Alignment = StringAlignment.Center,
+                                    LineAlignment = StringAlignment.Center,
+                                    Trimming = StringTrimming.EllipsisCharacter
+                                };
+                                bgGraphics.DrawString("Goal : " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
+                            }
                         }
 
                         else if (wsplit.split.Done)
@@ -3034,6 +3073,11 @@ namespace WSplitTimer
 
                         if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                             y += 18;
+
+                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        {
+                            y += 18;
+                        }
 
                         if (wsplit.currentDispMode == DisplayMode.Wide)
                         {
@@ -3735,6 +3779,10 @@ namespace WSplitTimer
                         rectangle3 = new Rectangle(x, wsplit.segHeight * (wsplit.split.LiveIndex - num13), wsplit.Width - x, wsplit.segHeight);
                         // Moves the rectangle down if we have to show the run title
                         if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        {
+                            rectangle3.Y += 0x12;
+                        }
+                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                         {
                             rectangle3.Y += 0x12;
                         }
