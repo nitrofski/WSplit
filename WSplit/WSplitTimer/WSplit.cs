@@ -2914,27 +2914,34 @@ namespace WSplitTimer
                                 int titleY = 0;
                                 int goalX = 0;
                                 int goalY = 0;
-                                if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                                if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal) && !Settings.Profile.BackgroundPlain)
                                 {
-                                    if (Settings.Profile.BackgroundPlain)
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 18);
-                                    else
-                                    {
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 18);
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 9);
-                                    }
-                                    goalY = 18;
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 36);
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 18);
                                 }
-                                if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                                else
                                 {
-                                    if (Settings.Profile.BackgroundPlain)
+                                    if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                                     {
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 18);
+                                        if (Settings.Profile.BackgroundPlain)
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 18);
+                                        else
+                                        {
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 18);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 9);
+                                        }
                                     }
-                                    else
+                                    if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                                     {
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, goalY, wsplit.Width, 18);
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, goalY, wsplit.Width, 9);
+                                        if (Settings.Profile.BackgroundPlain)
+                                        {
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 18);
+                                        }
+                                        else
+                                        {
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, goalY, wsplit.Width, 18);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, goalY, wsplit.Width, 9);
+                                        }
                                     }
                                 }
                             }
