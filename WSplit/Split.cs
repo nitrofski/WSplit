@@ -6,7 +6,7 @@ public class Split
     private String runTitle;
     private String runGoal;
     private int attemptsCount;
-    private int offsetStart;
+    private int startDelay;
     public CompareType CompType;
     private int liveIndex;
     public bool NewBestTime;
@@ -33,10 +33,10 @@ public class Split
         get { return this.attemptsCount; }
     }
 
-    public int OffsetStart
+    public int StartDelay
     {
-        set { this.offsetStart = value; }
-        get { return this.offsetStart; }
+        set { this.startDelay = value; }
+        get { return this.startDelay; }
     }
 
     public String RunFile

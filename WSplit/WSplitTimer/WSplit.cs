@@ -284,7 +284,7 @@ namespace WSplitTimer
             this.split.RunTitle = "";
             this.split.RunGoal = "";
             this.split.AttemptsCount = 0;
-            this.split.OffsetStart = 0;
+            this.split.StartDelay = 0;
             this.detailPreferredSize = this.clockMinimumSize;
             this.InitializeDisplay();
         }
@@ -375,7 +375,7 @@ namespace WSplitTimer
             this.modalWindowOpened = true;
 
             // A few settings are necessary before calling the custom ShowDialog method
-            this.SettingsDialog.StartDelay = this.timeFormatter(((double)this.split.OffsetStart) / 1000.0, TimeFormat.Seconds);
+            this.SettingsDialog.StartDelay = this.timeFormatter(((double)this.split.StartDelay) / 1000.0, TimeFormat.Seconds);
             this.SettingsDialog.DetailedWidth = this.clockRect.Width;
 
             // Costum ShowDialog method...
@@ -383,7 +383,7 @@ namespace WSplitTimer
             {
                 this.SettingsDialog.ApplyChanges();
 
-                this.split.OffsetStart = Convert.ToInt32((double)(this.timeParse(this.SettingsDialog.StartDelay) * 1000.0));
+                this.split.StartDelay = Convert.ToInt32((double)(this.timeParse(this.SettingsDialog.StartDelay) * 1000.0));
                 this.clockRect.Width = this.SettingsDialog.DetailedWidth;
                 this.updateDetailed();
                 this.InitializeSettings();
@@ -1148,7 +1148,7 @@ namespace WSplitTimer
                 this.split.Clear();
 
                 this.split.RunGoal = "";
-                this.split.OffsetStart = 0;
+                this.split.StartDelay = 0;
                 this.split.RunTitle = "";
                 this.split.AttemptsCount = 0;
 
@@ -1180,7 +1180,7 @@ namespace WSplitTimer
                             {
                                 int offsetStart = 0;
                                 int.TryParse(str.Substring(7), out offsetStart);
-                                this.split.OffsetStart = offsetStart;
+                                this.split.StartDelay = offsetStart;
                                 continue;
                             }
                             if (str.StartsWith("Width="))
@@ -1561,7 +1561,7 @@ namespace WSplitTimer
                     writer.WriteLine("Title=" + this.split.RunTitle);
                     writer.WriteLine("Goal=" + this.split.RunGoal);
                     writer.WriteLine("Attempts=" + this.split.AttemptsCount);
-                    writer.WriteLine("Offset=" + this.split.OffsetStart);
+                    writer.WriteLine("Offset=" + this.split.StartDelay);
                     writer.WriteLine(string.Concat(new object[] { "Size=", this.detailPreferredSize.Width, ",", this.detailPreferredSize.Height }));
                     List<string> list = new List<string>();
                     foreach (Segment segment in this.split.segments)
@@ -1749,11 +1749,11 @@ namespace WSplitTimer
         {
             if (this.startDelay == null)
             {
-                if (useDelay && this.split.OffsetStart > 0)
+                if (useDelay && this.split.StartDelay > 0)
                 {
                     this.offsetStartTime = DateTime.UtcNow;
                     this.startDelay = new Timer();
-                    this.startDelay.Interval = this.split.OffsetStart;
+                    this.startDelay.Interval = this.split.StartDelay;
                     this.startDelay.Tick += (sender, e) => startDelay_Tick(sender, e, startingTicks);
                     this.startDelay.Enabled = true;
                     base.Invalidate();
@@ -3450,9 +3450,9 @@ namespace WSplitTimer
                 else
                     num5 = wsplit.detailSegCount();
 
-                if ((wsplit.split.OffsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L))
+                if ((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L))
                 {
-                    span2 = TimeSpan.FromMilliseconds((double)wsplit.split.OffsetStart);
+                    span2 = TimeSpan.FromMilliseconds((double)wsplit.split.StartDelay);
                     if (wsplit.startDelay != null)
                     {
                         span2 -= DateTime.UtcNow - wsplit.offsetStartTime;
@@ -3486,12 +3486,12 @@ namespace WSplitTimer
                         this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(9, ' ');*/
 
                     this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(8, ' ');
-                    if (((wsplit.split.OffsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && (this.timeStringAbsPart.Substring(0, 1) == " "))
+                    if (((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L)) && (this.timeStringAbsPart.Substring(0, 1) == " "))
                     {
                         this.timeStringAbsPart = "-" + this.timeStringAbsPart.Substring(1, this.timeStringAbsPart.Length - 1);
                     }
                 }
-                else if (((wsplit.split.OffsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && ((span2.TotalHours < 10.0) || ((span2.TotalHours < 100.0) && (wsplit.stopwatch.Interval > 42))))
+                else if (((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L)) && ((span2.TotalHours < 10.0) || ((span2.TotalHours < 100.0) && (wsplit.stopwatch.Interval > 42))))
                     this.timeStringAbsPart = "-" + this.timeStringAbsPart;
 
                 // If the number of hours is greater or equal to 100 or the refresh interval is greater than 42, show only 1 digit after the decimal
@@ -3616,7 +3616,7 @@ namespace WSplitTimer
                     clockColor = ColorSettings.Profile.Paused;
                     dViewClockColor = ColorSettings.Profile.UsedDViewPaused;
                 }
-                else if (wsplit.split.OffsetStart != 0)
+                else if (wsplit.split.StartDelay != 0)
                 {
                     clockColor = ColorSettings.Profile.DelayFore;
                     this.clockGrColor = ColorSettings.Profile.DelayBack;
