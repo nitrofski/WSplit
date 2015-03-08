@@ -282,6 +282,7 @@ namespace WSplitTimer
         {
             this.split.Clear();
             this.runTitle = "";
+            this.runGoal = "";
             this.attemptCount = 0;
             this.offsetStart = 0;
             this.detailPreferredSize = this.clockMinimumSize;
