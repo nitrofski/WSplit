@@ -470,11 +470,15 @@ namespace WSplitTimer
                 this.clockRect.Size = this.clockMinimumSize;
             }
             int height = (this.clockRect.Height + (this.detailSegCount() * this.segHeight)) + 0x15;
-            if ((this.runTitle != "") && Settings.Profile.ShowTitle)
+            if (((this.runTitle != "") && Settings.Profile.ShowTitle) && ((this.runGoal != "") && Settings.Profile.ShowGoal))
+            {
+                height += 0x20;
+            }
+            else if ((this.runTitle != "") && Settings.Profile.ShowTitle)
             {
                 height += 0x12;
             }
-            if ((this.runGoal != "") && Settings.Profile.ShowGoal)
+            else if ((this.runGoal != "") && Settings.Profile.ShowGoal)
             {
                 height += 0x12;
             }
@@ -1144,6 +1148,7 @@ namespace WSplitTimer
                 this.split.Clear();
                 this.offsetStart = 0;
                 this.runTitle = "";
+                this.runGoal = "";
                 this.attemptCount = 0;
                 this.detailPreferredSize = this.clockMinimumSize;
                 using (StreamReader reader = new StreamReader(this.runFile))
@@ -2913,34 +2918,35 @@ namespace WSplitTimer
                                 int titleX = 0;
                                 int titleY = 0;
                                 int goalX = 0;
-                                int goalY = 0;
+                                int goalY = 16;
                                 if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal) && !Settings.Profile.BackgroundPlain)
                                 {
-                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 36);
-                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 18);
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 32);
+                                    bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 16);
+                                    
                                 }
                                 else
                                 {
                                     if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                                     {
                                         if (Settings.Profile.BackgroundPlain)
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 18);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 16);
                                         else
                                         {
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 18);
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 9);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 16);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 8);
                                         }
                                     }
                                     if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                                     {
                                         if (Settings.Profile.BackgroundPlain)
                                         {
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 18);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 16);
                                         }
                                         else
                                         {
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, goalY, wsplit.Width, 18);
-                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, goalY, wsplit.Width, 9);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, goalY, wsplit.Width, 16);
+                                            bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, goalY, wsplit.Width, 8);
                                         }
                                     }
                                 }
@@ -3023,7 +3029,7 @@ namespace WSplitTimer
                             {
                                 bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                                 Rectangle rectangle7 = new Rectangle(0, 1, wsplit.Width, 17);
-                                goalTextY = 19;
+                                goalTextY = 16;
 
                                 // Draws the hotkey toggle indicator
                                 if (Settings.Profile.HotkeyToggleKey != Keys.None)
@@ -3129,11 +3135,14 @@ namespace WSplitTimer
                         Rectangle rectangle8;   // Yet another unnamed rectangle
                         int num16 = wsplit.clockRect.Right + 2;
                         int y = 0;
-
-                        if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal))
+                        {
+                            y += 32;
+                        }
+                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                             y += 18;
 
-                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        else if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                         {
                             y += 18;
                         }
@@ -3837,11 +3846,15 @@ namespace WSplitTimer
                         // Builds a rectangle for the live segment time
                         rectangle3 = new Rectangle(x, wsplit.segHeight * (wsplit.split.LiveIndex - num13), wsplit.Width - x, wsplit.segHeight);
                         // Moves the rectangle down if we have to show the run title
-                        if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal))
+                        {
+                            rectangle3.Y += 0x20;
+                        }
+                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                         {
                             rectangle3.Y += 0x12;
                         }
-                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        else if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                         {
                             rectangle3.Y += 0x12;
                         }
