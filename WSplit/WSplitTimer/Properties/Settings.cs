@@ -251,6 +251,13 @@
             set { this["ShowTitle"] = value; }
         }
 
+        [DefaultSettingValue("True"), UserScopedSetting, DebuggerNonUserCode]
+        public bool ShowGoal
+        {
+            get { return (bool)this["ShowGoal"];  }
+            set { this["ShowGoal"] = value; }
+        }
+
         [DebuggerNonUserCode, UserScopedSetting, DefaultSettingValue("False")]
         public bool WideSegBlanks
         {

@@ -156,6 +156,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="WSplitTimer\RunEditor.resx">
+      <DependentUpon>RunEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WSplitTimer\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -44,6 +44,7 @@ namespace WSplitTimer
         private ToolStripMenuItem alwaysOnTop;
         private ToolStripMenuItem showRunTitleButton;
         private ToolStripMenuItem showAttemptCount;
+        private ToolStripMenuItem showRunGoalMenuItem;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem displayTimerOnlyButton;
         private ToolStripMenuItem displayCompactButton;
@@ -105,6 +106,7 @@ namespace WSplitTimer
         private int offsetStart;
         private DateTime offsetStartTime = new DateTime();
         private string runFile;
+        private string runGoal;
         private string runTitle = "";
         private int segHeight = 14;
         public Split split = new Split();
@@ -471,6 +473,10 @@ namespace WSplitTimer
             {
                 height += 0x12;
             }
+            if ((this.runGoal != "") && Settings.Profile.ShowGoal)
+            {
+                height += 0x12;
+            }
             this.clockRect.Location = new Point(0, (height - this.clockRect.Height) - 0x12);
             this.currentDispMode = DisplayMode.Detailed;
             base.Size = new Size(this.clockRect.Width, height);
@@ -662,6 +668,7 @@ namespace WSplitTimer
             this.alwaysOnTop = new ToolStripMenuItem();
             this.showRunTitleButton = new ToolStripMenuItem();
             this.showAttemptCount = new ToolStripMenuItem();
+            this.showRunGoalMenuItem = new ToolStripMenuItem();
             this.toolStripSeparator3 = new ToolStripSeparator();
             this.displayTimerOnlyButton = new ToolStripMenuItem();
             this.displayCompactButton = new ToolStripMenuItem();
@@ -759,7 +766,7 @@ namespace WSplitTimer
             this.menuItemSettings.Text = "Settings...";
             this.menuItemSettings.Click += new EventHandler(this.menuItemSettings_Click);
             this.displaySettingsMenu.DropDownItems.AddRange(new ToolStripItem[] { 
-                this.alwaysOnTop, this.showRunTitleButton, this.showAttemptCount, this.toolStripSeparator3, this.displayTimerOnlyButton, this.displayCompactButton, this.displayWideButton, this.displayDetailedButton, this.toolStripSeparator5, this.clockAppearanceToolStripMenuItem, this.plainBg, this.blackBg, this.menuItemAdvancedDisplay, this.setColorsButton, this.toolStripSeparator6, 
+                this.alwaysOnTop, this.showRunTitleButton, this.showAttemptCount, this.showRunGoalMenuItem, this.toolStripSeparator3, this.displayTimerOnlyButton, this.displayCompactButton, this.displayWideButton, this.displayDetailedButton, this.toolStripSeparator5, this.clockAppearanceToolStripMenuItem, this.plainBg, this.blackBg, this.menuItemAdvancedDisplay, this.setColorsButton, this.toolStripSeparator6, 
                 this.advancedDetailButton
              });
             this.displaySettingsMenu.Name = "displaySettingsMenu";
@@ -777,6 +784,10 @@ namespace WSplitTimer
             this.showAttemptCount.Size = new Size(0xcc, 0x16);
             this.showAttemptCount.Text = "Show attempt count";
             this.showAttemptCount.Click += new EventHandler(this.showAttemptCount_Click);
+            this.showRunGoalMenuItem.Name = "showRunGoal";
+            this.showRunGoalMenuItem.Size = new Size(0xcc, 0x16);
+            this.showRunGoalMenuItem.Text = "Show run goal";
+            this.showRunGoalMenuItem.Click += new EventHandler(this.showRunGoal_Click);
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new Size(0xc9, 6);
             this.displayTimerOnlyButton.Name = "displayTimerOnlyButton";
@@ -959,6 +970,7 @@ namespace WSplitTimer
             this.showRunTitleButton.Checked = Settings.Profile.ShowTitle;
             this.digitalClockButton.Checked = Settings.Profile.DigitalClock;
             this.showAttemptCount.Checked = Settings.Profile.ShowAttempts;
+            this.showRunGoalMenuItem.Checked = Settings.Profile.ShowGoal;
 
             if (Settings.Profile.BestAsOverall)
                 this.bestAsOverallButton.Checked = true;
@@ -1145,6 +1157,10 @@ namespace WSplitTimer
                         }
                         else
                         {
+                            if (str.StartsWith("Goal="))
+                            {
+                                this.runGoal = str.Substring(5);
+                            }
                             if (str.StartsWith("Attempts="))
                             {
                                 int.TryParse(str.Substring(9), out this.attemptCount);
@@ -1265,7 +1281,9 @@ namespace WSplitTimer
             RunEditorDialog editor = new RunEditorDialog(this.split)
             {
                 titleBox = { Text = this.runTitle },
-                attemptsBox = { Text = this.attemptCount.ToString() }
+                attemptsBox = { Text = this.attemptCount.ToString() },
+                txtGoal = { Text = this.runGoal}
+                
             };
             base.TopMost = false;
             this.dview.TopMost = false;
@@ -1278,6 +1296,7 @@ namespace WSplitTimer
                     this.split.Add(segment);
                 }
                 this.runTitle = editor.titleBox.Text;
+                this.runGoal = editor.txtGoal.Text;
                 int.TryParse(editor.attemptsBox.Text, out this.attemptCount);
                 this.InitializeDisplay();
                 this.unsavedSplits = true;
@@ -1526,6 +1545,7 @@ namespace WSplitTimer
                 {
                     writer = new StreamWriter(this.runFile);
                     writer.WriteLine("Title=" + this.runTitle);
+                    writer.WriteLine("Goal=" + this.runGoal);
                     writer.WriteLine("Attempts=" + this.attemptCount);
                     writer.WriteLine("Offset=" + this.offsetStart);
                     writer.WriteLine(string.Concat(new object[] { "Size=", this.detailPreferredSize.Width, ",", this.detailPreferredSize.Height }));
@@ -1659,6 +1679,13 @@ namespace WSplitTimer
             this.showAttemptCount.Checked = Settings.Profile.ShowAttempts;
             this.painter.RequestBackgroundRedraw();
             base.Invalidate();
+        }
+
+        private void showRunGoal_Click(object sender, EventArgs e)
+        {
+            Settings.Profile.ShowGoal = !Settings.Profile.ShowGoal;
+            this.showRunGoalMenuItem.Checked = Settings.Profile.ShowGoal;
+            this.setDisplay((DisplayMode)Settings.Profile.DisplayMode);
         }
 
         private void showDecimalSeparator_Click(object sender, EventArgs e)
@@ -2121,7 +2148,7 @@ namespace WSplitTimer
                 }
 
                 if (this.runTitle != "")
-                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle;
+                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle + "   Goal: " + this.runGoal;
                 else
                     this.dview.segs.Rows[0].Cells[0].Value = "Segment";
                 this.dview.segs.DefaultCellStyle.SelectionForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
@@ -2823,25 +2850,45 @@ namespace WSplitTimer
                         Rectangle statusBarEctangle;   
                         Rectangle headerTextRectangle;
                         Rectangle statusTextRectangle;
+                        Rectangle goalTextRectangle;
 
                         if (wsplit.currentDispMode == DisplayMode.Wide)
                         {
                             statusBarEctangle = new Rectangle(wsplit.Width - 120, 0, 120, wsplit.Height);                       // Status bar
-                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 118, 12);          // Run title
-                            statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
+                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
+
+                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            {
+                                statusTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, (wsplit.Height / 4) - 4, 59, 12); //Run goal
+                                goalTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); //Run status
+                            }
+                            else
+                            {
+                                statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
+                                goalTextRectangle = new Rectangle(0, 0, 0, 0);  //Nothing...
+                            }
+                            
                         }
                         else if (wsplit.currentDispMode == DisplayMode.Detailed)
                         {
                             statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 18);            // Status bar
                             headerTextRectangle = new Rectangle(0, 0, 0, 0);                                            // Nothing? Why?
                             statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 16);  // Run status
+                            goalTextRectangle = new Rectangle(0, 0, 0, 0);                                              // Nothing...
                         }
                         else
                         {
                             statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 16);            // Status bar
-                            headerTextRectangle = new Rectangle(1, 2, wsplit.Width - 2, 13);                            // Segment name
+                            headerTextRectangle = new Rectangle(1, 2, (wsplit.Width / 2) - 2, 13);                            // Segment name
                             statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 14);  // Run status
-
+                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            {
+                                goalTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, 2, (wsplit.Width / 2) - 2, 13); // Run goal
+                            }
+                            else
+                            {
+                                goalTextRectangle = new Rectangle(0, 0, 0, 0); // Nothing...
+                            }
                             // If the segment icon will be shown, the segment name have to be pushed right
                             if ((Settings.Profile.SegmentIcons > 0) && !wsplit.split.Done)
                             {
@@ -2862,14 +2909,31 @@ namespace WSplitTimer
                             // Detailed mode - Draw the title bar
                             if (wsplit.currentDispMode == DisplayMode.Detailed)
                             {
+                                int titleX = 0;
+                                int titleY = 0;
+                                int goalX = 0;
+                                int goalY = 0;
                                 if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                                 {
                                     if (Settings.Profile.BackgroundPlain)
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, 0, wsplit.Width, 18);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 18);
                                     else
                                     {
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, 0, wsplit.Width, 18);
-                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, 0, wsplit.Width, 9);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 18);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 9);
+                                    }
+                                    goalY = 18;
+                                }
+                                if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                                {
+                                    if (Settings.Profile.BackgroundPlain)
+                                    {
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 18);
+                                    }
+                                    else
+                                    {
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), 0, goalY, wsplit.Width, 18);
+                                        bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), 0, goalY, wsplit.Width, 9);
                                     }
                                 }
                             }
@@ -2946,10 +3010,12 @@ namespace WSplitTimer
                         // Detailed mode
                         if (wsplit.currentDispMode == DisplayMode.Detailed)
                         {
+                            int goalTextY = 0;
                             if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                             {
                                 bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                                 Rectangle rectangle7 = new Rectangle(0, 1, wsplit.Width, 17);
+                                goalTextY = 19;
 
                                 // Draws the hotkey toggle indicator
                                 if (Settings.Profile.HotkeyToggleKey != Keys.None)
@@ -2987,6 +3053,26 @@ namespace WSplitTimer
 
                                 bgGraphics.DrawString(str8 + wsplit.runTitle, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), rectangle7, format5);
                             }
+
+                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            {
+                                bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                                Rectangle goalRectangle = new Rectangle(0, 19, wsplit.Width, 17);
+                                goalRectangle.Y = goalTextY;
+
+                                if (Settings.Profile.HotkeyToggleKey != Keys.None)
+                                {
+                                    goalRectangle.Width -= 10;
+                                }
+
+                                StringFormat format5 = new StringFormat
+                                {
+                                    Alignment = StringAlignment.Center,
+                                    LineAlignment = StringAlignment.Center,
+                                    Trimming = StringTrimming.EllipsisCharacter
+                                };
+                                bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
+                            }
                         }
 
                         else if (wsplit.split.Done)
@@ -3021,6 +3107,10 @@ namespace WSplitTimer
                         bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                         bgGraphics.DrawString(s, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), headerTextRectangle, format3);   // To be verified, but it seems like this line writes fuck all in a negative rectangle when in Detailed mode...
                         bgGraphics.DrawString(statusText, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), statusTextRectangle, format4);
+                        if (wsplit.currentDispMode != DisplayMode.Detailed)
+                        {
+                            bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
+                        }
                     }
 
                     //
@@ -3034,6 +3124,11 @@ namespace WSplitTimer
 
                         if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
                             y += 18;
+
+                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        {
+                            y += 18;
+                        }
 
                         if (wsplit.currentDispMode == DisplayMode.Wide)
                         {
@@ -3735,6 +3830,10 @@ namespace WSplitTimer
                         rectangle3 = new Rectangle(x, wsplit.segHeight * (wsplit.split.LiveIndex - num13), wsplit.Width - x, wsplit.segHeight);
                         // Moves the rectangle down if we have to show the run title
                         if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        {
+                            rectangle3.Y += 0x12;
+                        }
+                        if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
                         {
                             rectangle3.Y += 0x12;
                         }
