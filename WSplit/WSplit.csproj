@@ -107,6 +107,7 @@
     <Compile Include="WSplitTimer\StartAtDialog.Designer.cs">
       <DependentUpon>StartAtDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="XMLReader.cs" />
     <Compile Include="_IMAGE_FILE_HEADER.cs" />
     <Compile Include="WSplitTimer\WSplit.cs">
       <SubType>Form</SubType>
