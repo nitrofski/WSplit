@@ -47,6 +47,7 @@
         private ToolStripMenuItem menuItemImportSplitterZ;
 
         private OpenFileDialog openFileDialog;
+        private XMLReader xmlReader;
 
         private int windowHeight;
 
@@ -372,6 +373,8 @@
                 {
                     using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
                     {
+                        this.xmlReader = new XMLReader(this.openFileDialog.FileName);
+                        this.xmlReader.ReadSplit();
                         var reader = new StreamReader(stream);
 
                         var newLine = reader.ReadLine();
