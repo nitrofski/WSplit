@@ -15,31 +15,32 @@ public class XMLReader
     private const String SEGMENTS = "Segments";
     private const String SEGMENT_NAME = "Name";
     private const String SPLIT_TIMES = "SplitTimes";
-
+    private const String BEST_SEGMENT = "BestSegmentTime";
 
     private Split split;
     private XmlDocument xmlDocument;
 
-    public XMLReader(String file)
+    public XMLReader()
     {
         this.split = new Split();
         xmlDocument = new XmlDocument();
-        xmlDocument.Load(file);
     }
 
     /// <summary>
     /// Read split information from the file and returns it.
     /// </summary>
+    /// <param name="file">The filename of the LiveSplit XML file.</param>
     /// <returns>The split with all its information.</returns>
-    public Split ReadSplit()
+    public Split ReadSplit(String file)
     {
+        xmlDocument.Load(file);
         StringBuilder stringBuilder = new StringBuilder();
         String runTitle = "";
         String attemptsCountString = "";
         String startDelay = "";
         int attemptsCount = 0;
         XmlNodeList rootNode;
-        ArrayList segments = new ArrayList();
+        List<Segment> segments = new List<Segment>();
 
         rootNode = xmlDocument.DocumentElement.SelectNodes("/Run");
         foreach(XmlNode runNode in rootNode)
@@ -74,6 +75,7 @@ public class XMLReader
         this.split.StartDelay = SetRunDelay(startDelay);
         Int32.TryParse(attemptsCountString, out attemptsCount);
         this.split.AttemptsCount = attemptsCount;
+        this.split.segments = segments;
         return this.split;
     }
 
@@ -137,12 +139,12 @@ public class XMLReader
     /// </summary>
     /// <param name="segments">The array list of segments.</param>
     /// <param name="segmentsNode">The node containing the segments in the xml file.</param>
-    private void PopulateSegments(ArrayList segments, XmlNode segmentsNode)
+    private void PopulateSegments(List<Segment> segments, XmlNode segmentsNode)
     {
         Segment newSegment;
-        String segmentName;
-        double segmentBestTime;
-        double segmentBestSegment;
+        String segmentName = "";
+        double segmentBestTime = 0.0;
+        double segmentBestSegment = 0.0;
         XmlNode nodeSegmentTime;
         foreach(XmlNode segmentNode in segmentsNode.ChildNodes)
         {
@@ -155,9 +157,16 @@ public class XMLReader
                 else if (segmentInfoNode.Name == SPLIT_TIMES)
                 {
                     nodeSegmentTime = segmentInfoNode.FirstChild.FirstChild;
-                    MessageBox.Show(nodeSegmentTime.InnerText);
+                    segmentBestTime = WSplitUtil.timeParse(nodeSegmentTime.InnerText);
+                }
+                else if (segmentInfoNode.Name == BEST_SEGMENT)
+                {
+                    nodeSegmentTime = segmentInfoNode.FirstChild;
+                    segmentBestSegment = WSplitUtil.timeParse(nodeSegmentTime.InnerText);
                 }
             }
+            newSegment = new Segment(segmentName, 0.0, segmentBestTime, segmentBestSegment);
+            segments.Add(newSegment);
         }
     }
 }

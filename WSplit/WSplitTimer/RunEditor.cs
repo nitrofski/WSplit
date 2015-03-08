@@ -45,6 +45,7 @@
         private ContextMenuStrip contextMenuImport;
         private ToolStripMenuItem menuItemImportLlanfair;
         private ToolStripMenuItem menuItemImportSplitterZ;
+        private ToolStripMenuItem menuItemImportLiveSplit;
 
         private OpenFileDialog openFileDialog;
         private XMLReader xmlReader;
@@ -53,6 +54,7 @@
 
         public RunEditorDialog(Split splits)
         {
+            this.xmlReader = new XMLReader();
             this.InitializeComponent();
             this.cellHeight = this.runView.RowTemplate.Height;
             this.windowHeight = (base.Height - (this.runView.Height - this.cellHeight)) - 2;
@@ -132,6 +134,7 @@
             this.contextMenuImport = new ContextMenuStrip();
             this.menuItemImportLlanfair = new ToolStripMenuItem();
             this.menuItemImportSplitterZ = new ToolStripMenuItem();
+            this.menuItemImportLiveSplit = new ToolStripMenuItem();
             this.openFileDialog = new OpenFileDialog();
 
             ((ISupportInitialize)this.runView).BeginInit();
@@ -240,6 +243,7 @@
 
             this.contextMenuImport.Items.Add(this.menuItemImportLlanfair);
             this.contextMenuImport.Items.Add(this.menuItemImportSplitterZ);
+            this.contextMenuImport.Items.Add(this.menuItemImportLiveSplit);
             this.contextMenuImport.Name = "contextMenuImport";
 
             //this.menuItemImportLlanfair.Enabled = false;
@@ -251,6 +255,11 @@
             this.menuItemImportSplitterZ.Name = "menuItemImportSplitterZ";
             this.menuItemImportSplitterZ.Text = "Import from SplitterZ";
             this.menuItemImportSplitterZ.Click += this.menuItemImportSplitterZ_Click;
+
+            this.menuItemImportLiveSplit.Name = "menuItemImportLiveSplit";
+            this.menuItemImportLiveSplit.Text = "Import from LiveSplit";
+            this.menuItemImportLiveSplit.Click += this.menuItemImportLiveSplit_Click;
+
 
             this.oldOffset.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.oldOffset.Location = new Point(230, 0x1f);
@@ -373,8 +382,6 @@
                 {
                     using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
                     {
-                        this.xmlReader = new XMLReader(this.openFileDialog.FileName);
-                        this.xmlReader.ReadSplit();
                         var reader = new StreamReader(stream);
 
                         var newLine = reader.ReadLine();
@@ -560,6 +567,29 @@
                 {
                     // An error has occured...
                 }
+            }
+        }
+
+        private void menuItemImportLiveSplit_Click(object sender, EventArgs e)
+        {
+            Split split = null;
+            if (this.openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
+                {
+                    this.xmlReader = new XMLReader();
+                    split = this.xmlReader.ReadSplit(this.openFileDialog.FileName);
+                }
+            }
+            if (split != null)
+            {
+                this.titleBox.Text = split.RunTitle;
+                this.txtGoal.Text = split.RunGoal;
+                this.populateList(split.segments);
+            }
+            else
+            {
+                MessageBox.Show("The import from livesplit has failed.");
             }
         }
 
