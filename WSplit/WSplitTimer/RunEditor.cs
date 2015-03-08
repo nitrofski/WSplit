@@ -546,11 +546,11 @@
                         // The only remaining thing in the file should be the window height and width for Llanfair usage.
                         // We don't need to extract it.
 
-                        if (strGoal == "")
-                            ;
+                        
 
                         this.populateList(segmentList);
                         this.titleBox.Text = strTitle;
+                        this.txtGoal.Text = strGoal;
                     }
                 }
                 catch (Exception)
