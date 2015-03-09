@@ -6,7 +6,7 @@ using System.Xml;
 using System.Windows.Forms;
 using System.Collections;
 
-public class XMLReader
+public class LiveSplitXMLReader
 {
     private const String GAME_NAME = "GameName";
     private const String CATEGORY_NAME = "CategoryName";
@@ -20,7 +20,7 @@ public class XMLReader
     private Split split;
     private XmlDocument xmlDocument;
 
-    public XMLReader()
+    public LiveSplitXMLReader()
     {
         this.split = new Split();
         xmlDocument = new XmlDocument();
@@ -112,9 +112,12 @@ public class XMLReader
         String[] timeSection = delayString.Split(':');
         String[] secondsAndMilliseconds = timeSection[timeSection.Length - 1].Split('.');
         //Millseconds
-        if (Int32.TryParse(secondsAndMilliseconds[1], out delayTimeSection))
+        if (secondsAndMilliseconds.Length == 2)
         {
-            delay += delayTimeSection;
+            if (Int32.TryParse(secondsAndMilliseconds[1].Substring(0, 2), out delayTimeSection))
+            {
+                delay += (delayTimeSection * 10);
+            }
         }
         //Seconds
         if (Int32.TryParse(secondsAndMilliseconds[0], out delayTimeSection))
@@ -129,7 +132,7 @@ public class XMLReader
         //Hours
         if (Int32.TryParse(timeSection[0], out delayTimeSection))
         {
-            delay += (delayTimeSection * 3660 * 1000);
+            delay += (delayTimeSection * 3600 * 1000);
         }
         return delay;
     }

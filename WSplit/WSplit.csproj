@@ -108,7 +108,7 @@
       <DependentUpon>StartAtDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="WSplitUtil.cs" />
-    <Compile Include="XMLReader.cs" />
+    <Compile Include="LiveSplitXMLReader.cs" />
     <Compile Include="_IMAGE_FILE_HEADER.cs" />
     <Compile Include="WSplitTimer\WSplit.cs">
       <SubType>Form</SubType>

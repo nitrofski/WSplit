@@ -48,13 +48,14 @@
         private ToolStripMenuItem menuItemImportLiveSplit;
 
         private OpenFileDialog openFileDialog;
-        private XMLReader xmlReader;
+        private LiveSplitXMLReader xmlReader;
 
         private int windowHeight;
+        public int startDelay; //Temporary until I refactor the whole application...
 
         public RunEditorDialog(Split splits)
         {
-            this.xmlReader = new XMLReader();
+            this.xmlReader = new LiveSplitXMLReader();
             this.InitializeComponent();
             this.cellHeight = this.runView.RowTemplate.Height;
             this.windowHeight = (base.Height - (this.runView.Height - this.cellHeight)) - 2;
@@ -577,7 +578,7 @@
             {
                 using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
                 {
-                    this.xmlReader = new XMLReader();
+                    this.xmlReader = new LiveSplitXMLReader();
                     split = this.xmlReader.ReadSplit(this.openFileDialog.FileName);
                 }
             }
@@ -585,7 +586,9 @@
             {
                 this.titleBox.Text = split.RunTitle;
                 this.txtGoal.Text = split.RunGoal;
+                this.attemptsBox.Text = split.AttemptsCount.ToString();
                 this.populateList(split.segments);
+                this.startDelay = split.StartDelay;
             }
             else
             {

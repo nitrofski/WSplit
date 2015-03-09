@@ -1314,6 +1314,7 @@ namespace WSplitTimer
                 this.split.AttemptsCount = attemptsCount;
                 this.InitializeDisplay();
                 this.split.UnsavedSplit = true;
+                this.split.StartDelay = editor.startDelay;
             }
             else
             {
