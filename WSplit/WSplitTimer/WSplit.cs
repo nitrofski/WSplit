@@ -89,7 +89,7 @@ namespace WSplitTimer
         private OpenFileDialog openFileDialog;
         private SettingsDialog settingsDialog;
 
-        private int attemptCount;
+        //private int attemptCount;
         private Size clockMinimumSize = new Size(120, 25);
         private Size clockMinimumSizeAbsolute = new Size(120, 25);
         private Rectangle clockRect;
@@ -103,11 +103,11 @@ namespace WSplitTimer
         private Timer doubleTapDelay;
         private DetailedView dview;
         private Timer flashDelay;
-        private int offsetStart;
+        //private int offsetStart;
         private DateTime offsetStartTime = new DateTime();
-        private string runFile;
-        private string runGoal;
-        private string runTitle = "";
+        //private string runFile;
+        //private string runGoal;
+        //private string runTitle = "";
         private int segHeight = 14;
         public Split split = new Split();
         private Timer startDelay;
@@ -121,7 +121,7 @@ namespace WSplitTimer
         private int wideSegWidthBase = 100;
         private int wideSegX;
 
-        public bool unsavedSplits;
+        //public bool unsavedSplits;
         public bool modalWindowOpened;
 
         // Apparently unused variables...
@@ -281,10 +281,10 @@ namespace WSplitTimer
         private void closeFile()
         {
             this.split.Clear();
-            this.runTitle = "";
-            this.runGoal = "";
-            this.attemptCount = 0;
-            this.offsetStart = 0;
+            this.split.RunTitle = "";
+            this.split.RunGoal = "";
+            this.split.AttemptsCount = 0;
+            this.split.StartDelay = 0;
             this.detailPreferredSize = this.clockMinimumSize;
             this.InitializeDisplay();
         }
@@ -375,7 +375,7 @@ namespace WSplitTimer
             this.modalWindowOpened = true;
 
             // A few settings are necessary before calling the custom ShowDialog method
-            this.SettingsDialog.StartDelay = this.timeFormatter(((double)this.offsetStart) / 1000.0, TimeFormat.Seconds);
+            this.SettingsDialog.StartDelay = this.timeFormatter(((double)this.split.StartDelay) / 1000.0, TimeFormat.Seconds);
             this.SettingsDialog.DetailedWidth = this.clockRect.Width;
 
             // Costum ShowDialog method...
@@ -383,7 +383,7 @@ namespace WSplitTimer
             {
                 this.SettingsDialog.ApplyChanges();
 
-                this.offsetStart = Convert.ToInt32((double)(this.timeParse(this.SettingsDialog.StartDelay) * 1000.0));
+                this.split.StartDelay = Convert.ToInt32((double)(this.timeParse(this.SettingsDialog.StartDelay) * 1000.0));
                 this.clockRect.Width = this.SettingsDialog.DetailedWidth;
                 this.updateDetailed();
                 this.InitializeSettings();
@@ -470,15 +470,15 @@ namespace WSplitTimer
                 this.clockRect.Size = this.clockMinimumSize;
             }
             int height = (this.clockRect.Height + (this.detailSegCount() * this.segHeight)) + 0x15;
-            if (((this.runTitle != "") && Settings.Profile.ShowTitle) && ((this.runGoal != "") && Settings.Profile.ShowGoal))
+            if (((this.split.RunTitle != "") && Settings.Profile.ShowTitle) && ((this.split.RunGoal != "") && Settings.Profile.ShowGoal))
             {
                 height += 0x20;
             }
-            else if ((this.runTitle != "") && Settings.Profile.ShowTitle)
+            else if ((this.split.RunTitle != "") && Settings.Profile.ShowTitle)
             {
                 height += 0x12;
             }
-            else if ((this.runGoal != "") && Settings.Profile.ShowGoal)
+            else if ((this.split.RunGoal != "") && Settings.Profile.ShowGoal)
             {
                 height += 0x12;
             }
@@ -933,13 +933,13 @@ namespace WSplitTimer
             string[] commandLineArgs = Environment.GetCommandLineArgs();
             for (int i = 1; (i < commandLineArgs.Length) && !this.split.LiveRun; i++)
             {
-                this.runFile = commandLineArgs[i];
+                this.split.RunFile = commandLineArgs[i];
                 this.loadFile();
             }
 
-            if ((this.runFile == null) && Settings.Profile.LoadMostRecent)
+            if ((this.split.RunFile == null) && Settings.Profile.LoadMostRecent)
             {
-                this.runFile = Settings.Profile.LastFile;
+                this.split.RunFile = Settings.Profile.LastFile;
                 this.loadFile();
             }
 
@@ -1061,7 +1061,7 @@ namespace WSplitTimer
             if (this.split.LastIndex < 0)
             {
                 this.dview.Hide();
-                this.runFile = null;
+                this.split.RunFile = null;
                 this.closeButton.Enabled = false;
                 this.saveButton.Enabled = false;
                 this.saveAsButton.Enabled = false;
@@ -1074,7 +1074,7 @@ namespace WSplitTimer
                     this.dview.Show();
                 }
                 this.closeButton.Enabled = true;
-                if (this.runFile != null)
+                if (split.RunFile != null)
                 {
                     this.saveButton.Enabled = true;
                     this.reloadButton.Enabled = true;
@@ -1143,15 +1143,17 @@ namespace WSplitTimer
 
         private void loadFile()
         {
-            if ((File.Exists(this.runFile) && (new FileInfo(this.runFile).Length < (10.0 * Math.Pow(1024.0, 2.0)))) && IsTextFile(this.runFile))
+            if ((File.Exists(this.split.RunFile) && (new FileInfo(this.split.RunFile).Length < (10.0 * Math.Pow(1024.0, 2.0)))) && IsTextFile(this.split.RunFile))
             {
                 this.split.Clear();
-                this.offsetStart = 0;
-                this.runTitle = "";
-                this.runGoal = "";
-                this.attemptCount = 0;
+
+                this.split.RunGoal = "";
+                this.split.StartDelay = 0;
+                this.split.RunTitle = "";
+                this.split.AttemptsCount = 0;
+
                 this.detailPreferredSize = this.clockMinimumSize;
-                using (StreamReader reader = new StreamReader(this.runFile))
+                using (StreamReader reader = new StreamReader(this.split.RunFile))
                 {
                     string str;
                     List<string> list = new List<string>();
@@ -1159,22 +1161,26 @@ namespace WSplitTimer
                     {
                         if (str.StartsWith("Title="))
                         {
-                            this.runTitle = str.Substring(6);
+                            this.split.RunTitle = str.Substring(6);
                         }
                         else
                         {
                             if (str.StartsWith("Goal="))
                             {
-                                this.runGoal = str.Substring(5);
+                                this.split.RunGoal = str.Substring(5);
                             }
                             if (str.StartsWith("Attempts="))
                             {
-                                int.TryParse(str.Substring(9), out this.attemptCount);
+                                int attemptsCount = 0;
+                                int.TryParse(str.Substring(9), out attemptsCount);
+                                this.split.AttemptsCount = attemptsCount;
                                 continue;
                             }
                             if (str.StartsWith("Offset="))
                             {
-                                int.TryParse(str.Substring(7), out this.offsetStart);
+                                int offsetStart = 0;
+                                int.TryParse(str.Substring(7), out offsetStart);
+                                this.split.StartDelay = offsetStart;
                                 continue;
                             }
                             if (str.StartsWith("Width="))
@@ -1239,24 +1245,24 @@ namespace WSplitTimer
                     }
                     this.currentDispMode = DisplayMode.Null;
                     this.InitializeDisplay();
-                    if (this.runFile != null)
+                    if (this.split.RunFile != null)
                     {
                         if (Settings.Profile.RecentFiles != null)
                         {
-                            if (Settings.Profile.RecentFiles.Contains(this.runFile))
+                            if (Settings.Profile.RecentFiles.Contains(this.split.RunFile))
                             {
-                                Settings.Profile.RecentFiles.Remove(this.runFile);
+                                Settings.Profile.RecentFiles.Remove(this.split.RunFile);
                             }
                             else if (Settings.Profile.RecentFiles.Count > 9)
                             {
                                 Settings.Profile.RecentFiles.RemoveAt(Settings.Profile.RecentFiles.Count - 1);
                             }
-                            Settings.Profile.RecentFiles.Insert(0, this.runFile);
+                            Settings.Profile.RecentFiles.Insert(0, this.split.RunFile);
                         }
                         this.populateRecentFiles();
                     }
 
-                    unsavedSplits = false;
+                    this.split.UnsavedSplit = false;
                     return;
                 }
             }
@@ -1286,9 +1292,9 @@ namespace WSplitTimer
             this.split.UpdateBest(Settings.Profile.BestAsOverall);
             RunEditorDialog editor = new RunEditorDialog(this.split)
             {
-                titleBox = { Text = this.runTitle },
-                attemptsBox = { Text = this.attemptCount.ToString() },
-                txtGoal = { Text = this.runGoal}
+                titleBox = { Text = this.split.RunTitle },
+                attemptsBox = { Text = this.split.AttemptsCount.ToString() },
+                txtGoal = { Text = this.split.RunGoal }
                 
             };
             base.TopMost = false;
@@ -1301,11 +1307,14 @@ namespace WSplitTimer
                 {
                     this.split.Add(segment);
                 }
-                this.runTitle = editor.titleBox.Text;
-                this.runGoal = editor.txtGoal.Text;
-                int.TryParse(editor.attemptsBox.Text, out this.attemptCount);
+                int attemptsCount = 0;
+                this.split.RunTitle = editor.titleBox.Text;
+                this.split.RunGoal = editor.txtGoal.Text;
+                int.TryParse(editor.attemptsBox.Text, out attemptsCount);
+                this.split.AttemptsCount = attemptsCount;
                 this.InitializeDisplay();
-                this.unsavedSplits = true;
+                this.split.UnsavedSplit = true;
+                this.split.StartDelay = editor.startDelay;
             }
             else
             {
@@ -1356,7 +1365,7 @@ namespace WSplitTimer
                 this.modalWindowOpened = true;
                 if (this.openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    this.runFile = this.openFileDialog.FileName;
+                    this.split.RunFile = this.openFileDialog.FileName;
                     this.loadFile();
                 }
                 this.modalWindowOpened = false;
@@ -1500,7 +1509,7 @@ namespace WSplitTimer
         {
             if (this.promptForSave())
             {
-                this.runFile = ((ToolStripMenuItem)sender).Name;
+                this.split.RunFile = ((ToolStripMenuItem)sender).Name;
                 this.loadFile();
             }
         }
@@ -1525,7 +1534,7 @@ namespace WSplitTimer
             this.modalWindowOpened = true;
             if (this.saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                this.runFile = this.saveFileDialog.FileName;
+                this.split.RunFile = this.saveFileDialog.FileName;
                 this.saveFile();
             }
             this.modalWindowOpened = false;
@@ -1538,22 +1547,22 @@ namespace WSplitTimer
 
         private void saveFile()
         {
-            if (this.runFile == null)
+            if (this.split.RunFile == null)
             {
                 this.saveButton.Enabled = false;
             }
             else
             {
                 this.split.UpdateBest(Settings.Profile.BestAsOverall);
-                new FileInfo(this.runFile);
+                new FileInfo(this.split.RunFile);
                 StreamWriter writer = null;
                 try
                 {
-                    writer = new StreamWriter(this.runFile);
-                    writer.WriteLine("Title=" + this.runTitle);
-                    writer.WriteLine("Goal=" + this.runGoal);
-                    writer.WriteLine("Attempts=" + this.attemptCount);
-                    writer.WriteLine("Offset=" + this.offsetStart);
+                    writer = new StreamWriter(this.split.RunFile);
+                    writer.WriteLine("Title=" + this.split.RunTitle);
+                    writer.WriteLine("Goal=" + this.split.RunGoal);
+                    writer.WriteLine("Attempts=" + this.split.AttemptsCount);
+                    writer.WriteLine("Offset=" + this.split.StartDelay);
                     writer.WriteLine(string.Concat(new object[] { "Size=", this.detailPreferredSize.Width, ",", this.detailPreferredSize.Height }));
                     List<string> list = new List<string>();
                     foreach (Segment segment in this.split.segments)
@@ -1568,7 +1577,7 @@ namespace WSplitTimer
                     }
                     writer.WriteLine("Icons=" + string.Join(",", list.ToArray()));
                     writer.Close();
-                    unsavedSplits = false;
+                    this.split.UnsavedSplit = false;
                 }
                 catch (Exception exception)
                 {
@@ -1580,15 +1589,15 @@ namespace WSplitTimer
                     {
                         if (Settings.Profile.RecentFiles != null)
                         {
-                            if (Settings.Profile.RecentFiles.Contains(this.runFile))
+                            if (Settings.Profile.RecentFiles.Contains(this.split.RunFile))
                             {
-                                Settings.Profile.RecentFiles.Remove(this.runFile);
+                                Settings.Profile.RecentFiles.Remove(this.split.RunFile);
                             }
                             else if (Settings.Profile.RecentFiles.Count > 9)
                             {
                                 Settings.Profile.RecentFiles.RemoveAt(Settings.Profile.RecentFiles.Count - 1);
                             }
-                            Settings.Profile.RecentFiles.Insert(0, this.runFile);
+                            Settings.Profile.RecentFiles.Insert(0, this.split.RunFile);
                         }
                         this.populateRecentFiles();
                     }
@@ -1733,7 +1742,7 @@ namespace WSplitTimer
         {
             this.startDelay.Dispose();
             this.startDelay = null;
-            this.attemptCount++;
+            this.split.AttemptsCount++;
             this.timer.StartAt(new TimeSpan(startingTicks));
         }
 
@@ -1741,11 +1750,11 @@ namespace WSplitTimer
         {
             if (this.startDelay == null)
             {
-                if (useDelay && this.offsetStart > 0)
+                if (useDelay && this.split.StartDelay > 0)
                 {
                     this.offsetStartTime = DateTime.UtcNow;
                     this.startDelay = new Timer();
-                    this.startDelay.Interval = this.offsetStart;
+                    this.startDelay.Interval = this.split.StartDelay;
                     this.startDelay.Tick += (sender, e) => startDelay_Tick(sender, e, startingTicks);
                     this.startDelay.Enabled = true;
                     base.Invalidate();
@@ -1754,7 +1763,7 @@ namespace WSplitTimer
                 {
                     if (this.split.LiveRun)
                     {
-                        this.attemptCount++;
+                        this.split.AttemptsCount++;
                     }
                     this.timer.StartAt(new TimeSpan(startingTicks));
                     this.painter.RequestBackgroundRedraw();
@@ -2153,8 +2162,8 @@ namespace WSplitTimer
                         this.dview.Deltas.Add(0.0);
                 }
 
-                if (this.runTitle != "")
-                    this.dview.segs.Rows[0].Cells[0].Value = this.runTitle + "   Goal: " + this.runGoal;
+                if (this.split.RunTitle != "")
+                    this.dview.segs.Rows[0].Cells[0].Value = this.split.RunTitle + "   Goal: " + this.split.RunGoal;
                 else
                     this.dview.segs.Rows[0].Cells[0].Value = "Segment";
                 this.dview.segs.DefaultCellStyle.SelectionForeColor = ColorSettings.Profile.UsedDViewSegCurrentText;
@@ -2277,7 +2286,7 @@ namespace WSplitTimer
         {
             if (!this.modalWindowOpened)
             {
-                this.runFile = ((string[])drgevent.Data.GetData(DataFormats.FileDrop, false)).First<string>();
+                this.split.RunFile = ((string[])drgevent.Data.GetData(DataFormats.FileDrop, false)).First<string>();
                 this.loadFile();
             }
             base.OnDragDrop(drgevent);
@@ -2300,7 +2309,7 @@ namespace WSplitTimer
         {
             this.clearHotkeys();
             Settings.Profile.WindowPosition = base.Location;
-            Settings.Profile.LastFile = this.runFile;
+            Settings.Profile.LastFile = this.split.RunFile;
             Settings.Profile.Save();
             ColorSettings.Profile.Save();
             base.OnFormClosed(e);
@@ -2594,7 +2603,7 @@ namespace WSplitTimer
 
         private bool promptForSave()
         {
-            if (this.unsavedSplits)
+            if (this.split.UnsavedSplit)
             {
                 this.modalWindowOpened = true;
                 DialogResult result = MessageBoxEx.Show(
@@ -2608,12 +2617,12 @@ namespace WSplitTimer
                     return false;
                 if (result == DialogResult.Yes)
                 {
-                    if (this.runFile == null)
+                    if (this.split.RunFile == null)
                         this.saveAs();
                     else
                         this.saveFile();
                 }
-                this.unsavedSplits = false;
+                this.split.UnsavedSplit = false;
             }
 
             else if (this.split.NeedUpdate(Settings.Profile.BestAsOverall))
@@ -2630,7 +2639,7 @@ namespace WSplitTimer
                     return false;
                 if (result == DialogResult.Yes)
                 {
-                    if (this.runFile == null)
+                    if (this.split.RunFile == null)
                         this.saveAs();
                     else
                         this.saveFile();
@@ -2654,7 +2663,7 @@ namespace WSplitTimer
                 if (result == DialogResult.Yes)
                 {
                     this.split.UpdateBest(Settings.Profile.BestAsOverall);
-                    this.unsavedSplits = true;
+                    this.split.UnsavedSplit = true;
                 }
                 if (result != DialogResult.Cancel)
                 {
@@ -2670,7 +2679,7 @@ namespace WSplitTimer
             if (this.split.NeedUpdate(Settings.Profile.BestAsOverall))
             {
                 this.split.UpdateBest(Settings.Profile.BestAsOverall);
-                this.unsavedSplits = true;
+                this.split.UnsavedSplit = true;
             }
             this.InitializeDisplay();
         }
@@ -2863,7 +2872,7 @@ namespace WSplitTimer
                             statusBarEctangle = new Rectangle(wsplit.Width - 120, 0, 120, wsplit.Height);                       // Status bar
                             headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
 
-                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
                                 statusTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, (wsplit.Height / 4) - 4, 59, 12); //Run goal
                                 goalTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); //Run status
@@ -2887,7 +2896,7 @@ namespace WSplitTimer
                             statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 16);            // Status bar
                             headerTextRectangle = new Rectangle(1, 2, (wsplit.Width / 2) - 2, 13);                            // Segment name
                             statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 14);  // Run status
-                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
                                 goalTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, 2, (wsplit.Width / 2) - 2, 13); // Run goal
                             }
@@ -2918,8 +2927,9 @@ namespace WSplitTimer
                                 int titleX = 0;
                                 int titleY = 0;
                                 int goalX = 0;
-                                int goalY = 16;
-                                if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal) && !Settings.Profile.BackgroundPlain)
+                                int goalY = 0;
+                                
+                                if (((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal) && !Settings.Profile.BackgroundPlain)
                                 {
                                     bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 32);
                                     bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 16);
@@ -2927,7 +2937,7 @@ namespace WSplitTimer
                                 }
                                 else
                                 {
-                                    if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                                    if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
                                     {
                                         if (Settings.Profile.BackgroundPlain)
                                             bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), titleX, titleY, wsplit.Width, 16);
@@ -2937,8 +2947,12 @@ namespace WSplitTimer
                                             bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 8);
                                         }
                                     }
-                                    if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                                    if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                                     {
+                                        if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
+                                        {
+                                            goalY = 16;
+                                        }
                                         if (Settings.Profile.BackgroundPlain)
                                         {
                                             bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBackPlain), 0, goalY, wsplit.Width, 16);
@@ -2993,7 +3007,7 @@ namespace WSplitTimer
                             {
                                 statusText = "Ready";
                                 if (Settings.Profile.ShowAttempts && ((wsplit.currentDispMode != DisplayMode.Detailed) || !Settings.Profile.ShowTitle))
-                                    statusText += ", Attempt #" + (wsplit.attemptCount + 1);
+                                    statusText += ", Attempt #" + (wsplit.split.AttemptsCount + 1);
                             }
                         }
 
@@ -3025,7 +3039,7 @@ namespace WSplitTimer
                         if (wsplit.currentDispMode == DisplayMode.Detailed)
                         {
                             int goalTextY = 0;
-                            if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                            if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
                             {
                                 bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                                 Rectangle rectangle7 = new Rectangle(0, 1, wsplit.Width, 17);
@@ -3050,11 +3064,11 @@ namespace WSplitTimer
                                 {
                                     if (wsplit.timer.IsRunning)
                                     {
-                                        str8 = "#" + wsplit.attemptCount + " / ";
+                                        str8 = "#" + wsplit.split.AttemptsCount + " / ";
                                     }
                                     else
                                     {
-                                        str8 = "#" + (wsplit.attemptCount + 1) + " / ";
+                                        str8 = "#" + (wsplit.split.AttemptsCount + 1) + " / ";
                                     }
                                 }
 
@@ -3065,10 +3079,10 @@ namespace WSplitTimer
                                     Trimming = StringTrimming.EllipsisCharacter
                                 };
 
-                                bgGraphics.DrawString(str8 + wsplit.runTitle, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), rectangle7, format5);
+                                bgGraphics.DrawString(str8 + wsplit.split.RunTitle, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), rectangle7, format5);
                             }
 
-                            if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                            if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
                                 bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                                 Rectangle goalRectangle = new Rectangle(0, 19, wsplit.Width, 17);
@@ -3085,7 +3099,7 @@ namespace WSplitTimer
                                     LineAlignment = StringAlignment.Center,
                                     Trimming = StringTrimming.EllipsisCharacter
                                 };
-                                bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
+                                bgGraphics.DrawString("Goal: " + wsplit.split.RunGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.TitleFore), goalRectangle, format5);
                             }
                         }
 
@@ -3101,8 +3115,8 @@ namespace WSplitTimer
                         }
                         else if (wsplit.currentDispMode == DisplayMode.Compact)
                             s = wsplit.split.CurrentSegment.Name;
-                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
-                            s = wsplit.runTitle;
+                        else if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
+                            s = wsplit.split.RunTitle;
                         else
                             s = "Run";
 
@@ -3123,7 +3137,7 @@ namespace WSplitTimer
                         bgGraphics.DrawString(statusText, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), statusTextRectangle, format4);
                         if (wsplit.currentDispMode != DisplayMode.Detailed)
                         {
-                            bgGraphics.DrawString("Goal: " + wsplit.runGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
+                            bgGraphics.DrawString("Goal: " + wsplit.split.RunGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
                         }
                     }
 
@@ -3135,14 +3149,15 @@ namespace WSplitTimer
                         Rectangle rectangle8;   // Yet another unnamed rectangle
                         int num16 = wsplit.clockRect.Right + 2;
                         int y = 0;
-                        if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal))
+
+                        if (((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal))
                         {
                             y += 32;
                         }
-                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        else if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
                             y += 18;
 
-                        else if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        else if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                         {
                             y += 18;
                         }
@@ -3436,9 +3451,9 @@ namespace WSplitTimer
                 else
                     num5 = wsplit.detailSegCount();
 
-                if ((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L))
+                if ((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L))
                 {
-                    span2 = TimeSpan.FromMilliseconds((double)wsplit.offsetStart);
+                    span2 = TimeSpan.FromMilliseconds((double)wsplit.split.StartDelay);
                     if (wsplit.startDelay != null)
                     {
                         span2 -= DateTime.UtcNow - wsplit.offsetStartTime;
@@ -3472,12 +3487,12 @@ namespace WSplitTimer
                         this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(9, ' ');*/
 
                     this.timeStringAbsPart = this.timeStringAbsPart.PadLeft(8, ' ');
-                    if (((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && (this.timeStringAbsPart.Substring(0, 1) == " "))
+                    if (((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L)) && (this.timeStringAbsPart.Substring(0, 1) == " "))
                     {
                         this.timeStringAbsPart = "-" + this.timeStringAbsPart.Substring(1, this.timeStringAbsPart.Length - 1);
                     }
                 }
-                else if (((wsplit.offsetStart != 0) && (wsplit.timer.ElapsedTicks == 0L)) && ((span2.TotalHours < 10.0) || ((span2.TotalHours < 100.0) && (wsplit.stopwatch.Interval > 42))))
+                else if (((wsplit.split.StartDelay != 0) && (wsplit.timer.ElapsedTicks == 0L)) && ((span2.TotalHours < 10.0) || ((span2.TotalHours < 100.0) && (wsplit.stopwatch.Interval > 42))))
                     this.timeStringAbsPart = "-" + this.timeStringAbsPart;
 
                 // If the number of hours is greater or equal to 100 or the refresh interval is greater than 42, show only 1 digit after the decimal
@@ -3602,7 +3617,7 @@ namespace WSplitTimer
                     clockColor = ColorSettings.Profile.Paused;
                     dViewClockColor = ColorSettings.Profile.UsedDViewPaused;
                 }
-                else if (wsplit.offsetStart != 0)
+                else if (wsplit.split.StartDelay != 0)
                 {
                     clockColor = ColorSettings.Profile.DelayFore;
                     this.clockGrColor = ColorSettings.Profile.DelayBack;
@@ -3846,15 +3861,16 @@ namespace WSplitTimer
                         // Builds a rectangle for the live segment time
                         rectangle3 = new Rectangle(x, wsplit.segHeight * (wsplit.split.LiveIndex - num13), wsplit.Width - x, wsplit.segHeight);
                         // Moves the rectangle down if we have to show the run title
-                        if (((wsplit.runTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.runGoal != "") && Settings.Profile.ShowGoal))
+
+                        if (((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal))
                         {
                             rectangle3.Y += 0x20;
                         }
-                        else if ((wsplit.runTitle != "") && Settings.Profile.ShowTitle)
+                        else if ((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle)
                         {
                             rectangle3.Y += 0x12;
                         }
-                        else if ((wsplit.runGoal != "") && Settings.Profile.ShowGoal)
+                        else if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                         {
                             rectangle3.Y += 0x12;
                         }
