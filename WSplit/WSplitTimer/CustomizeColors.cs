@@ -114,6 +114,7 @@
         private PictureBox picBoxRunTitleBack;
         private PictureBox picBoxRunTitleBack2;
         private PictureBox picBoxRunTitleBackPlain;
+        //private PictureBox picturebox1;
 
         // Segment Tab
         private Label labelColumnSegColor;
@@ -232,6 +233,8 @@
 
         private Label labelGraphBehind;
         private PictureBox picBoxGraphBehind;
+
+        private PictureBox picturebox1;
 
 
         public CustomizeColors(bool selectDViewTab = false)
@@ -396,6 +399,8 @@
             this.labelGraphBehind = new Label();
             this.picBoxGraphBehind = new PictureBox();
 
+            this.picturebox1 = new PictureBox();
+
             // Detailed View tab:
             this.checkBoxDViewUsePrimary = new CheckBox();
 
@@ -544,6 +549,7 @@
             ((ISupportInitialize)this.picBoxDViewSegBehindGain).BeginInit();
             ((ISupportInitialize)this.picBoxDViewSegBehindLoss).BeginInit();
             ((ISupportInitialize)this.picBoxDViewSegHighlight).BeginInit();
+            ((ISupportInitialize)this.picturebox1).BeginInit();
             ((ISupportInitialize)this.picBoxPreview).BeginInit();
             base.SuspendLayout();
 
@@ -704,7 +710,7 @@
                 this.labelSegAheadGain, this.picBoxSegAheadGain,
                 this.labelSegAheadLoss, this.picBoxSegAheadLoss,
                 this.labelSegBehindGain, this.picBoxSegBehindGain,
-                this.labelSegBehindLoss, this.picBoxSegBehindLoss
+                this.labelSegBehindLoss, this.picBoxSegBehindLoss, this.picturebox1
             });
             this.tabPageSegColors.Name = "segColorTab";
             this.tabPageSegColors.Padding = new Padding(3);
@@ -2134,6 +2140,17 @@
             this.picBoxGraphBehind.Size = new Size(20, 20);
             this.picBoxGraphBehind.TabStop = false;
             this.picBoxGraphBehind.Click += this.SetPictureBoxColor;
+            // 
+            // pictureBox1
+            // 
+            this.picturebox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picturebox1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picturebox1.Location = new System.Drawing.Point(180, 97);
+            this.picturebox1.Name = "picturebox1";
+            this.picturebox1.Size = new System.Drawing.Size(20, 20);
+            this.picturebox1.TabIndex = 35;
+            this.picturebox1.TabStop = false;
+            this.picturebox1.Click += this.SetPictureBoxColor;
 
             this.colorTabs.ResumeLayout(false);
             this.tabPageClockColors.ResumeLayout(false);
@@ -2228,6 +2245,7 @@
             ((ISupportInitialize)this.picBoxDViewSegBehindGain).EndInit();
             ((ISupportInitialize)this.picBoxDViewSegBehindLoss).EndInit();
             ((ISupportInitialize)this.picBoxDViewSegHighlight).EndInit();
+            ((ISupportInitialize)this.picturebox1).EndInit();
             ((ISupportInitialize)this.picBoxPreview).EndInit();
             base.ResumeLayout(false);
             base.PerformLayout();
@@ -2263,6 +2281,7 @@
                 new SettingPair("BehindLosingBack2", this.picBoxBehindLosingBack2),
                 new SettingPair("BehindLosingBackPlain", this.picBoxBehindLosingBackPlain),
                 new SettingPair("WatchFore", this.picBoxNoLoadedFore),
+                new SettingPair("SegPastTime", this.picturebox1),
                 new SettingPair("WatchBack", this.picBoxNoLoadedBack),
                 new SettingPair("WatchBack2", this.picBoxNoLoadedBack2),
                 new SettingPair("WatchBackPlain", this.picBoxNoLoadedBackPlain),
@@ -2500,8 +2519,8 @@
                 foreach (SettingsPropertyValue v in Properties.ColorSettings.Profile.PropertyValues)
                 {
                     foreach (SettingPair setting in from cs in ColorSettings
-                                                     where cs.name == v.Name
-                                                     select cs)
+                                                    where cs.name == v.Name
+                                                    select cs)
                     {
                         try
                         {
@@ -2711,10 +2730,10 @@
                 Alignment = StringAlignment.Far
             };
             Rectangle rectangle7 = new Rectangle(0, 0, 0, 1);
-            string[] strArray = new string[] { "Best Segment", "Ahead, gained", "Ahead, lost", "Behind, gained", "Behind, lost", "New time", "Missing time", "Live segment", "Future segment", "Future segment", "Future segment", "Future segment" };
-            string[] strArray2 = new string[] { "-88.8", "-88.8", "-88.8", "+88.8", "+88.8", "8:88", "-", "8:88.8", "8:88", "8:88", "8:88", "8:88" };
-            Color[] colorArray = new Color[] { this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor };
-            Color[] colorArray2 = new Color[] { this.picBoxSegBestSegment.BackColor, this.picBoxSegAheadGain.BackColor, this.picBoxSegAheadLoss.BackColor, this.picBoxSegBehindGain.BackColor, this.picBoxSegBehindLoss.BackColor, this.picBoxSegNewTime.BackColor, this.picBoxSegMissing.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor };
+            string[] strArray = new string[] { "Past Segment", "Best Segment", "Ahead, gained", "Ahead, lost", "Behind, gained", "Behind, lost", "New time", "Live segment", "Missing time", "Future segment", "Future segment", "Future segment" };
+            string[] strArray2 = new string[] { "17:17", "-88.8", "-88.8", "-88.8", "+88.8", "+88.8", "8:88", "-", "8:88.8", "8:88", "8:88", "8:88" };
+            Color[] colorArray = new Color[] { this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor };
+            Color[] colorArray2 = new Color[] { this.picturebox1.BackColor, this.picBoxSegBestSegment.BackColor, this.picBoxSegAheadGain.BackColor, this.picBoxSegAheadLoss.BackColor, this.picBoxSegBehindGain.BackColor, this.picBoxSegBehindLoss.BackColor, this.picBoxSegNewTime.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegMissing.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor };
             for (int i = 0; i < 12; i++)
             {
                 Rectangle rectangle8 = new Rectangle(0, y, this.picBoxPreview.Width, this.segHeight);
@@ -2783,4 +2802,3 @@
         }
     }
 }
-

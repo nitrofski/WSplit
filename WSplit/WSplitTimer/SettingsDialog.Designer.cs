@@ -29,25 +29,28 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("General options", 0);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Global hotkeys", 1);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Font settings", 2);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Display settings", 3);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("General options", 0);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Global hotkeys", 1);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Font settings", 2);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Display settings", 3);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Start/Split");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Pause/Resume");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Stop");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Reset");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Previous (Unsplit)");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Next (Skip)");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Switch Comparison Type");
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Toggle Global Hotkeys");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Start/Split");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Pause/Resume");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Stop");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Reset");
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Previous (Unsplit)");
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("Next (Skip)");
+            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("Switch Comparison Type");
+            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("Toggle Global Hotkeys");
             this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.listViewPanelSelector = new System.Windows.Forms.ListView();
             this.imageListPageIcons = new System.Windows.Forms.ImageList(this.components);
             this.panelGeneralOptions = new System.Windows.Forms.Panel();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.trackBarDoubleTap = new System.Windows.Forms.TrackBar();
             this.labelRefreshIntervalDisplay = new System.Windows.Forms.Label();
             this.labelDoubleTapDisplay = new System.Windows.Forms.Label();
             this.checkBoxReloadRun = new System.Windows.Forms.CheckBox();
@@ -57,7 +60,6 @@
             this.labelRefreshInterval = new System.Windows.Forms.Label();
             this.labelDoubleTap = new System.Windows.Forms.Label();
             this.trackBarRefreshInterval = new System.Windows.Forms.TrackBar();
-            this.trackBarDoubleTap = new System.Windows.Forms.TrackBar();
             this.textBoxStartDelay = new System.Windows.Forms.TextBox();
             this.labelStartDelay = new System.Windows.Forms.Label();
             this.panelHotkeys = new System.Windows.Forms.Panel();
@@ -70,6 +72,8 @@
             this.imageListHotkey = new System.Windows.Forms.ImageList(this.components);
             this.checkBoxHotkeysEnabled = new System.Windows.Forms.CheckBox();
             this.panelDisplaySettings = new System.Windows.Forms.Panel();
+            this.labelDetailedWidth = new System.Windows.Forms.Label();
+            this.numericUpDownDetailedWidth = new System.Windows.Forms.NumericUpDown();
             this.buttonBackgroundSetup = new System.Windows.Forms.Button();
             this.groupBoxDisplayMode = new System.Windows.Forms.GroupBox();
             this.radioButtonDisplayDetailed = new System.Windows.Forms.RadioButton();
@@ -81,15 +85,15 @@
             this.numericUpDownWideSegments = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownDetailedSegments = new System.Windows.Forms.NumericUpDown();
             this.checkBoxWideShowLast = new System.Windows.Forms.CheckBox();
+            this.labelIcons = new System.Windows.Forms.Label();
+            this.checkBoxShowTitle = new System.Windows.Forms.CheckBox();
             this.checkBoxDetailedShowLast = new System.Windows.Forms.CheckBox();
             this.checkBoxWideBlanks = new System.Windows.Forms.CheckBox();
             this.checkBoxDetailedBlanks = new System.Windows.Forms.CheckBox();
             this.labelWideMode = new System.Windows.Forms.Label();
             this.labelDetailedMode = new System.Windows.Forms.Label();
             this.comboBoxIcons = new System.Windows.Forms.ComboBox();
-            this.labelIcons = new System.Windows.Forms.Label();
             this.checkBoxShowAttemptCount = new System.Windows.Forms.CheckBox();
-            this.checkBoxShowTitle = new System.Windows.Forms.CheckBox();
             this.labelOpacityDisplay = new System.Windows.Forms.Label();
             this.trackBarOpacity = new System.Windows.Forms.TrackBar();
             this.labelOpacity = new System.Windows.Forms.Label();
@@ -102,13 +106,14 @@
             this.numericUpDownPrimWndMult = new System.Windows.Forms.NumericUpDown();
             this.labelPrimWndMult = new System.Windows.Forms.Label();
             this.labelNote = new System.Windows.Forms.Label();
-            this.numericUpDownDetailedWidth = new System.Windows.Forms.NumericUpDown();
-            this.labelDetailedWidth = new System.Windows.Forms.Label();
+            this.numwv = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.panelGeneralOptions.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarRefreshInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDoubleTap)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarRefreshInterval)).BeginInit();
             this.panelHotkeys.SuspendLayout();
             this.panelDisplaySettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDetailedWidth)).BeginInit();
             this.groupBoxDisplayMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWideSegments)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDetailedSegments)).BeginInit();
@@ -117,7 +122,7 @@
             this.groupBoxDViewFont.SuspendLayout();
             this.groupBoxPrimWndFont.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPrimWndMult)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDetailedWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numwv)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonDefaults
@@ -154,10 +159,10 @@
             // 
             this.listViewPanelSelector.HideSelection = false;
             this.listViewPanelSelector.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8});
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16});
             this.listViewPanelSelector.LargeImageList = this.imageListPageIcons;
             this.listViewPanelSelector.Location = new System.Drawing.Point(12, 12);
             this.listViewPanelSelector.MultiSelect = false;
@@ -180,6 +185,11 @@
             // panelGeneralOptions
             // 
             this.panelGeneralOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelGeneralOptions.Controls.Add(this.label1);
+            this.panelGeneralOptions.Controls.Add(this.numwv);
+            this.panelGeneralOptions.Controls.Add(this.checkBox2);
+            this.panelGeneralOptions.Controls.Add(this.checkBox1);
+            this.panelGeneralOptions.Controls.Add(this.trackBarDoubleTap);
             this.panelGeneralOptions.Controls.Add(this.labelRefreshIntervalDisplay);
             this.panelGeneralOptions.Controls.Add(this.labelDoubleTapDisplay);
             this.panelGeneralOptions.Controls.Add(this.checkBoxReloadRun);
@@ -189,7 +199,6 @@
             this.panelGeneralOptions.Controls.Add(this.labelRefreshInterval);
             this.panelGeneralOptions.Controls.Add(this.labelDoubleTap);
             this.panelGeneralOptions.Controls.Add(this.trackBarRefreshInterval);
-            this.panelGeneralOptions.Controls.Add(this.trackBarDoubleTap);
             this.panelGeneralOptions.Controls.Add(this.textBoxStartDelay);
             this.panelGeneralOptions.Controls.Add(this.labelStartDelay);
             this.panelGeneralOptions.Location = new System.Drawing.Point(84, 12);
@@ -197,6 +206,38 @@
             this.panelGeneralOptions.Padding = new System.Windows.Forms.Padding(3);
             this.panelGeneralOptions.Size = new System.Drawing.Size(256, 302);
             this.panelGeneralOptions.TabIndex = 3;
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(118, 246);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(101, 17);
+            this.checkBox2.TabIndex = 9;
+            this.checkBox2.Text = "Show split times";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(6, 246);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(94, 17);
+            this.checkBox1.TabIndex = 8;
+            this.checkBox1.Text = "Rainbow splits";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // trackBarDoubleTap
+            // 
+            this.trackBarDoubleTap.LargeChange = 2;
+            this.trackBarDoubleTap.Location = new System.Drawing.Point(6, 45);
+            this.trackBarDoubleTap.Maximum = 100;
+            this.trackBarDoubleTap.Name = "trackBarDoubleTap";
+            this.trackBarDoubleTap.Size = new System.Drawing.Size(242, 45);
+            this.trackBarDoubleTap.TabIndex = 2;
+            this.trackBarDoubleTap.TickFrequency = 4;
+            this.trackBarDoubleTap.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.trackBarDoubleTap.ValueChanged += new System.EventHandler(this.trackBarDoubleTap_ValueChanged);
             // 
             // labelRefreshIntervalDisplay
             // 
@@ -290,18 +331,6 @@
             this.trackBarRefreshInterval.Value = 10;
             this.trackBarRefreshInterval.ValueChanged += new System.EventHandler(this.trackBarRefreshInterval_ValueChanged);
             // 
-            // trackBarDoubleTap
-            // 
-            this.trackBarDoubleTap.LargeChange = 2;
-            this.trackBarDoubleTap.Location = new System.Drawing.Point(6, 45);
-            this.trackBarDoubleTap.Maximum = 100;
-            this.trackBarDoubleTap.Name = "trackBarDoubleTap";
-            this.trackBarDoubleTap.Size = new System.Drawing.Size(242, 45);
-            this.trackBarDoubleTap.TabIndex = 2;
-            this.trackBarDoubleTap.TickFrequency = 4;
-            this.trackBarDoubleTap.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBarDoubleTap.ValueChanged += new System.EventHandler(this.trackBarDoubleTap_ValueChanged);
-            // 
             // textBoxStartDelay
             // 
             this.textBoxStartDelay.Location = new System.Drawing.Point(72, 6);
@@ -377,14 +406,14 @@
             this.listViewHotkeys.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotkeys.HideSelection = false;
             this.listViewHotkeys.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem9,
-            listViewItem10,
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem17,
+            listViewItem18,
+            listViewItem19,
+            listViewItem20});
             this.listViewHotkeys.Location = new System.Drawing.Point(6, 29);
             this.listViewHotkeys.MultiSelect = false;
             this.listViewHotkeys.Name = "listViewHotkeys";
@@ -452,6 +481,37 @@
             this.panelDisplaySettings.Padding = new System.Windows.Forms.Padding(3);
             this.panelDisplaySettings.Size = new System.Drawing.Size(256, 302);
             this.panelDisplaySettings.TabIndex = 3;
+            // 
+            // labelDetailedWidth
+            // 
+            this.labelDetailedWidth.AutoSize = true;
+            this.labelDetailedWidth.Location = new System.Drawing.Point(6, 99);
+            this.labelDetailedWidth.Name = "labelDetailedWidth";
+            this.labelDetailedWidth.Size = new System.Drawing.Size(106, 13);
+            this.labelDetailedWidth.TabIndex = 14;
+            this.labelDetailedWidth.Text = "Detailed clock width:";
+            // 
+            // numericUpDownDetailedWidth
+            // 
+            this.numericUpDownDetailedWidth.Location = new System.Drawing.Point(118, 97);
+            this.numericUpDownDetailedWidth.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.numericUpDownDetailedWidth.Minimum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.numericUpDownDetailedWidth.Name = "numericUpDownDetailedWidth";
+            this.numericUpDownDetailedWidth.Size = new System.Drawing.Size(130, 20);
+            this.numericUpDownDetailedWidth.TabIndex = 13;
+            this.numericUpDownDetailedWidth.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
             // 
             // buttonBackgroundSetup
             // 
@@ -591,6 +651,24 @@
             this.checkBoxWideShowLast.Text = "Always show last";
             this.checkBoxWideShowLast.UseVisualStyleBackColor = true;
             // 
+            // labelIcons
+            // 
+            this.labelIcons.Location = new System.Drawing.Point(180, 53);
+            this.labelIcons.Name = "labelIcons";
+            this.labelIcons.Size = new System.Drawing.Size(68, 16);
+            this.labelIcons.TabIndex = 5;
+            this.labelIcons.Text = "Icons:";
+            // 
+            // checkBoxShowTitle
+            // 
+            this.checkBoxShowTitle.AutoSize = true;
+            this.checkBoxShowTitle.Location = new System.Drawing.Point(6, 52);
+            this.checkBoxShowTitle.Name = "checkBoxShowTitle";
+            this.checkBoxShowTitle.Size = new System.Drawing.Size(90, 17);
+            this.checkBoxShowTitle.TabIndex = 3;
+            this.checkBoxShowTitle.Text = "Show run title";
+            this.checkBoxShowTitle.UseVisualStyleBackColor = true;
+            // 
             // checkBoxDetailedShowLast
             // 
             this.checkBoxDetailedShowLast.AutoSize = true;
@@ -653,14 +731,6 @@
             this.comboBoxIcons.Size = new System.Drawing.Size(68, 21);
             this.comboBoxIcons.TabIndex = 6;
             // 
-            // labelIcons
-            // 
-            this.labelIcons.Location = new System.Drawing.Point(180, 53);
-            this.labelIcons.Name = "labelIcons";
-            this.labelIcons.Size = new System.Drawing.Size(68, 16);
-            this.labelIcons.TabIndex = 5;
-            this.labelIcons.Text = "Icons:";
-            // 
             // checkBoxShowAttemptCount
             // 
             this.checkBoxShowAttemptCount.AutoSize = true;
@@ -670,16 +740,6 @@
             this.checkBoxShowAttemptCount.TabIndex = 4;
             this.checkBoxShowAttemptCount.Text = "Show attempt count";
             this.checkBoxShowAttemptCount.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxShowTitle
-            // 
-            this.checkBoxShowTitle.AutoSize = true;
-            this.checkBoxShowTitle.Location = new System.Drawing.Point(6, 52);
-            this.checkBoxShowTitle.Name = "checkBoxShowTitle";
-            this.checkBoxShowTitle.Size = new System.Drawing.Size(90, 17);
-            this.checkBoxShowTitle.TabIndex = 3;
-            this.checkBoxShowTitle.Text = "Show run title";
-            this.checkBoxShowTitle.UseVisualStyleBackColor = true;
             // 
             // labelOpacityDisplay
             // 
@@ -819,48 +879,43 @@
             this.labelNote.TabIndex = 1;
             this.labelNote.Text = resources.GetString("labelNote.Text");
             // 
-            // numericUpDownDetailedWidth
+            // numwv
             // 
-            this.numericUpDownDetailedWidth.Location = new System.Drawing.Point(118, 97);
-            this.numericUpDownDetailedWidth.Maximum = new decimal(new int[] {
-            -1,
-            -1,
-            -1,
-            0});
-            this.numericUpDownDetailedWidth.Minimum = new decimal(new int[] {
-            120,
+            this.numwv.Location = new System.Drawing.Point(118, 269);
+            this.numwv.Minimum = new decimal(new int[] {
+            24,
             0,
             0,
             0});
-            this.numericUpDownDetailedWidth.Name = "numericUpDownDetailedWidth";
-            this.numericUpDownDetailedWidth.Size = new System.Drawing.Size(130, 20);
-            this.numericUpDownDetailedWidth.TabIndex = 13;
-            this.numericUpDownDetailedWidth.Value = new decimal(new int[] {
-            120,
+            this.numwv.Name = "numwv";
+            this.numwv.Size = new System.Drawing.Size(124, 20);
+            this.numwv.TabIndex = 10;
+            this.numwv.Value = new decimal(new int[] {
+            36,
             0,
             0,
             0});
             // 
-            // labelDetailedWidth
+            // label1
             // 
-            this.labelDetailedWidth.AutoSize = true;
-            this.labelDetailedWidth.Location = new System.Drawing.Point(6, 99);
-            this.labelDetailedWidth.Name = "labelDetailedWidth";
-            this.labelDetailedWidth.Size = new System.Drawing.Size(106, 13);
-            this.labelDetailedWidth.TabIndex = 14;
-            this.labelDetailedWidth.Text = "Detailed clock width:";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 271);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(92, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Wide view height:";
             // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(352, 355);
+            this.Controls.Add(this.panelGeneralOptions);
             this.Controls.Add(this.listViewPanelSelector);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
             this.Controls.Add(this.buttonDefaults);
             this.Controls.Add(this.panelDisplaySettings);
-            this.Controls.Add(this.panelGeneralOptions);
             this.Controls.Add(this.panelHotkeys);
             this.Controls.Add(this.panelFontSettings);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -871,12 +926,13 @@
             this.Text = "Settings...";
             this.panelGeneralOptions.ResumeLayout(false);
             this.panelGeneralOptions.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarRefreshInterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDoubleTap)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarRefreshInterval)).EndInit();
             this.panelHotkeys.ResumeLayout(false);
             this.panelHotkeys.PerformLayout();
             this.panelDisplaySettings.ResumeLayout(false);
             this.panelDisplaySettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDetailedWidth)).EndInit();
             this.groupBoxDisplayMode.ResumeLayout(false);
             this.groupBoxDisplayMode.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWideSegments)).EndInit();
@@ -887,7 +943,7 @@
             this.groupBoxPrimWndFont.ResumeLayout(false);
             this.groupBoxPrimWndFont.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPrimWndMult)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDetailedWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numwv)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -956,6 +1012,10 @@
         private System.Windows.Forms.Button buttonBackgroundSetup;
         private System.Windows.Forms.NumericUpDown numericUpDownDetailedWidth;
         private System.Windows.Forms.Label labelDetailedWidth;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numwv;
 
     }
 }

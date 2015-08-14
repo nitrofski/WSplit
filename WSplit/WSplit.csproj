@@ -149,6 +149,9 @@
     <EmbeddedResource Include="WSplitTimer\BackgroundImageDialog.resx">
       <DependentUpon>BackgroundImageDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WSplitTimer\CustomizeColors.resx">
+      <DependentUpon>CustomizeColors.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WSplitTimer\DViewSetColumnsDialog.resx">
       <DependentUpon>DViewSetColumnsDialog.cs</DependentUpon>
     </EmbeddedResource>

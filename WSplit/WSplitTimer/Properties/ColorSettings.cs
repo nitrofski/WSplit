@@ -500,6 +500,20 @@
             set { this["SegNewTime"] = value; }
         }
 
+        [DefaultSettingValue("White"), UserScopedSetting, DebuggerNonUserCode]
+        public Color SegPastTime
+        {
+            get { return (Color)this["SegPastTime"]; }
+            set { this["SegPastTime"] = value; }
+        }
+
+        [DefaultSettingValue("White"), UserScopedSetting, DebuggerNonUserCode]
+        public Color SegRainbow
+        {
+            get { return (Color)this["SegRainbow"]; }
+            set { this["SegRainbow"] = value; }
+        }
+
         [DefaultSettingValue("28, 32, 28"), DebuggerNonUserCode, UserScopedSetting]
         public Color StatusBack
         {

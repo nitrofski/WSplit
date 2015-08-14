@@ -174,6 +174,83 @@
             set { this["LoadMostRecent"] = value; }
         }
 
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool RainbowSplits
+        {
+            get { return (bool)this["RainbowSplits"]; }
+            set { this["RainbowSplits"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool SplitTimes
+        {
+            get { return (bool)this["SplitTimes"]; }
+            set { this["SplitTimes"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("True"), UserScopedSetting]
+        public bool ShowPrevSeg
+        {
+            get { return (bool)this["ShowPrevSeg"]; }
+            set { this["ShowPrevSeg"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool ShowTimeSave
+        {
+            get { return (bool)this["ShowTimeSave"]; }
+            set { this["ShowTimeSave"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool ShowSoB
+        {
+            get { return (bool)this["ShowSoB"]; }
+            set { this["ShowSoB"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool PredPB
+        {
+            get { return (bool)this["PredPB"]; }
+            set { this["PredPB"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("False"), UserScopedSetting]
+        public bool PredBest
+        {
+            get { return (bool)this["PredBest"]; }
+            set { this["PredBest"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("True"), UserScopedSetting]
+        public bool HGrad
+        {
+            get { return (bool)this["HGrad"]; }
+            set { this["HGrad"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("36"), UserScopedSetting]
+        public int WideHeight
+        {
+            get { return (int)this["WideHeight"]; }
+            set { this["WideHeight"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue("0"), UserScopedSetting]
+        public int Width
+        {
+            get { return (int)this["Width"]; }
+            set { this["Width"] = value; }
+        }
+
+        [DebuggerNonUserCode, DefaultSettingValue(""), UserScopedSetting]
+        public string last
+        {
+            get { return (string)this["last"]; }
+            set { this["last"] = value; }
+        }
+
         [DefaultSettingValue("False"), DebuggerNonUserCode, UserScopedSetting]
         public bool OnTop
         {
