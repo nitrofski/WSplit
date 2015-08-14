@@ -11,6 +11,7 @@
     using System.Windows.Forms;
     using Properties;
     using System.Text;
+    using System.Globalization;
 
     public class RunEditorDialog : Form
     {
@@ -27,6 +28,7 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private Label lblGoal;
         private Button offsetButton;
         private DataGridViewTextBoxColumn old;
         private TextBox oldOffset;
@@ -36,19 +38,24 @@
         private Button saveButton;
         private DataGridViewTextBoxColumn segment;
         public TextBox titleBox;
+        public TextBox txtGoal;
 
         private Button buttonAutoFillBests;
         private Button buttonImport;
         private ContextMenuStrip contextMenuImport;
         private ToolStripMenuItem menuItemImportLlanfair;
         private ToolStripMenuItem menuItemImportSplitterZ;
+        private ToolStripMenuItem menuItemImportLiveSplit;
 
         private OpenFileDialog openFileDialog;
+        private LiveSplitXMLReader xmlReader;
 
         private int windowHeight;
+        public int startDelay; //Temporary until I refactor the whole application...
 
         public RunEditorDialog(Split splits)
         {
+            this.xmlReader = new LiveSplitXMLReader();
             this.InitializeComponent();
             this.cellHeight = this.runView.RowTemplate.Height;
             this.windowHeight = (base.Height - (this.runView.Height - this.cellHeight)) - 2;
@@ -116,6 +123,8 @@
             this.label1 = new Label();
             this.offsetButton = new Button();
             this.titleBox = new TextBox();
+            this.txtGoal = new TextBox();
+            this.lblGoal = new Label();
             this.label2 = new Label();
             this.insertButton = new Button();
             this.openIconDialog = new OpenFileDialog();
@@ -126,6 +135,7 @@
             this.contextMenuImport = new ContextMenuStrip();
             this.menuItemImportLlanfair = new ToolStripMenuItem();
             this.menuItemImportSplitterZ = new ToolStripMenuItem();
+            this.menuItemImportLiveSplit = new ToolStripMenuItem();
             this.openFileDialog = new OpenFileDialog();
 
             ((ISupportInitialize)this.runView).BeginInit();
@@ -234,6 +244,7 @@
 
             this.contextMenuImport.Items.Add(this.menuItemImportLlanfair);
             this.contextMenuImport.Items.Add(this.menuItemImportSplitterZ);
+            this.contextMenuImport.Items.Add(this.menuItemImportLiveSplit);
             this.contextMenuImport.Name = "contextMenuImport";
 
             //this.menuItemImportLlanfair.Enabled = false;
@@ -241,10 +252,15 @@
             this.menuItemImportLlanfair.Text = "Import from Llanfair";
             this.menuItemImportLlanfair.Click += this.menuItemImportLlanfair_Click;
 
-            this.menuItemImportSplitterZ.Enabled = false;
+            //this.menuItemImportSplitterZ.Enabled = false;
             this.menuItemImportSplitterZ.Name = "menuItemImportSplitterZ";
             this.menuItemImportSplitterZ.Text = "Import from SplitterZ";
             this.menuItemImportSplitterZ.Click += this.menuItemImportSplitterZ_Click;
+
+            this.menuItemImportLiveSplit.Name = "menuItemImportLiveSplit";
+            this.menuItemImportLiveSplit.Text = "Import from LiveSplit";
+            this.menuItemImportLiveSplit.Click += this.menuItemImportLiveSplit_Click;
+
 
             this.oldOffset.Anchor = AnchorStyles.Right | AnchorStyles.Top;
             this.oldOffset.Location = new Point(230, 0x1f);
@@ -275,21 +291,33 @@
             this.titleBox.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
             this.titleBox.Location = new Point(12, 0x1f);
             this.titleBox.Name = "titleBox";
-            this.titleBox.Size = new Size(0xd4, 20);
+            this.titleBox.Size = new Size(0x6a, 20);
             this.titleBox.TabIndex = 8;
+
+            this.txtGoal.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
+            this.txtGoal.Location = new Point(titleBox.Right + 6, 0x1f);
+            this.txtGoal.Name = "txtGoal";
+            this.txtGoal.Size = new Size(0x64, 20);
+            this.txtGoal.TabIndex = 9;
 
             this.label2.AutoSize = true;
             this.label2.Location = new Point(12, 15);
             this.label2.Name = "label2";
             this.label2.Size = new Size(0x31, 13);
-            this.label2.TabIndex = 9;
+            this.label2.TabIndex = 10;
             this.label2.Text = "Run title:";
+
+            this.lblGoal.AutoSize = true;
+            this.lblGoal.Location = new Point(txtGoal.Left, 15);
+            this.lblGoal.Name = "lblGoal";
+            this.lblGoal.Size = new Size(0x31, 13);
+            this.lblGoal.Text = "Goal:";
 
             this.insertButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
             this.insertButton.Location = new Point(12, 136);
             this.insertButton.Name = "insertButton";
             this.insertButton.Size = new Size(50, 0x17);
-            this.insertButton.TabIndex = 10;
+            this.insertButton.TabIndex = 11;
             this.insertButton.Text = "Insert";
             this.insertButton.UseVisualStyleBackColor = true;
             this.insertButton.Click += new EventHandler(this.insertButton_Click);
@@ -323,6 +351,8 @@
             base.Controls.Add(this.insertButton);
             base.Controls.Add(this.label2);
             base.Controls.Add(this.titleBox);
+            base.Controls.Add(this.txtGoal);
+            base.Controls.Add(this.lblGoal);
             base.Controls.Add(this.offsetButton);
             base.Controls.Add(this.label1);
             base.Controls.Add(this.oldOffset);
@@ -347,7 +377,43 @@
         private void menuItemImportSplitterZ_Click(object sender, EventArgs e)
         {
             // Imports a file from a SplitterZ run file
-            this.openFileDialog.ShowDialog(this);
+            if (this.openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                try
+                {
+                    using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
+                    {
+                        var reader = new StreamReader(stream);
+
+                        var newLine = reader.ReadLine();
+                        var title = newLine.Split(',');
+                        titleBox.Text = title[0].Replace(@"‡", @",");
+
+                        List<Segment> segmentList = new List<Segment>();
+
+                        while ((newLine = reader.ReadLine()) != null)
+                        {
+                            var segmentInfo = newLine.Split(',');
+                            var name = segmentInfo[0].Replace(@"‡", @",");
+                            double splitTime = timeParse(segmentInfo[1]);
+                            double bestSegment = timeParse(segmentInfo[2]);
+
+                            var newSegment = new Segment(name, 0.0, splitTime, bestSegment);
+                            if (segmentInfo.Length > 3)
+                            {
+                                newSegment.IconPath = segmentInfo[3].Replace(@"‡", @",");
+                                newSegment.Icon = Image.FromFile(newSegment.IconPath);
+                            }
+                            segmentList.Add(newSegment);
+                        }
+                        populateList(segmentList);
+                    }
+                }
+                catch (Exception)
+                {
+                    // An error has occured...
+                }
+            }
         }
 
         private void menuItemImportLlanfair_Click(object sender, EventArgs e)
@@ -386,7 +452,7 @@
                         stream.Read(buffer, 0, 4);
 
                         Int32 segmentListCount = BitConverter.ToInt32(this.toConverterEndianness(buffer, 0, 4), 0);
-                        
+
                         // The object header changes if there is no instance of one of the object used by the Run class.
                         // The 2 objects that can be affected are the Time object and the ImageIcon object.
                         // The next step of the import algorythm is to check for their presence.
@@ -491,17 +557,42 @@
                         // The only remaining thing in the file should be the window height and width for Llanfair usage.
                         // We don't need to extract it.
 
-                        if (strGoal == "")
-                            ;
                         
+
                         this.populateList(segmentList);
                         this.titleBox.Text = strTitle;
+                        this.txtGoal.Text = strGoal;
                     }
                 }
                 catch (Exception)
                 {
                     // An error has occured...
                 }
+            }
+        }
+
+        private void menuItemImportLiveSplit_Click(object sender, EventArgs e)
+        {
+            Split split = null;
+            if (this.openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                using (FileStream stream = File.OpenRead(this.openFileDialog.FileName))
+                {
+                    this.xmlReader = new LiveSplitXMLReader();
+                    split = this.xmlReader.ReadSplit(this.openFileDialog.FileName);
+                }
+            }
+            if (split != null)
+            {
+                this.titleBox.Text = split.RunTitle;
+                this.txtGoal.Text = split.RunGoal;
+                this.attemptsBox.Text = split.AttemptsCount.ToString();
+                this.populateList(split.segments);
+                this.startDelay = split.StartDelay;
+            }
+            else
+            {
+                MessageBox.Show("The import from livesplit has failed.");
             }
         }
 

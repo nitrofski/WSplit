@@ -107,6 +107,8 @@
     <Compile Include="WSplitTimer\StartAtDialog.Designer.cs">
       <DependentUpon>StartAtDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="WSplitUtil.cs" />
+    <Compile Include="LiveSplitXMLReader.cs" />
     <Compile Include="_IMAGE_FILE_HEADER.cs" />
     <Compile Include="WSplitTimer\WSplit.cs">
       <SubType>Form</SubType>
@@ -158,6 +160,9 @@
     <EmbeddedResource Include="WSplitTimer\Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSplitTimer\RunEditor.resx">
+      <DependentUpon>RunEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WSplitTimer\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>

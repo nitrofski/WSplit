@@ -3,11 +3,53 @@ using System.Collections.Generic;
 
 public class Split
 {
+    private String runTitle;
+    private String runGoal;
+    private int attemptsCount;
+    private int startDelay;
     public CompareType CompType;
     private int liveIndex;
     public bool NewBestTime;
     private bool oldFaster;
     public List<Segment> segments = new List<Segment>();
+    private String runFile;
+    private bool unsavedSplits;
+
+    public String RunTitle
+    {
+        set { this.runTitle = value; }
+        get { return this.runTitle; }
+    }
+
+    public String RunGoal
+    {
+        set { this.runGoal = value; }
+        get { return this.runGoal; }
+    }
+
+    public int AttemptsCount
+    {
+        set { this.attemptsCount = value; }
+        get { return this.attemptsCount; }
+    }
+
+    public int StartDelay
+    {
+        set { this.startDelay = value; }
+        get { return this.startDelay; }
+    }
+
+    public String RunFile
+    {
+        set { this.runFile = value; }
+        get { return this.runFile; }
+    }
+
+    public Boolean UnsavedSplit
+    {
+        set { this.unsavedSplits = value; }
+        get { return this.unsavedSplits; }
+    }
 
     public void Add(Segment s)
     {
