@@ -72,6 +72,17 @@ namespace WSplitTimer
         private ToolStripMenuItem bestAsOverallButton;
         private ToolStripMenuItem bestAsSplitsButton;
 
+        private ToolStripMenuItem layoutMenu;
+        private ToolStripMenuItem prevsegButton;
+        private ToolStripMenuItem timesaveButton;
+        private ToolStripMenuItem sobButton;
+        private ToolStripMenuItem predpbButton;
+        private ToolStripMenuItem predbestButton;
+
+        private ToolStripMenuItem gradientMenu;
+        private ToolStripMenuItem horiButton;
+        private ToolStripMenuItem vertButton;
+
         private ToolStripSeparator toolStripSeparator6;
 
         private ToolStripMenuItem aboutButton;
@@ -139,6 +150,18 @@ namespace WSplitTimer
         // Painter object take values from the WSplit members.
         private Painter painter;
 
+        //test
+        private int r = 255;
+        private int g = 127;
+        private int b = 255;
+        private bool rg = false;
+        private bool gg = false;
+        private bool gb = false;
+        private bool bb = false;
+        private bool br = false;
+        private bool rr = true;
+
+
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(byte[] pbFont, int cbFont, IntPtr pdv, out uint pcFonts);
@@ -189,10 +212,10 @@ namespace WSplitTimer
             if (this.timer.useFallback)
                 str3 = " [Using Fallback]";
 
-            MessageBoxEx.Show(this, str + Environment.NewLine +
-                            "by Wodanaz@SDA untill 1.4.4" + Environment.NewLine +
+            MessageBoxEx.Show("WSplit, the superior timer (" + str + ")" + Environment.NewLine +
+                            "by Wodanaz@SDA until 1.4.4" + Environment.NewLine +
                             "further developed by Nitrofski (twitch.tv/Nitrofski)" + Environment.NewLine +
-                            Environment.NewLine +
+                            "probably broken by DeathBasket" + Environment.NewLine + Environment.NewLine +
                             "Compiled: " + buildDateTime.ToString() +
                             Environment.NewLine +
                             Environment.NewLine +
@@ -459,6 +482,7 @@ namespace WSplitTimer
 
         private void displayDetail()
         {
+            int hh = 0;
             this.segHeight = Math.Max(14, (Settings.Profile.SegmentIcons + 1) * 8);
             this.clockMinimumSize = this.clockMinimumSizeAbsolute;
             if (this.currentDispMode != DisplayMode.Detailed)
@@ -482,7 +506,14 @@ namespace WSplitTimer
             {
                 height += 0x12;
             }
-            this.clockRect.Location = new Point(0, (height - this.clockRect.Height) - 0x12);
+            /* component stuff here */
+            if (Settings.Profile.ShowPrevSeg) { hh += 18; };
+            if (Settings.Profile.ShowTimeSave) { hh += 18; };
+            if (Settings.Profile.ShowSoB) { hh += 18; };
+            if (Settings.Profile.PredPB) { hh += 18; };
+            if (Settings.Profile.PredBest) { hh += 18; };
+            height += hh - 18;
+            this.clockRect.Location = new Point(0, (height - this.clockRect.Height) - hh);
             this.currentDispMode = DisplayMode.Detailed;
             base.Size = new Size(this.clockRect.Width, height);
         }
@@ -540,7 +571,7 @@ namespace WSplitTimer
             }
             else
             {
-                this.clockMinimumSize.Height = 26;
+                this.clockMinimumSize.Height = Settings.Profile.WideHeight; // make this changeable //
             }
             this.clockRect.Location = new Point(0, 0);
             if (((this.currentDispMode != DisplayMode.Wide) || (this.clockRect.Height != this.clockMinimumSize.Height)) || (this.clockRect.Width < this.clockMinimumSize.Width))
@@ -597,14 +628,14 @@ namespace WSplitTimer
 
         private void flashClock()
         {
-            if (this.flashDelay == null)
+            /* if (this.flashDelay == null)
             {
                 this.flashDelay = new Timer();
                 this.flashDelay.Tick += new EventHandler(this.unflashClock);
                 this.flashDelay.Interval = 750;
                 this.flashDelay.Enabled = true;
                 base.Invalidate();
-            }
+            } */
         }
 
         private static DateTime GetBuildDateTime(Assembly assembly)
@@ -705,11 +736,20 @@ namespace WSplitTimer
             this.openFileDialog = new OpenFileDialog();
             this.saveFileDialog = new SaveFileDialog();
             this.menuItemStartAt = new ToolStripMenuItem();
+            this.layoutMenu = new ToolStripMenuItem();
+            this.prevsegButton = new ToolStripMenuItem();
+            this.timesaveButton = new ToolStripMenuItem();
+            this.sobButton = new ToolStripMenuItem();
+            this.predpbButton = new ToolStripMenuItem();
+            this.predbestButton = new ToolStripMenuItem();
+            this.gradientMenu = new ToolStripMenuItem();
+            this.horiButton = new ToolStripMenuItem();
+            this.vertButton = new ToolStripMenuItem();
 
             this.timerMenu.SuspendLayout();
             base.SuspendLayout();
             this.timerMenu.Items.AddRange(new ToolStripItem[] { 
-                this.newButton, this.openButton, this.openRecent, this.saveButton, this.saveAsButton, this.reloadButton, this.closeButton, this.toolStripSeparator2, this.menuItemStartAt, this.resetButton, this.stopButton, this.newOldButton, this.toolStripSeparator1, this.menuItemSettings, this.displaySettingsMenu, this.compareMenu, this.trackBestMenu, 
+                this.newButton, this.openButton, this.openRecent, this.saveButton, this.saveAsButton, this.reloadButton, this.closeButton, this.toolStripSeparator2, this.menuItemStartAt, this.resetButton, this.stopButton, this.newOldButton, this.toolStripSeparator1, this.menuItemSettings, this.displaySettingsMenu, this.compareMenu, this.trackBestMenu, this.layoutMenu, this.gradientMenu,
                 this.toolStripSeparator4, this.aboutButton, this.exitButton
              });
             this.timerMenu.Name = "timerMenu";
@@ -884,6 +924,46 @@ namespace WSplitTimer
             this.bestAsSplitsButton.Size = new Size(0xb1, 0x16);
             this.bestAsSplitsButton.Text = "Fastest to each split";
             this.bestAsSplitsButton.Click += new EventHandler(this.bestAsSplitsButton_Click);
+            // layout
+            this.layoutMenu.DropDownItems.AddRange(new ToolStripItem[] { this.prevsegButton, this.timesaveButton, this.sobButton, this.predpbButton, this.predbestButton });
+            this.layoutMenu.Name = "layoutMenu";
+            this.layoutMenu.Size = new Size(0xad, 0x16);
+            this.layoutMenu.Text = "Layout (detailed only)...";
+            this.prevsegButton.Name = "prevsegButton";
+            this.prevsegButton.Size = new Size(0xb1, 0x16);
+            this.prevsegButton.Text = "Previous Segment";
+            this.prevsegButton.Click += new EventHandler(this.prevsegButton_Click);
+            //this.prevsegButton.Enabled = false;
+            this.timesaveButton.Name = "timesaveButton";
+            this.timesaveButton.Size = new Size(0xb1, 0x16);
+            this.timesaveButton.Text = "Possible Time Save";
+            this.timesaveButton.Click += new EventHandler(this.timesaveButton_Click);
+            this.sobButton.Name = "sobButton";
+            this.sobButton.Size = new Size(0xb1, 0x16);
+            this.sobButton.Text = "Sum of Best Segments";
+            this.sobButton.Click += new EventHandler(this.sobButton_Click);
+            this.predpbButton.Name = "predpbButton";
+            this.predpbButton.Size = new Size(0xb1, 0x16);
+            this.predpbButton.Text = "Predicted Time (PB)";
+            this.predpbButton.Click += new EventHandler(this.predpbButton_Click);
+            this.predbestButton.Name = "predbestButton";
+            this.predbestButton.Size = new Size(0xb1, 0x16);
+            this.predbestButton.Text = "Predicted Time (Best)";
+            this.predbestButton.Click += new EventHandler(this.predbestButton_Click);
+            // ye
+            this.gradientMenu.DropDownItems.AddRange(new ToolStripItem[] { this.horiButton, this.vertButton });
+            this.gradientMenu.Name = "gradientMenu";
+            this.gradientMenu.Size = new Size(0xad, 0x16);
+            this.gradientMenu.Text = "Gradients...";
+            this.horiButton.Name = "horiButton";
+            this.horiButton.Size = new Size(0xb1, 0x16);
+            this.horiButton.Text = "Horizontal";
+            this.horiButton.Click += new EventHandler(horiButton_Click);
+            this.vertButton.Name = "vertButton";
+            this.vertButton.Size = new Size(0xb1, 0x16);
+            this.vertButton.Text = "Vertical";
+            this.vertButton.Click += new EventHandler(vertButton_Click);
+            // more
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new Size(170, 6);
             this.aboutButton.Name = "aboutButton";
@@ -912,6 +992,28 @@ namespace WSplitTimer
             this.timerMenu.ResumeLayout(false);
             base.ResumeLayout(false);
             base.Icon = Resources.AppIcon;
+        }
+
+        void vertButton_Click(object sender, EventArgs e)
+        {
+            if (!this.vertButton.Checked)
+            {
+                this.vertButton.Checked = true;
+                Settings.Profile.HGrad = false;
+                this.horiButton.Checked = false;
+                this.updateDetailed();
+            };
+        }
+
+        void horiButton_Click(object sender, EventArgs e)
+        {
+            if (!this.horiButton.Checked)
+            {
+                this.horiButton.Checked = true;
+                Settings.Profile.HGrad = true;
+                this.vertButton.Checked = false;
+                this.updateDetailed();
+            }
         }
 
         private void Initialize()
@@ -976,6 +1078,15 @@ namespace WSplitTimer
             this.digitalClockButton.Checked = Settings.Profile.DigitalClock;
             this.showAttemptCount.Checked = Settings.Profile.ShowAttempts;
             this.showRunGoalMenuItem.Checked = Settings.Profile.ShowGoal;
+
+            this.prevsegButton.Checked = Settings.Profile.ShowPrevSeg;
+            this.timesaveButton.Checked = Settings.Profile.ShowTimeSave;
+            this.sobButton.Checked = Settings.Profile.ShowSoB;
+            this.predpbButton.Checked = Settings.Profile.PredPB;
+            this.predbestButton.Checked = Settings.Profile.PredBest;
+
+            this.horiButton.Checked = Settings.Profile.HGrad;
+            this.vertButton.Checked = !Settings.Profile.HGrad;
 
             if (Settings.Profile.BestAsOverall)
                 this.bestAsOverallButton.Checked = true;
@@ -1295,7 +1406,6 @@ namespace WSplitTimer
                 titleBox = { Text = this.split.RunTitle },
                 attemptsBox = { Text = this.split.AttemptsCount.ToString() },
                 txtGoal = { Text = this.split.RunGoal }
-                
             };
             base.TopMost = false;
             this.dview.TopMost = false;
@@ -1426,6 +1536,41 @@ namespace WSplitTimer
             this.plainBg.Checked = Settings.Profile.BackgroundPlain;
             this.painter.RequestBackgroundRedraw();
             base.Invalidate();
+        }
+
+        private void prevsegButton_Click(object sender, EventArgs e)
+        {
+            this.prevsegButton.Checked = !Settings.Profile.ShowPrevSeg;
+            Settings.Profile.ShowPrevSeg = !Settings.Profile.ShowPrevSeg;
+            if (this.currentDispMode == DisplayMode.Detailed) { this.displayDetail(); };
+        }
+
+        private void timesaveButton_Click(object sender, EventArgs e)
+        {
+            this.timesaveButton.Checked = !Settings.Profile.ShowTimeSave;
+            Settings.Profile.ShowTimeSave = !Settings.Profile.ShowTimeSave;
+            if (this.currentDispMode == DisplayMode.Detailed) { this.displayDetail(); };
+        }
+
+        private void sobButton_Click(object sender, EventArgs e)
+        {
+            this.sobButton.Checked = !Settings.Profile.ShowSoB;
+            Settings.Profile.ShowSoB = !Settings.Profile.ShowSoB;
+            if (this.currentDispMode == DisplayMode.Detailed) { this.displayDetail(); };
+        }
+
+        private void predpbButton_Click(object sender, EventArgs e)
+        {
+            this.predpbButton.Checked = !Settings.Profile.PredPB;
+            Settings.Profile.PredPB = !Settings.Profile.PredPB;
+            if (this.currentDispMode == DisplayMode.Detailed) { this.displayDetail(); };
+        }
+
+        private void predbestButton_Click(object sender, EventArgs e)
+        {
+            this.predbestButton.Checked = !Settings.Profile.PredBest;
+            Settings.Profile.PredBest = !Settings.Profile.PredBest;
+            if (this.currentDispMode == DisplayMode.Detailed) { this.displayDetail(); };
         }
 
         public void populateDetailed()
@@ -1748,6 +1893,11 @@ namespace WSplitTimer
 
         private void startTimer(long startingTicks = 0, bool useDelay = true)
         {
+            if (this.split.Count > 0)
+            {
+                Settings.Profile.Width = this.split.segments[this.split.LastIndex].TimeWidth;
+                Settings.Profile.last = this.split.segments[this.split.LastIndex].TimeString;
+            };
             if (this.startDelay == null)
             {
                 if (useDelay && this.split.StartDelay > 0)
@@ -1783,6 +1933,19 @@ namespace WSplitTimer
             {
                 base.Invalidate();
             }
+            if (Settings.Profile.RainbowSplits)
+            {
+                ColorSettings.Profile.SegRainbow = Color.FromArgb(255, r, g, b);
+                //colour stuff
+                if (rr) { b -= 4; g += 4; };
+                if (gg) { r -= 4; b += 4; };
+                if (bb) { g -= 4; r += 4; };
+                if ((rr) && (b == 127)) { gg = true; rr = false; };
+                if ((gg) && (r == 127)) { bb = true; gg = false; };
+                if ((bb) && (g == 127)) { rr = true; bb = false; };
+                // I don't like this at all
+                this.updateDetailed();
+            };
         }
 
         private uint stripkeyMods(Keys key)
@@ -1968,7 +2131,14 @@ namespace WSplitTimer
                         this.split.segments[i].TimeString = this.timeFormatter(this.split.RunDeltaAt(i), TimeFormat.Delta);
                         if (this.split.LiveSegment(i) != 0.0 && (this.split.segments[i].BestSegment == 0.0 || this.split.LiveSegment(i) < this.split.segments[i].BestSegment))
                         {
-                            this.split.segments[i].TimeColor = colors.SegBestSegment;
+                            if (Settings.Profile.RainbowSplits)
+                            {
+                                this.split.segments[i].TimeColor = colors.SegRainbow;
+                            }
+                            else
+                            {
+                                this.split.segments[i].TimeColor = colors.SegBestSegment;
+                            };
                         }
                         else if (num3 < 0.0)
                         {
@@ -2004,7 +2174,14 @@ namespace WSplitTimer
                             (this.split.segments[i].BestSegment == 0.0) || this.split.LiveSegment(i) < this.split.segments[i].BestSegment*/
                             this.split.LiveSegment(i) != 0.0 && (this.split.segments[i].BestSegment == 0.0 || this.split.LiveSegment(i) < this.split.segments[i].BestSegment))
                         {
-                            this.split.segments[i].TimeColor = colors.SegBestSegment;
+                            if (Settings.Profile.RainbowSplits)
+                            {
+                                this.split.segments[i].TimeColor = colors.SegRainbow;
+                            }
+                            else
+                            {
+                                this.split.segments[i].TimeColor = colors.SegBestSegment;
+                            };
                         }
                         else
                         {
@@ -2017,7 +2194,7 @@ namespace WSplitTimer
                     this.split.segments[i].TimeColor = colors.LiveSeg;
                     if (this.split.CompTime(i) > 0.0)
                     {
-                        this.split.segments[i].TimeString = this.timeFormatter(this.split.CompTime(i), TimeFormat.Long);
+                        this.split.segments[i].TimeString = this.timeFormatter(this.split.CompTime(i), TimeFormat.Short); //changed
                     }
                     else
                     {
@@ -2690,7 +2867,7 @@ namespace WSplitTimer
             if (this.stopwatch.Enabled)
             {
                 throw new InvalidOperationException(
-                    "Trying to start the timer with an starting time, but timer is already running.");
+                    "Trying to start the timer with a starting time, but timer is already running.");
             }
 
             // If the split aren't done, so if the timer isn't running
@@ -2715,7 +2892,7 @@ namespace WSplitTimer
                 else
                 {
                     throw new InvalidOperationException(
-                    "Trying to start the timer with an starting time, but timer is paused.");
+                    "Trying to start the timer with a starting time, but timer is paused.");
                 }
                 this.stopwatch.Enabled = true;
             }
@@ -2782,6 +2959,8 @@ namespace WSplitTimer
             private int segTimeLength;
             private int segTimeWidth;
 
+
+
             public Painter(WSplit wsplit)
             {
                 this.wsplit = wsplit;
@@ -2842,6 +3021,7 @@ namespace WSplitTimer
             private void DrawBackground(Graphics graphics, float angle, int num5, int num8, int num13, int x)
             {
                 // What is "angle?"
+                // it's the angle m8...
 
                 // If there is a need to redraw the background
                 if (((this.background == null) || (this.background.Size != wsplit.Size)) || this.bgRedrawRequested)
@@ -2862,16 +3042,48 @@ namespace WSplitTimer
                     //
                     if (wsplit.currentDispMode != DisplayMode.Timer)
                     {
-                        Rectangle statusBarEctangle;   
+                        Rectangle statusBarEctangle;
                         Rectangle headerTextRectangle;
                         Rectangle statusTextRectangle;
+                        Rectangle timesaverectangle;
+                        Rectangle sobrectangle;
+                        Rectangle timesaverectangle1;
+                        Rectangle sobrectangle1;
+                        Rectangle timesaverectangle2;
+                        Rectangle sobrectangle2;
+                        Rectangle pbrectangle;
+                        Rectangle pbrectangle1;
+                        Rectangle pbrectangle2;
+                        Rectangle bestrectangle;
+                        Rectangle bestrectangle1;
+                        Rectangle bestrectangle2;
                         Rectangle goalTextRectangle;
+
+                        int ps_y, ts_y, sob_y, pb_y, best_y = 0;
+                        ps_y = wsplit.clockRect.Bottom;
+                        if (Settings.Profile.ShowPrevSeg) { ts_y = ps_y + 18; } else { ts_y = ps_y; };
+                        if (Settings.Profile.ShowTimeSave) { sob_y = ts_y + 18; } else { sob_y = ts_y; };
+                        if (Settings.Profile.ShowSoB) { pb_y = sob_y + 18; } else { pb_y = sob_y; };
+                        if (Settings.Profile.PredPB) { best_y = pb_y + 18; } else { best_y = pb_y; };
 
                         if (wsplit.currentDispMode == DisplayMode.Wide)
                         {
                             statusBarEctangle = new Rectangle(wsplit.Width - 120, 0, 120, wsplit.Height);                       // Status bar
-                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
+                            statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
+                            timesaverectangle = new Rectangle(0, 0, 0, 0);
+                            sobrectangle = new Rectangle(0, 0, 0, 0);
+                            timesaverectangle1 = new Rectangle(0, 0, 0, 0);
+                            sobrectangle1 = new Rectangle(0, 0, 0, 0);
+                            timesaverectangle2 = new Rectangle(0, 0, 0, 0);
+                            sobrectangle2 = new Rectangle(0, 0, 0, 0);
+                            pbrectangle = new Rectangle(0, 0, 0, 0);
+                            pbrectangle1 = new Rectangle(0, 0, 0, 0);
+                            pbrectangle2 = new Rectangle(0, 0, 0, 0);
+                            bestrectangle = new Rectangle(0, 0, 0, 0);
+                            bestrectangle1 = new Rectangle(0, 0, 0, 0);
+                            bestrectangle2 = new Rectangle(0, 0, 0, 0);
 
+                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
                             if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
                                 statusTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, (wsplit.Height / 4) - 4, 59, 12); //Run goal
@@ -2882,10 +3094,34 @@ namespace WSplitTimer
                                 statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
                                 goalTextRectangle = new Rectangle(0, 0, 0, 0);  //Nothing...
                             }
-                            
                         }
                         else if (wsplit.currentDispMode == DisplayMode.Detailed)
                         {
+                            headerTextRectangle = new Rectangle(0, 0, 0, 0);
+
+                            if (Settings.Profile.ShowPrevSeg)
+                            {
+                                statusBarEctangle = new Rectangle(0, ps_y, wsplit.Width, 18);
+                                statusTextRectangle = new Rectangle(1, ps_y + 2, wsplit.Width - 2, 16);
+                            }
+                            else
+                            {
+                                statusBarEctangle = new Rectangle(0, ps_y - 18, wsplit.Width, 18);
+                                statusTextRectangle = new Rectangle(1, ps_y + 2 - 18, wsplit.Width - 2, 16);
+                            };
+
+                            timesaverectangle = new Rectangle(0, ts_y, wsplit.Width, 18);
+                            sobrectangle = new Rectangle(0, sob_y, wsplit.Width, 18);
+                            timesaverectangle1 = new Rectangle(0, ts_y + 2, wsplit.Width - 2, 16);
+                            sobrectangle1 = new Rectangle(0, sob_y + 2, wsplit.Width - 2, 16);
+                            timesaverectangle2 = new Rectangle(0, ts_y + 2, wsplit.Width - 2, 16);
+                            sobrectangle2 = new Rectangle(0, sob_y + 2, wsplit.Width - 2, 16);
+                            pbrectangle = new Rectangle(0, pb_y, wsplit.Width, 18);
+                            bestrectangle = new Rectangle(0, best_y, wsplit.Width, 18);
+                            pbrectangle1 = new Rectangle(0, pb_y + 2, wsplit.Width - 2, 16);
+                            bestrectangle1 = new Rectangle(0, best_y + 2, wsplit.Width - 2, 16);
+                            pbrectangle2 = new Rectangle(0, pb_y + 2, wsplit.Width - 2, 16);
+                            bestrectangle2 = new Rectangle(0, best_y + 2, wsplit.Width - 2, 16);
                             statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 18);            // Status bar
                             headerTextRectangle = new Rectangle(0, 0, 0, 0);                                            // Nothing? Why?
                             statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 16);  // Run status
@@ -2896,6 +3132,19 @@ namespace WSplitTimer
                             statusBarEctangle = new Rectangle(0, wsplit.clockRect.Bottom, wsplit.Width, 16);            // Status bar
                             headerTextRectangle = new Rectangle(1, 2, (wsplit.Width / 2) - 2, 13);                            // Segment name
                             statusTextRectangle = new Rectangle(1, wsplit.clockRect.Bottom + 2, wsplit.Width - 2, 14);  // Run status
+                            timesaverectangle = new Rectangle(0, 0, 0, 0);
+                            sobrectangle = new Rectangle(0, 0, 0, 0);
+                            timesaverectangle1 = new Rectangle(0, 0, 0, 0);
+                            sobrectangle1 = new Rectangle(0, 0, 0, 0);
+                            timesaverectangle2 = new Rectangle(0, 0, 0, 0);
+                            sobrectangle2 = new Rectangle(0, 0, 0, 0);
+                            pbrectangle = new Rectangle(0, 0, 0, 0);
+                            pbrectangle1 = new Rectangle(0, 0, 0, 0);
+                            pbrectangle2 = new Rectangle(0, 0, 0, 0);
+                            bestrectangle = new Rectangle(0, 0, 0, 0);
+                            bestrectangle1 = new Rectangle(0, 0, 0, 0);
+                            bestrectangle2 = new Rectangle(0, 0, 0, 0);
+
                             if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
                                 goalTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, 2, (wsplit.Width / 2) - 2, 13); // Run goal
@@ -2917,10 +3166,21 @@ namespace WSplitTimer
                         {
                             // Fill the status bar
                             if (Settings.Profile.BackgroundPlain)
+                            {
                                 bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), statusBarEctangle);
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), timesaverectangle);
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), sobrectangle);
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), pbrectangle);
+                                bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.StatusBackPlain), bestrectangle);
+                            }
                             else
+                            {
                                 bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), statusBarEctangle);
-
+                                bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), timesaverectangle);
+                                bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), sobrectangle);
+                                bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), pbrectangle);
+                                bgGraphics.FillRectangle(new LinearGradientBrush(statusBarEctangle, ColorSettings.Profile.StatusBack, ColorSettings.Profile.StatusBack2, angle), bestrectangle);
+                            };
                             // Detailed mode - Draw the title bar
                             if (wsplit.currentDispMode == DisplayMode.Detailed)
                             {
@@ -2928,12 +3188,12 @@ namespace WSplitTimer
                                 int titleY = 0;
                                 int goalX = 0;
                                 int goalY = 0;
-                                
+
                                 if (((wsplit.split.RunTitle != "") && Settings.Profile.ShowTitle) && ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal) && !Settings.Profile.BackgroundPlain)
                                 {
                                     bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack), titleX, titleY, wsplit.Width, 32);
                                     bgGraphics.FillRectangle(new SolidBrush(ColorSettings.Profile.TitleBack2), titleX, titleY, wsplit.Width, 16);
-                                    
+
                                 }
                                 else
                                 {
@@ -3135,6 +3395,103 @@ namespace WSplitTimer
                         bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
                         bgGraphics.DrawString(s, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), headerTextRectangle, format3);   // To be verified, but it seems like this line writes fuck all in a negative rectangle when in Detailed mode...
                         bgGraphics.DrawString(statusText, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), statusTextRectangle, format4);
+                        // u wote m8
+                        StringFormat strleft = new StringFormat
+                        {
+                            Alignment = StringAlignment.Near,
+                            LineAlignment = StringAlignment.Center,
+                            Trimming = StringTrimming.EllipsisCharacter
+                        };
+                        StringFormat strright = new StringFormat
+                        {
+                            Alignment = StringAlignment.Far,
+                            LineAlignment = StringAlignment.Center,
+                            Trimming = StringTrimming.EllipsisCharacter
+                        };
+                        // text
+                        string sobtext = "-";
+                        string tstext = "0:00";
+                        if (Settings.Profile.ShowSoB)
+                        {
+                            bgGraphics.DrawString("Sum of Best", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), sobrectangle1, strleft);
+                            if (wsplit.split.SumOfBests(wsplit.split.LastIndex) > 0.0)
+                            {
+                                sobtext = wsplit.timeFormatter(wsplit.split.SumOfBests(wsplit.split.LastIndex), TimeFormat.Short);
+                            };
+                            bgGraphics.DrawString(sobtext, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), sobrectangle2, strright);
+                        };//yeah
+                        //int j;
+                        double segtime = 0.0;
+                        //segtime = wsplit.split.segments[wsplit.split.LiveIndex].BestTime;
+                        if (wsplit.split.LiveIndex > 0 && (wsplit.split.LiveIndex <= wsplit.split.LastIndex))
+                        {
+                            segtime = wsplit.split.segments[wsplit.split.LiveIndex].BestTime;
+                            segtime -= wsplit.split.segments[wsplit.split.LiveIndex - 1].BestTime;
+                        }
+                        else if (wsplit.split.LiveIndex == 0)
+                        {
+                            segtime = wsplit.split.segments[0].BestTime;
+                        };
+                        if ((segtime > 0.0) && (wsplit.split.segments[wsplit.split.LiveIndex].BestSegment > 0.0) && (segtime >= wsplit.split.segments[wsplit.split.LiveIndex].BestSegment))
+                        {
+                            tstext = wsplit.timeFormatter(Math.Abs(segtime - wsplit.split.segments[wsplit.split.LiveIndex].BestSegment), TimeFormat.Short);
+                        };
+                        if ((wsplit.split.LiveIndex > 0) && (wsplit.split.LiveIndex <= wsplit.split.LastIndex) && ((wsplit.split.segments[wsplit.split.LiveIndex].BestTime == 0.0) || (wsplit.split.segments[wsplit.split.LiveIndex - 1].BestTime == 0.0)))
+                        {
+                            tstext = "-";
+                        };
+                        if (Settings.Profile.ShowTimeSave)
+                        {
+                            bgGraphics.DrawString("Possible Gain", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), timesaverectangle1, strleft);
+                            bgGraphics.DrawString(tstext, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), timesaverectangle2, strright);
+                        };
+                        if (Settings.Profile.PredPB)
+                        {
+                            bgGraphics.DrawString("Predicted (PB)", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), pbrectangle1, strleft);
+                            if (wsplit.split.CompTime(wsplit.split.LastIndex) > 0.0)
+                            {
+                                string pbtime = "";
+                                //if (wsplit.split.LiveIndex <= 0)
+                                //{
+                                //    pbtime = wsplit.timeFormatter(wsplit.split.CompTime(wsplit.split.LastIndex), TimeFormat.Short);
+                                //}
+                                //else
+                                //{
+                                pbtime = wsplit.timeFormatter(wsplit.split.CompTime(wsplit.split.LastIndex) + wsplit.split.LastDelta(wsplit.split.LiveIndex), TimeFormat.Short);
+                                //};
+                                bgGraphics.DrawString(pbtime, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), pbrectangle2, strright);
+                            }
+                            else
+                            {
+                                bgGraphics.DrawString("-", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), pbrectangle2, strright);
+                            };
+                        };
+                        if (Settings.Profile.PredBest)
+                        {
+                            bgGraphics.DrawString("Predicted (Best)", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), bestrectangle1, strleft);
+                            if (wsplit.split.SumOfBests(wsplit.split.LastIndex) > 0.0)
+                            {
+                                double best = wsplit.split.SumOfBests(wsplit.split.LastIndex);
+                                if ((wsplit.split.LiveIndex > 0) && (wsplit.split.LiveIndex <= wsplit.split.LastIndex))
+                                {
+                                    int i;
+                                    for (i = wsplit.split.LiveIndex; i >= 0; i--)
+                                    {
+                                        if (wsplit.split.segments[i].LiveTime != 0)
+                                        {
+                                            best += wsplit.split.segments[i].LiveTime - wsplit.split.SumOfBests(i);
+                                            break;
+                                        };
+                                    };
+                                };
+                                string besttime = wsplit.timeFormatter(best, TimeFormat.Short);
+                                bgGraphics.DrawString(besttime, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), bestrectangle2, strright);
+                            }
+                            else
+                            {
+                                bgGraphics.DrawString("-", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), bestrectangle2, strright);
+                            };
+                        };
                         if (wsplit.currentDispMode != DisplayMode.Detailed)
                         {
                             bgGraphics.DrawString("Goal: " + wsplit.split.RunGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
@@ -3169,7 +3526,7 @@ namespace WSplitTimer
                         }
 
                         else
-                            rectangle8 = new Rectangle(0, y, wsplit.Width, ((wsplit.Height - wsplit.clockRect.Height) - 19) - y);
+                            rectangle8 = new Rectangle(0, y, wsplit.Width, wsplit.clockRect.Bottom - 18);
 
                         if (!Settings.Profile.BackgroundBlack)
                         {
@@ -3212,7 +3569,7 @@ namespace WSplitTimer
                         if (wsplit.currentDispMode != DisplayMode.Wide)
                         {
                             if (wsplit.segHeight > 24)
-                                format6.Alignment = StringAlignment.Far;
+                                format6.Alignment = StringAlignment.Near;
 
                             format7.Alignment = StringAlignment.Far;
                         }
@@ -3226,6 +3583,7 @@ namespace WSplitTimer
                             Rectangle rectangle10;
                             Rectangle rectangle11;
                             Rectangle rectangle12;
+                            Rectangle rectangle13;
 
                             Image grayIcon;
                             ImageAttributes attributes;
@@ -3239,6 +3597,17 @@ namespace WSplitTimer
 
                             Brush brush3 = new SolidBrush(ColorSettings.Profile.FutureSegName);
                             string str9 = wsplit.split.segments[i].TimeString;
+                            // thing //
+                            string splittime = "";
+                            if ((i < wsplit.split.LiveIndex) && (wsplit.split.segments[i].LiveTime > 0.0))
+                            {
+                                splittime = wsplit.timeFormatter(wsplit.split.segments[i].LiveTime, TimeFormat.Short);
+                            }
+                            else
+                            {
+                                splittime = "-";
+                            };
+                            // idk //
                             string name = wsplit.split.segments[i].Name;
 
                             if ((i == wsplit.split.LiveIndex) && this.runLosingTime)
@@ -3256,13 +3625,16 @@ namespace WSplitTimer
                                 rectangle10 = new Rectangle(num16, 0, wsplit.wideSegWidth, wsplit.Height);
                                 rectangle11 = new Rectangle(num16 + 2, (wsplit.Height / 4) - 4, (wsplit.wideSegWidth - x) - 2, 12);
                                 rectangle12 = new Rectangle(rectangle11.Left, wsplit.Height / 2, rectangle11.Width, wsplit.Height / 2);
+                                rectangle13 = new Rectangle(rectangle11.Left + Settings.Profile.Width + 8, wsplit.Height / 2, rectangle11.Width, wsplit.Height / 2);
                             }
 
                             else
+                            /* create rectangles here */
                             {
-                                rectangle10 = new Rectangle(0, y, wsplit.Width, wsplit.segHeight);
-                                rectangle11 = new Rectangle(x, y + 2, wsplit.Width - x, wsplit.segHeight);
-                                rectangle12 = new Rectangle(x, y + 1, wsplit.Width - x, wsplit.segHeight);
+                                rectangle10 = new Rectangle(0, y, wsplit.Width, wsplit.segHeight);         //icon
+                                rectangle11 = new Rectangle(x, y + 2, wsplit.Width - x, wsplit.segHeight); //name
+                                rectangle12 = new Rectangle(x, y + 1, wsplit.Width - x, wsplit.segHeight); //delta
+                                rectangle13 = new Rectangle(x - Settings.Profile.Width - 8, y + 1, wsplit.Width - x, wsplit.segHeight); //test
 
                                 if (wsplit.segHeight <= 24)
                                 {
@@ -3276,11 +3648,17 @@ namespace WSplitTimer
                                     rectangle11.Height /= 2;
                                     rectangle12.Y = rectangle11.Bottom - 2;
                                     rectangle12.Height /= 2;
+                                    rectangle13.Y = rectangle11.Bottom - 2;
+                                    rectangle13.Height /= 2;
                                 }
                             }
                             if ((i < wsplit.split.LiveIndex) && (wsplit.timer.ElapsedTicks > 0L))
                             {
                                 brush3 = new SolidBrush(ColorSettings.Profile.PastSeg);
+                                if (wsplit.split.segments[i].TimeColor == ColorSettings.Profile.SegRainbow && Settings.Profile.RainbowSplits)
+                                {
+                                    brush3 = new SolidBrush(ColorSettings.Profile.SegRainbow);
+                                };
                             }
                             else if (i == wsplit.split.LiveIndex)
                             {
@@ -3349,11 +3727,35 @@ namespace WSplitTimer
                             bgGraphics.DrawImage(grayIcon, destRect, 0, 0, grayIcon.Width, grayIcon.Height, GraphicsUnit.Pixel, attributes);
                         Label_1F67:
                             bgGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                            //test
+                            if (Settings.Profile.SplitTimes && (i < wsplit.split.LiveIndex) && (x < 32) && wsplit.currentDispMode == DisplayMode.Detailed)
+                            {
+                                rectangle11.Width = rectangle13.Right - MeasureDisplayStringWidth(str9, wsplit.timeFont) - x - 4;
+                            };
                             bgGraphics.DrawString(name, wsplit.displayFont, brush3, rectangle11, format6);
+                            /* draw labels here */
                             if (i != wsplit.split.LiveIndex)
                             {
-                                bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-                                bgGraphics.DrawString(str9, wsplit.timeFont, new SolidBrush(wsplit.split.segments[i].TimeColor), rectangle12, format7);
+                                if (i < wsplit.split.LiveIndex && Settings.Profile.SplitTimes && (Settings.Profile.last != "-") && wsplit.timer.ElapsedTicks > 0L)
+                                {
+                                    bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                    if (wsplit.split.segments[i].TimeColor == ColorSettings.Profile.SegRainbow && Settings.Profile.RainbowSplits)
+                                    {
+                                        bgGraphics.DrawString(splittime, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegRainbow), rectangle12, format7);
+                                    }
+                                    else
+                                    {
+                                        bgGraphics.DrawString(splittime, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegPastTime), rectangle12, format7);
+                                    };
+                                    bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                    if (wsplit.split.CompTime(i) == 0.0) { str9 = "-"; };
+                                    bgGraphics.DrawString(str9, wsplit.timeFont, new SolidBrush(wsplit.split.segments[i].TimeColor), rectangle13, format7);
+                                }
+                                else
+                                {
+                                    bgGraphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+                                    bgGraphics.DrawString(str9, wsplit.timeFont, new SolidBrush(wsplit.split.segments[i].TimeColor), rectangle12, format7);
+                                };
                             }
                             num16 += wsplit.wideSegWidth;
                             y += wsplit.segHeight;
@@ -3418,6 +3820,7 @@ namespace WSplitTimer
                 bool flag = false;
                 double totalMilliseconds = wsplit.timer.Elapsed.TotalMilliseconds;
 
+
                 if (((Settings.Profile.FallbackPreference == 1) || (Settings.Profile.FallbackPreference == 2)) && (totalMilliseconds > 0.0))
                 {
                     double num2 = Math.Abs(wsplit.timer.driftMilliseconds);
@@ -3441,12 +3844,20 @@ namespace WSplitTimer
                 double num3 = wsplit.split.SegDelta(elapsed.TotalSeconds, wsplit.split.LiveIndex);
                 double secs = wsplit.split.RunDelta(elapsed.TotalSeconds, wsplit.split.LiveIndex);
                 int num5 = 0;
-                float angle = 0f;
+                float angle;
+                if (Settings.Profile.HGrad)
+                {
+                    angle = 0f;
+                }
+                else
+                {
+                    angle = 270f;
+                };
 
                 if (wsplit.currentDispMode == DisplayMode.Wide)
                 {
                     num5 = wsplit.displaySegsWide();
-                    angle = 90f;
+                    //angle = 90f;
                 }
                 else
                     num5 = wsplit.detailSegCount();
@@ -3842,7 +4253,7 @@ namespace WSplitTimer
                     {
                         this.runLosingTime = true;  // Losing time...
                         // Formats run delta in timeString:
-                        timeString = wsplit.timeFormatter(secs, TimeFormat.Delta);
+                        //timeString = wsplit.timeFormatter(secs, TimeFormat.Delta);
                     }
                     // If losing time and in detailed display mode, and if Segment height (so Icon size) is smaller or equal to 24 pixels and length has changed...
                     if ((this.runLosingTime && (wsplit.currentDispMode == DisplayMode.Detailed)) && ((wsplit.segHeight <= 0x18) && (timeString.Length != this.segTimeLength)))
@@ -3905,22 +4316,33 @@ namespace WSplitTimer
                     // num10 -> What has to be written in the status bar
 
                     // If the time to write in the status bar is a new best segment...
-                    if (!this.segLosingTime && wsplit.split.LiveIndex > 0 &&
-                        wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) != 0.0 && (wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment == 0.0 ||
-                        wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) < wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment))
+                    /* apparently this always runs m8 */
+                    if (Settings.Profile.ShowPrevSeg)
                     {
-                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBestSegment), rectangle2, format);
-                    }
-                    // Else, if The time to write in the status bar is a time loss...
-                    else if (num10 > 0.0)
-                    {
-                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBehindLoss), rectangle2, format);
-                    }
-                    // Otherwise (the time is a time gain but not a best segment), or there is not time to write...
-                    else
-                    {
-                        graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegAheadGain), rectangle2, format);
-                    }
+                        if (!this.segLosingTime && wsplit.split.LiveIndex > 0 &&
+                            wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) != 0.0 && (wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment == 0.0 ||
+                            wsplit.split.LiveSegment(wsplit.split.LiveIndex - 1) < wsplit.split.segments[wsplit.split.LiveIndex - 1].BestSegment))
+                        {
+                            if (Settings.Profile.RainbowSplits)
+                            {
+                                graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegRainbow), rectangle2, format);
+                            }
+                            else
+                            {
+                                graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBestSegment), rectangle2, format);
+                            };
+                        }
+                        // Else, if The time to write in the status bar is a time loss...
+                        else if (num10 > 0.0)
+                        {
+                            graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegBehindLoss), rectangle2, format);
+                        }
+                        // Otherwise (the time is a time gain but not a best segment), or there is not time to write...
+                        else
+                        {
+                            graphics.DrawString(text, wsplit.timeFont, new SolidBrush(ColorSettings.Profile.SegAheadGain), rectangle2, format);
+                        }
+                    };
                     if (wsplit.currentDispMode != DisplayMode.Detailed)
                     {
                         graphics.DrawString(str4, wsplit.timeFont, white, layoutRectangle, format2);

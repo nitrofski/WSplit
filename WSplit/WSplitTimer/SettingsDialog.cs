@@ -147,6 +147,9 @@ namespace WSplitTimer
             this.comboBoxFallback.SelectedIndex = Settings.Profile.FallbackPreference;
             this.checkBoxWindowPos.Checked = Settings.Profile.SaveWindowPos;
             this.checkBoxReloadRun.Checked = Settings.Profile.LoadMostRecent;
+            this.checkBox1.Checked = Settings.Profile.RainbowSplits;
+            this.checkBox2.Checked = Settings.Profile.SplitTimes;
+            this.numwv.Value = Settings.Profile.WideHeight;
 
             // Global hotkeys:
             this.checkBoxHotkeysEnabled.Checked = Settings.Profile.EnabledHotkeys;
@@ -219,6 +222,9 @@ namespace WSplitTimer
             Settings.Profile.FallbackPreference = this.comboBoxFallback.SelectedIndex;
             Settings.Profile.SaveWindowPos = this.checkBoxWindowPos.Checked;
             Settings.Profile.LoadMostRecent = this.checkBoxReloadRun.Checked;
+            Settings.Profile.RainbowSplits = this.checkBox1.Checked;
+            Settings.Profile.SplitTimes = this.checkBox2.Checked;
+            Settings.Profile.WideHeight = (int)this.numwv.Value;
 
             // Global hotkeys:
             Settings.Profile.EnabledHotkeys = this.checkBoxHotkeysEnabled.Checked;
