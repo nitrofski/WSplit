@@ -204,7 +204,7 @@ namespace WSplitTimer
 
         private void aboutButton_Click(object sender, EventArgs e)
         {
-            string str = Assembly.GetExecutingAssembly().GetName().Name + " v" + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion/*Assembly.GetExecutingAssembly().GetName().Version*/;
+            string str = Assembly.GetExecutingAssembly().GetName().Name + " v" + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
             DateTime buildDateTime = GetBuildDateTime(Assembly.GetExecutingAssembly());
             double driftMilliseconds = this.timer.driftMilliseconds;
             string str2 = "Current fallback timer: " + string.Format("{0:+0.000;-0.000}", driftMilliseconds / 1000.0) + "s";
@@ -212,10 +212,11 @@ namespace WSplitTimer
             if (this.timer.useFallback)
                 str3 = " [Using Fallback]";
 
-            MessageBoxEx.Show("WSplit, the superior timer (" + str + ")" + Environment.NewLine +
+            MessageBoxEx.Show(this, str + Environment.NewLine +
                             "by Wodanaz@SDA until 1.4.4" + Environment.NewLine +
-                            "further developed by Nitrofski (twitch.tv/Nitrofski)" + Environment.NewLine +
-                            "probably broken by DeathBasket" + Environment.NewLine + Environment.NewLine +
+                            "currently maintained by Nitrofski (twitch.tv/Nitrofski)" + Environment.NewLine +
+                            Environment.NewLine +
+                            "Github repository location: https://github.com/Nitrofski/WSplit" + Environment.NewLine +
                             "Compiled: " + buildDateTime.ToString() +
                             Environment.NewLine +
                             Environment.NewLine +

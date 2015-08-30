@@ -2,7 +2,7 @@
 
 [assembly: System.Reflection.AssemblyCopyright("")]
 [assembly: System.Runtime.InteropServices.Guid("3d0f306a-21aa-4248-86e3-339c61d7efe4")]
-[assembly: System.Reflection.AssemblyFileVersion("1.5.2.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.5.3.0")]
 [assembly: System.Reflection.AssemblyProduct("WSplit")]
 [assembly: System.Reflection.AssemblyTrademark("")]
 [assembly: System.Runtime.InteropServices.ComVisible(false)]

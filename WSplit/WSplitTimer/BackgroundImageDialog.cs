@@ -751,7 +751,7 @@ namespace WSplitTimer
 
         private void linkLabelGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://www.github.com/Nitrofski/WSplit");
+            System.Diagnostics.Process.Start("https://github.com/Nitrofski/WSplit");
         }
     }
 }
