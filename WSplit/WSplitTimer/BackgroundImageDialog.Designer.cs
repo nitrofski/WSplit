@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BackgroundImageDialog));
             this.groupBoxImageBg = new System.Windows.Forms.GroupBox();
             this.linkLabelHelp = new System.Windows.Forms.LinkLabel();
             this.buttonAutoSelect = new System.Windows.Forms.Button();
@@ -50,11 +51,14 @@
             this.trackBarOpacity = new System.Windows.Forms.TrackBar();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.panelHideSettings = new System.Windows.Forms.Panel();
+            this.linkLabelGithub = new System.Windows.Forms.LinkLabel();
             this.groupBoxImageBg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarZoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxImageSelectionModifier)).BeginInit();
             this.groupBoxTopLayer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarOpacity)).BeginInit();
+            this.panelHideSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxImageBg
@@ -199,6 +203,7 @@
             // checkBoxUseImageBg
             // 
             this.checkBoxUseImageBg.AutoSize = true;
+            this.checkBoxUseImageBg.Enabled = false;
             this.checkBoxUseImageBg.Location = new System.Drawing.Point(18, 12);
             this.checkBoxUseImageBg.Name = "checkBoxUseImageBg";
             this.checkBoxUseImageBg.Size = new System.Drawing.Size(136, 17);
@@ -313,11 +318,31 @@
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
+            // panelHideSettings
+            // 
+            this.panelHideSettings.Controls.Add(this.linkLabelGithub);
+            this.panelHideSettings.Location = new System.Drawing.Point(12, 12);
+            this.panelHideSettings.Name = "panelHideSettings";
+            this.panelHideSettings.Size = new System.Drawing.Size(466, 458);
+            this.panelHideSettings.TabIndex = 12;
+            // 
+            // linkLabelGithub
+            // 
+            this.linkLabelGithub.Location = new System.Drawing.Point(7, 16);
+            this.linkLabelGithub.Name = "linkLabelGithub";
+            this.linkLabelGithub.Size = new System.Drawing.Size(453, 439);
+            this.linkLabelGithub.TabIndex = 0;
+            this.linkLabelGithub.TabStop = true;
+            this.linkLabelGithub.Text = resources.GetString("linkLabelGithub.Text");
+            this.linkLabelGithub.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.linkLabelGithub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelGithub_LinkClicked);
+            // 
             // BackgroundImageDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(490, 612);
+            this.Controls.Add(this.panelHideSettings);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
             this.Controls.Add(this.groupBoxTopLayer);
@@ -337,6 +362,7 @@
             this.groupBoxTopLayer.ResumeLayout(false);
             this.groupBoxTopLayer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarOpacity)).EndInit();
+            this.panelHideSettings.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -366,5 +392,7 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonAutoSelect;
         private System.Windows.Forms.LinkLabel linkLabelHelp;
+        private System.Windows.Forms.Panel panelHideSettings;
+        private System.Windows.Forms.LinkLabel linkLabelGithub;
     }
 }

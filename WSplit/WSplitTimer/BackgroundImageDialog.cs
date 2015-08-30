@@ -61,8 +61,7 @@ namespace WSplitTimer
         public DialogResult ShowDialog(Form caller, WSplit wsplit)
         {
             this.wsplit = wsplit;
-
-
+            
             // If for some reason, a value is not compatible with WSplit, the settings
             // will automatically be brought back to default.
             try
@@ -746,8 +745,13 @@ namespace WSplitTimer
         private void linkLabelHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             MessageBoxEx.Show(this,
-                "THIS IS SPARTA",
+                "Help Window",
                 "Help", MessageBoxButtons.OK);
+        }
+
+        private void linkLabelGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.github.com/Nitrofski/WSplit");
         }
     }
 }
