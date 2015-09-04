@@ -3084,14 +3084,15 @@ namespace WSplitTimer
                             bestrectangle1 = new Rectangle(0, 0, 0, 0);
                             bestrectangle2 = new Rectangle(0, 0, 0, 0);
 
-                            headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
                             if ((wsplit.split.RunGoal != "") && Settings.Profile.ShowGoal)
                             {
+                                headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 59, 12);          // Run title
                                 statusTextRectangle = new Rectangle(headerTextRectangle.X + headerTextRectangle.Width, (wsplit.Height / 4) - 4, 59, 12); //Run goal
                                 goalTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); //Run status
                             }
                             else
                             {
+                                headerTextRectangle = new Rectangle(wsplit.Width - 119, (wsplit.Height / 4) - 4, 118, 12);          // Run title
                                 statusTextRectangle = new Rectangle(wsplit.Width - 119, wsplit.Height / 2, 118, wsplit.Height / 2); // Run status
                                 goalTextRectangle = new Rectangle(0, 0, 0, 0);  //Nothing...
                             }
@@ -3493,7 +3494,7 @@ namespace WSplitTimer
                                 bgGraphics.DrawString("-", wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), bestrectangle2, strright);
                             };
                         };
-                        if (wsplit.currentDispMode != DisplayMode.Detailed)
+                        if (wsplit.currentDispMode != DisplayMode.Detailed && wsplit.split.RunGoal != "")
                         {
                             bgGraphics.DrawString("Goal: " + wsplit.split.RunGoal, wsplit.displayFont, new SolidBrush(ColorSettings.Profile.StatusFore), goalTextRectangle, format4);
                         }
