@@ -43,61 +43,61 @@
             // checkBoxAlwaysShowComp
             // 
             this.checkBoxAlwaysShowComp.AutoSize = true;
-            this.checkBoxAlwaysShowComp.Location = new System.Drawing.Point(12, 60);
+            this.checkBoxAlwaysShowComp.Location = new System.Drawing.Point(12, 55);
             this.checkBoxAlwaysShowComp.Name = "checkBoxAlwaysShowComp";
-            this.checkBoxAlwaysShowComp.Size = new System.Drawing.Size(201, 17);
+            this.checkBoxAlwaysShowComp.Size = new System.Drawing.Size(149, 16);
             this.checkBoxAlwaysShowComp.TabIndex = 0;
-            this.checkBoxAlwaysShowComp.Text = "Always show default comparison time";
+            this.checkBoxAlwaysShowComp.Text = "デフォルト比較を常時表示";
             this.checkBoxAlwaysShowComp.UseVisualStyleBackColor = true;
             // 
             // checkBoxOldTime
             // 
             this.checkBoxOldTime.AutoSize = true;
-            this.checkBoxOldTime.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxOldTime.Location = new System.Drawing.Point(6, 18);
             this.checkBoxOldTime.Name = "checkBoxOldTime";
-            this.checkBoxOldTime.Size = new System.Drawing.Size(64, 17);
+            this.checkBoxOldTime.Size = new System.Drawing.Size(60, 16);
             this.checkBoxOldTime.TabIndex = 1;
-            this.checkBoxOldTime.Text = "Old time";
+            this.checkBoxOldTime.Text = "旧記録";
             this.checkBoxOldTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxBestTime
             // 
             this.checkBoxBestTime.AutoSize = true;
-            this.checkBoxBestTime.Location = new System.Drawing.Point(76, 19);
+            this.checkBoxBestTime.Location = new System.Drawing.Point(76, 18);
             this.checkBoxBestTime.Name = "checkBoxBestTime";
-            this.checkBoxBestTime.Size = new System.Drawing.Size(69, 17);
+            this.checkBoxBestTime.Size = new System.Drawing.Size(72, 16);
             this.checkBoxBestTime.TabIndex = 2;
-            this.checkBoxBestTime.Text = "Best time";
+            this.checkBoxBestTime.Text = "最速記録";
             this.checkBoxBestTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxSumOfBests
             // 
             this.checkBoxSumOfBests.AutoSize = true;
-            this.checkBoxSumOfBests.Location = new System.Drawing.Point(151, 19);
+            this.checkBoxSumOfBests.Location = new System.Drawing.Point(151, 18);
             this.checkBoxSumOfBests.Name = "checkBoxSumOfBests";
-            this.checkBoxSumOfBests.Size = new System.Drawing.Size(87, 17);
+            this.checkBoxSumOfBests.Size = new System.Drawing.Size(96, 16);
             this.checkBoxSumOfBests.TabIndex = 3;
-            this.checkBoxSumOfBests.Text = "Sum of bests";
+            this.checkBoxSumOfBests.Text = "区間最速合計";
             this.checkBoxSumOfBests.UseVisualStyleBackColor = true;
             // 
             // checkBoxLiveTime
             // 
             this.checkBoxLiveTime.AutoSize = true;
-            this.checkBoxLiveTime.Location = new System.Drawing.Point(12, 83);
+            this.checkBoxLiveTime.Location = new System.Drawing.Point(12, 77);
             this.checkBoxLiveTime.Name = "checkBoxLiveTime";
-            this.checkBoxLiveTime.Size = new System.Drawing.Size(94, 17);
+            this.checkBoxLiveTime.Size = new System.Drawing.Size(139, 16);
             this.checkBoxLiveTime.TabIndex = 4;
-            this.checkBoxLiveTime.Text = "Show live time";
+            this.checkBoxLiveTime.Text = "今回の区間記録を表示";
             this.checkBoxLiveTime.UseVisualStyleBackColor = true;
             // 
             // checkBoxLiveDelta
             // 
             this.checkBoxLiveDelta.AutoSize = true;
-            this.checkBoxLiveDelta.Location = new System.Drawing.Point(12, 106);
+            this.checkBoxLiveDelta.Location = new System.Drawing.Point(12, 98);
             this.checkBoxLiveDelta.Name = "checkBoxLiveDelta";
-            this.checkBoxLiveDelta.Size = new System.Drawing.Size(139, 17);
+            this.checkBoxLiveDelta.Size = new System.Drawing.Size(93, 16);
             this.checkBoxLiveDelta.TabIndex = 5;
-            this.checkBoxLiveDelta.Text = "Show live run delta (+/-)";
+            this.checkBoxLiveDelta.Text = "区間差を表示";
             this.checkBoxLiveDelta.UseVisualStyleBackColor = true;
             // 
             // groupBoxCompColumns
@@ -105,18 +105,18 @@
             this.groupBoxCompColumns.Controls.Add(this.checkBoxOldTime);
             this.groupBoxCompColumns.Controls.Add(this.checkBoxBestTime);
             this.groupBoxCompColumns.Controls.Add(this.checkBoxSumOfBests);
-            this.groupBoxCompColumns.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxCompColumns.Location = new System.Drawing.Point(12, 11);
             this.groupBoxCompColumns.Name = "groupBoxCompColumns";
-            this.groupBoxCompColumns.Size = new System.Drawing.Size(244, 42);
+            this.groupBoxCompColumns.Size = new System.Drawing.Size(244, 39);
             this.groupBoxCompColumns.TabIndex = 6;
             this.groupBoxCompColumns.TabStop = false;
-            this.groupBoxCompColumns.Text = "Show comparison columns...";
+            this.groupBoxCompColumns.Text = "表示する比較";
             // 
             // buttonOk
             // 
-            this.buttonOk.Location = new System.Drawing.Point(12, 129);
+            this.buttonOk.Location = new System.Drawing.Point(12, 119);
             this.buttonOk.Name = "buttonOk";
-            this.buttonOk.Size = new System.Drawing.Size(119, 23);
+            this.buttonOk.Size = new System.Drawing.Size(119, 21);
             this.buttonOk.TabIndex = 7;
             this.buttonOk.Text = "OK";
             this.buttonOk.UseVisualStyleBackColor = true;
@@ -125,18 +125,18 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(137, 129);
+            this.buttonCancel.Location = new System.Drawing.Point(137, 119);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(119, 23);
+            this.buttonCancel.Size = new System.Drawing.Size(119, 21);
             this.buttonCancel.TabIndex = 8;
-            this.buttonCancel.Text = "Cancel";
+            this.buttonCancel.Text = "取消";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // DViewSetColumnsDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(268, 164);
+            this.ClientSize = new System.Drawing.Size(268, 151);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
             this.Controls.Add(this.groupBoxCompColumns);

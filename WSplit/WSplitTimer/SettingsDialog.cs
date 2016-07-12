@@ -127,8 +127,8 @@ namespace WSplitTimer
             {
                 this.RestoreDefaults();
                 MessageBoxEx.Show(this,
-                    "An error has occurred and your settings were brought back to defaults.",
-                    "Defaults Restored", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "エラーが発生したため設定を初期化しました。",
+                    "設定初期化", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return base.ShowDialog(wsplit);
@@ -292,12 +292,12 @@ namespace WSplitTimer
             if (this.trackBarDoubleTap.Value == 0)
                 this.labelDoubleTapDisplay.Text = "Off";
             else
-                this.labelDoubleTapDisplay.Text = (this.trackBarDoubleTap.Value * 50) + " ms";
+                this.labelDoubleTapDisplay.Text = (this.trackBarDoubleTap.Value * 50) + " ミリ秒";
         }
 
         private void UpdateRefreshIntervalDisplay()
         {
-            this.labelRefreshIntervalDisplay.Text = this.trackBarRefreshInterval.Value + " ms";
+            this.labelRefreshIntervalDisplay.Text = this.trackBarRefreshInterval.Value + " ミリ秒";
         }
 
         private void UpdateOpacityDisplay()
@@ -388,7 +388,7 @@ namespace WSplitTimer
 
         private void buttonDefaults_Click(object sender, EventArgs e)
         {
-            if (MessageBoxEx.Show(this, "Are you sure?", "Restore Defaults", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBoxEx.Show(this, "本当に初期化しますか？", "設定初期化", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 this.RestoreDefaults();
             }

@@ -16,27 +16,21 @@
     public class RunEditorDialog : Form
     {
         public TextBox attemptsBox;
-        private DataGridViewTextBoxColumn best;
-        private DataGridViewTextBoxColumn bseg;
         private int cellHeight;
         private Button discardButton;
         private Control eCtl;
         public List<Segment> editList = new List<Segment>();
-        private DataGridViewImageColumn icon;
-        private DataGridViewTextBoxColumn iconPath;
         private Button insertButton;
         private Label label1;
         private Label label2;
         private Label label3;
         private Label lblGoal;
         private Button offsetButton;
-        private DataGridViewTextBoxColumn old;
         private TextBox oldOffset;
         private OpenFileDialog openIconDialog;
         private Button resetButton;
         private DataGridView runView;
         private Button saveButton;
-        private DataGridViewTextBoxColumn segment;
         public TextBox titleBox;
         public TextBox txtGoal;
 
@@ -51,6 +45,13 @@
         private LiveSplitXMLReader xmlReader;
 
         private int windowHeight;
+        private IContainer components;
+        private DataGridViewTextBoxColumn segment;
+        private DataGridViewTextBoxColumn old;
+        private DataGridViewTextBoxColumn best;
+        private DataGridViewTextBoxColumn bseg;
+        private DataGridViewTextBoxColumn iconPath;
+        private DataGridViewImageColumn icon;
         public int startDelay; //Temporary until I refactor the whole application...
 
         public RunEditorDialog(Split splits)
@@ -109,269 +110,339 @@
 
         private void InitializeComponent()
         {
-            this.runView = new DataGridView();
-            this.segment = new DataGridViewTextBoxColumn();
-            this.old = new DataGridViewTextBoxColumn();
-            this.best = new DataGridViewTextBoxColumn();
-            this.bseg = new DataGridViewTextBoxColumn();
-            this.iconPath = new DataGridViewTextBoxColumn();
-            this.icon = new DataGridViewImageColumn();
-            this.saveButton = new Button();
-            this.discardButton = new Button();
-            this.resetButton = new Button();
-            this.oldOffset = new TextBox();
-            this.label1 = new Label();
-            this.offsetButton = new Button();
-            this.titleBox = new TextBox();
-            this.txtGoal = new TextBox();
-            this.lblGoal = new Label();
-            this.label2 = new Label();
-            this.insertButton = new Button();
-            this.openIconDialog = new OpenFileDialog();
-            this.label3 = new Label();
-            this.attemptsBox = new TextBox();
-            this.buttonAutoFillBests = new Button();
-            this.buttonImport = new Button();
-            this.contextMenuImport = new ContextMenuStrip();
-            this.menuItemImportLlanfair = new ToolStripMenuItem();
-            this.menuItemImportSplitterZ = new ToolStripMenuItem();
-            this.menuItemImportLiveSplit = new ToolStripMenuItem();
-            this.openFileDialog = new OpenFileDialog();
-
-            ((ISupportInitialize)this.runView).BeginInit();
-            base.SuspendLayout();
-
+            this.components = new System.ComponentModel.Container();
+            this.runView = new System.Windows.Forms.DataGridView();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.discardButton = new System.Windows.Forms.Button();
+            this.resetButton = new System.Windows.Forms.Button();
+            this.oldOffset = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.offsetButton = new System.Windows.Forms.Button();
+            this.titleBox = new System.Windows.Forms.TextBox();
+            this.txtGoal = new System.Windows.Forms.TextBox();
+            this.lblGoal = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.insertButton = new System.Windows.Forms.Button();
+            this.openIconDialog = new System.Windows.Forms.OpenFileDialog();
+            this.label3 = new System.Windows.Forms.Label();
+            this.attemptsBox = new System.Windows.Forms.TextBox();
+            this.buttonAutoFillBests = new System.Windows.Forms.Button();
+            this.buttonImport = new System.Windows.Forms.Button();
+            this.contextMenuImport = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menuItemImportLlanfair = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemImportSplitterZ = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemImportLiveSplit = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.segment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.old = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.best = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bseg = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.iconPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.icon = new System.Windows.Forms.DataGridViewImageColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.runView)).BeginInit();
+            this.contextMenuImport.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // runView
+            // 
             this.runView.AllowUserToResizeRows = false;
-            this.runView.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top;
-            this.runView.BackgroundColor = SystemColors.Window;
-            this.runView.BorderStyle = BorderStyle.Fixed3D;
-            this.runView.CellBorderStyle = DataGridViewCellBorderStyle.Raised;
-            this.runView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            this.runView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.runView.Columns.AddRange(new DataGridViewColumn[] { this.segment, this.old, this.best, this.bseg, this.iconPath, this.icon });
-            this.runView.Location = new Point(12, 0x3a);
+            this.runView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.runView.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.runView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.runView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
+            this.runView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.runView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.runView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.segment,
+            this.old,
+            this.best,
+            this.bseg,
+            this.iconPath,
+            this.icon});
+            this.runView.Location = new System.Drawing.Point(12, 54);
             this.runView.Name = "runView";
             this.runView.RowHeadersVisible = false;
-            this.runView.Size = new Size(0x167, 0x2a);
+            this.runView.Size = new System.Drawing.Size(418, 39);
             this.runView.TabIndex = 0;
-            this.runView.CellDoubleClick += new DataGridViewCellEventHandler(this.runView_CellDoubleClick);
-            this.runView.UserAddedRow += new DataGridViewRowEventHandler(this.runView_UserAddedRow);
-            this.runView.UserDeletedRow += new DataGridViewRowEventHandler(this.runView_UserDeletedRow);
-            this.runView.KeyDown += new KeyEventHandler(this.runView_KeyDown);
-
-            this.segment.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            this.segment.HeaderText = "Segment";
-            this.segment.Name = "segment";
-            this.segment.SortMode = DataGridViewColumnSortMode.NotSortable;
-
-            this.old.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            this.old.HeaderText = "Old Time";
-            this.old.Name = "old";
-            this.old.SortMode = DataGridViewColumnSortMode.NotSortable;
-            this.old.Width = 0x37;
-
-            this.best.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            this.best.HeaderText = "Best Time";
-            this.best.Name = "best";
-            this.best.SortMode = DataGridViewColumnSortMode.NotSortable;
-            this.best.Width = 60;
-
-            this.bseg.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            this.bseg.HeaderText = "Best Seg.";
-            this.bseg.Name = "bseg";
-            this.bseg.SortMode = DataGridViewColumnSortMode.NotSortable;
-            this.bseg.Width = 0x3b;
-
-            this.iconPath.HeaderText = "Icon Path";
-            this.iconPath.Name = "iconPath";
-            this.iconPath.Visible = false;
-
-            this.icon.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            this.icon.HeaderText = "Icon";
-            this.icon.ImageLayout = DataGridViewImageCellLayout.Zoom;
-            this.icon.MinimumWidth = 40;
-            this.icon.Name = "icon";
-            this.icon.ReadOnly = true;
-            this.icon.Resizable = DataGridViewTriState.False;
-            this.icon.Width = 40;
-
-            this.saveButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.saveButton.DialogResult = DialogResult.OK;
-            this.saveButton.Location = new Point(266, 136);
+            this.runView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.runView_CellDoubleClick);
+            this.runView.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.runView_UserAddedRow);
+            this.runView.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.runView_UserDeletedRow);
+            this.runView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.runView_KeyDown);
+            // 
+            // saveButton
+            // 
+            this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.saveButton.Location = new System.Drawing.Point(325, 126);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new Size(50, 23);
+            this.saveButton.Size = new System.Drawing.Size(50, 21);
             this.saveButton.TabIndex = 1;
-            this.saveButton.Text = "Save";
+            this.saveButton.Text = "保存";
             this.saveButton.UseVisualStyleBackColor = true;
-            this.saveButton.Click += new EventHandler(this.saveButton_Click);
-
-            this.discardButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.discardButton.DialogResult = DialogResult.Cancel;
-            this.discardButton.Location = new Point(322, 136);
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // discardButton
+            // 
+            this.discardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.discardButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.discardButton.Location = new System.Drawing.Point(381, 126);
             this.discardButton.Name = "discardButton";
-            this.discardButton.Size = new Size(50, 23);
+            this.discardButton.Size = new System.Drawing.Size(50, 21);
             this.discardButton.TabIndex = 2;
-            this.discardButton.Text = "Cancel";
+            this.discardButton.Text = "取消";
             this.discardButton.UseVisualStyleBackColor = true;
-
-            this.resetButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.resetButton.Location = new Point(266, 106);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.resetButton.Location = new System.Drawing.Point(325, 98);
             this.resetButton.Name = "resetButton";
-            this.resetButton.Size = new Size(106, 23);
+            this.resetButton.Size = new System.Drawing.Size(106, 21);
             this.resetButton.TabIndex = 3;
-            this.resetButton.Text = "Reset";
+            this.resetButton.Text = "リセット";
             this.resetButton.UseVisualStyleBackColor = true;
-            this.resetButton.Click += new EventHandler(this.resetButton_Click);
-
-            this.buttonAutoFillBests.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            this.buttonAutoFillBests.Location = new Point(88, 106);
-            this.buttonAutoFillBests.Name = "buttonAutoFillBests";
-            this.buttonAutoFillBests.Size = new Size(120, 23);
-            this.buttonAutoFillBests.TabIndex = 4;
-            this.buttonAutoFillBests.Text = "Auto-fill best segments";
-            this.buttonAutoFillBests.UseVisualStyleBackColor = true;
-            this.buttonAutoFillBests.Click += this.buttonAutoFillBests_Click;
-
-            this.buttonImport.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            //this.buttonImport.ContextMenuStrip = this.contextMenuImport;
-            this.buttonImport.Location = new Point(12, 106);
-            this.buttonImport.Name = "buttonImport";
-            this.buttonImport.Size = new Size(70, 23);
-            this.buttonImport.TabIndex = 5;
-            this.buttonImport.Text = "Import... ▼";
-            this.buttonImport.UseVisualStyleBackColor = true;
-            this.buttonImport.MouseUp += this.buttonImport_MouseUp;
-
-            this.contextMenuImport.Items.Add(this.menuItemImportLlanfair);
-            this.contextMenuImport.Items.Add(this.menuItemImportSplitterZ);
-            this.contextMenuImport.Items.Add(this.menuItemImportLiveSplit);
-            this.contextMenuImport.Name = "contextMenuImport";
-
-            //this.menuItemImportLlanfair.Enabled = false;
-            this.menuItemImportLlanfair.Name = "menuItemImportLlanfair";
-            this.menuItemImportLlanfair.Text = "Import from Llanfair";
-            this.menuItemImportLlanfair.Click += this.menuItemImportLlanfair_Click;
-
-            //this.menuItemImportSplitterZ.Enabled = false;
-            this.menuItemImportSplitterZ.Name = "menuItemImportSplitterZ";
-            this.menuItemImportSplitterZ.Text = "Import from SplitterZ";
-            this.menuItemImportSplitterZ.Click += this.menuItemImportSplitterZ_Click;
-
-            this.menuItemImportLiveSplit.Name = "menuItemImportLiveSplit";
-            this.menuItemImportLiveSplit.Text = "Import from LiveSplit";
-            this.menuItemImportLiveSplit.Click += this.menuItemImportLiveSplit_Click;
-
-
-            this.oldOffset.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.oldOffset.Location = new Point(230, 0x1f);
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // oldOffset
+            // 
+            this.oldOffset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.oldOffset.Location = new System.Drawing.Point(289, 29);
             this.oldOffset.Name = "oldOffset";
-            this.oldOffset.Size = new Size(0x56, 20);
+            this.oldOffset.Size = new System.Drawing.Size(86, 19);
             this.oldOffset.TabIndex = 5;
-            this.oldOffset.TextChanged += new EventHandler(this.oldOffset_TextChanged);
-            this.oldOffset.KeyDown += new KeyEventHandler(this.oldOffset_KeyDown);
-            this.oldOffset.KeyPress += new KeyPressEventHandler(this.oldOffset_KeyPress);
-
-            this.label1.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            this.oldOffset.TextChanged += new System.EventHandler(this.oldOffset_TextChanged);
+            this.oldOffset.KeyDown += new System.Windows.Forms.KeyEventHandler(this.oldOffset_KeyDown);
+            this.oldOffset.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.oldOffset_KeyPress);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new Point(230, 15);
+            this.label1.Location = new System.Drawing.Point(289, 14);
             this.label1.Name = "label1";
-            this.label1.Size = new Size(0x4d, 13);
+            this.label1.Size = new System.Drawing.Size(83, 12);
             this.label1.TabIndex = 6;
-            this.label1.Text = "Old time offset:";
-
-            this.offsetButton.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.offsetButton.Location = new Point(0x142, 0x1d);
+            this.label1.Text = "旧記録オフセット";
+            // 
+            // offsetButton
+            // 
+            this.offsetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.offsetButton.Location = new System.Drawing.Point(381, 27);
             this.offsetButton.Name = "offsetButton";
-            this.offsetButton.Size = new Size(50, 0x17);
+            this.offsetButton.Size = new System.Drawing.Size(50, 21);
             this.offsetButton.TabIndex = 7;
-            this.offsetButton.Text = "Apply";
+            this.offsetButton.Text = "適用";
             this.offsetButton.UseVisualStyleBackColor = true;
-            this.offsetButton.Click += new EventHandler(this.offsetButton_Click);
-
-            this.titleBox.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.titleBox.Location = new Point(12, 0x1f);
+            this.offsetButton.Click += new System.EventHandler(this.offsetButton_Click);
+            // 
+            // titleBox
+            // 
+            this.titleBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.titleBox.Location = new System.Drawing.Point(12, 29);
             this.titleBox.Name = "titleBox";
-            this.titleBox.Size = new Size(0x6a, 20);
+            this.titleBox.Size = new System.Drawing.Size(131, 19);
             this.titleBox.TabIndex = 8;
-
-            this.txtGoal.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top;
-            this.txtGoal.Location = new Point(titleBox.Right + 6, 0x1f);
+            // 
+            // txtGoal
+            // 
+            this.txtGoal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtGoal.Location = new System.Drawing.Point(148, 29);
             this.txtGoal.Name = "txtGoal";
-            this.txtGoal.Size = new Size(0x64, 20);
+            this.txtGoal.Size = new System.Drawing.Size(131, 19);
             this.txtGoal.TabIndex = 9;
-
-            this.label2.AutoSize = true;
-            this.label2.Location = new Point(12, 15);
-            this.label2.Name = "label2";
-            this.label2.Size = new Size(0x31, 13);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Run title:";
-
+            // 
+            // lblGoal
+            // 
             this.lblGoal.AutoSize = true;
-            this.lblGoal.Location = new Point(txtGoal.Left, 15);
+            this.lblGoal.Location = new System.Drawing.Point(148, 14);
             this.lblGoal.Name = "lblGoal";
-            this.lblGoal.Size = new Size(0x31, 13);
-            this.lblGoal.Text = "Goal:";
-
-            this.insertButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.insertButton.Location = new Point(12, 136);
+            this.lblGoal.Size = new System.Drawing.Size(49, 12);
+            this.lblGoal.TabIndex = 14;
+            this.lblGoal.Text = "カテゴリー";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 14);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 12);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "タイトル名";
+            // 
+            // insertButton
+            // 
+            this.insertButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.insertButton.Location = new System.Drawing.Point(12, 126);
             this.insertButton.Name = "insertButton";
-            this.insertButton.Size = new Size(50, 0x17);
+            this.insertButton.Size = new System.Drawing.Size(75, 21);
             this.insertButton.TabIndex = 11;
-            this.insertButton.Text = "Insert";
+            this.insertButton.Text = "新区間挿入";
             this.insertButton.UseVisualStyleBackColor = true;
-            this.insertButton.Click += new EventHandler(this.insertButton_Click);
-
+            this.insertButton.Click += new System.EventHandler(this.insertButton_Click);
+            // 
+            // openIconDialog
+            // 
             this.openIconDialog.Filter = "Image files (*.bmp; *.gif; *.jpg; *.png; *.tiff)|*.bmp;*.gif;*.jpg;*.png;*.tiff";
-
-            this.label3.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new Point(0x44, 141);
+            this.label3.Location = new System.Drawing.Point(93, 130);
             this.label3.Name = "label3";
-            this.label3.Size = new Size(0x33, 13);
+            this.label3.Size = new System.Drawing.Size(53, 12);
             this.label3.TabIndex = 12;
-            this.label3.Text = "Attempts:";
-
-            this.attemptsBox.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            this.attemptsBox.Location = new Point(0x7d, 138);
+            this.label3.Text = "試行回数";
+            // 
+            // attemptsBox
+            // 
+            this.attemptsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.attemptsBox.Location = new System.Drawing.Point(150, 127);
             this.attemptsBox.Name = "attemptsBox";
-            this.attemptsBox.Size = new Size(40, 20);
+            this.attemptsBox.Size = new System.Drawing.Size(40, 19);
             this.attemptsBox.TabIndex = 13;
             this.attemptsBox.Text = "0";
-            this.attemptsBox.TextAlign = HorizontalAlignment.Right;
-            this.attemptsBox.TextChanged += new EventHandler(this.attemptsBox_TextChanged);
-            this.attemptsBox.KeyPress += new KeyPressEventHandler(this.attemptsBox_KeyPress);
+            this.attemptsBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.attemptsBox.TextChanged += new System.EventHandler(this.attemptsBox_TextChanged);
+            this.attemptsBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.attemptsBox_KeyPress);
+            // 
+            // buttonAutoFillBests
+            // 
+            this.buttonAutoFillBests.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAutoFillBests.Location = new System.Drawing.Point(147, 98);
+            this.buttonAutoFillBests.Name = "buttonAutoFillBests";
+            this.buttonAutoFillBests.Size = new System.Drawing.Size(140, 21);
+            this.buttonAutoFillBests.TabIndex = 4;
+            this.buttonAutoFillBests.Text = "自動自己ベスト区間入力";
+            this.buttonAutoFillBests.UseVisualStyleBackColor = true;
+            this.buttonAutoFillBests.Click += this.buttonAutoFillBests_Click;
+            // 
+            // buttonImport
+            // 
+            this.buttonImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonImport.Location = new System.Drawing.Point(12, 98);
+            this.buttonImport.Name = "buttonImport";
+            this.buttonImport.Size = new System.Drawing.Size(70, 21);
+            this.buttonImport.TabIndex = 5;
+            this.buttonImport.Text = "インポート";
+            this.buttonImport.UseVisualStyleBackColor = true;
+            this.buttonImport.MouseUp += this.buttonImport_MouseUp;
+            // 
+            // contextMenuImport
+            // 
+            this.contextMenuImport.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemImportLlanfair,
+            this.menuItemImportSplitterZ,
+            this.menuItemImportLiveSplit});
+            this.contextMenuImport.Name = "contextMenuImport";
+            this.contextMenuImport.Size = new System.Drawing.Size(190, 70);
+            // 
+            // menuItemImportLlanfair
+            // 
+            this.menuItemImportLlanfair.Name = "menuItemImportLlanfair";
+            this.menuItemImportLlanfair.Size = new System.Drawing.Size(189, 22);
+            this.menuItemImportLlanfair.Text = "Llanfairからインポート";
+            this.menuItemImportLlanfair.Click += this.menuItemImportLlanfair_Click;
+            // 
+            // menuItemImportSplitterZ
+            // 
+            this.menuItemImportSplitterZ.Name = "menuItemImportSplitterZ";
+            this.menuItemImportSplitterZ.Size = new System.Drawing.Size(189, 22);
+            this.menuItemImportSplitterZ.Text = "SplitterZからインポート";
+            this.menuItemImportSplitterZ.Click += this.menuItemImportSplitterZ_Click;
+            // 
+            // menuItemImportLiveSplit
+            // 
+            this.menuItemImportLiveSplit.Name = "menuItemImportLiveSplit";
+            this.menuItemImportLiveSplit.Size = new System.Drawing.Size(189, 22);
+            this.menuItemImportLiveSplit.Text = "LiveSplitからインポート";
+            this.menuItemImportLiveSplit.Click += this.menuItemImportLiveSplit_Click;
+            // 
+            // segment
+            // 
+            this.segment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.segment.HeaderText = "区間名";
+            this.segment.Name = "segment";
+            this.segment.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // old
+            // 
+            this.old.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.old.FillWeight = 45F;
+            this.old.HeaderText = "旧記録";
+            this.old.Name = "old";
+            this.old.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // best
+            // 
+            this.best.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.best.FillWeight = 45F;
+            this.best.HeaderText = "自己ベスト";
+            this.best.Name = "best";
+            this.best.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // bseg
+            // 
+            this.bseg.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.bseg.FillWeight = 45F;
+            this.bseg.HeaderText = "区間最速";
+            this.bseg.Name = "bseg";
+            this.bseg.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // iconPath
+            // 
+            this.iconPath.HeaderText = "アイコンパス";
+            this.iconPath.Name = "iconPath";
+            this.iconPath.Visible = false;
+            // 
+            // icon
+            // 
+            this.icon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.icon.FillWeight = 30F;
+            this.icon.HeaderText = "アイコン";
+            this.icon.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.icon.MinimumWidth = 35;
+            this.icon.Name = "icon";
+            this.icon.ReadOnly = true;
+            this.icon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // RunEditorDialog
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(443, 158);
+            this.Controls.Add(this.attemptsBox);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.insertButton);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.titleBox);
+            this.Controls.Add(this.txtGoal);
+            this.Controls.Add(this.lblGoal);
+            this.Controls.Add(this.offsetButton);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.oldOffset);
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.discardButton);
+            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.runView);
+            this.Controls.Add(this.buttonAutoFillBests);
+            this.Controls.Add(this.buttonImport);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(390, 114);
+            this.Name = "RunEditorDialog";
+            this.Text = "スプリット編集";
+            this.Shown += new System.EventHandler(this.RunEditor_Shown);
+            ((System.ComponentModel.ISupportInitialize)(this.runView)).EndInit();
+            this.contextMenuImport.ResumeLayout(false);
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
-
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            base.ClientSize = new Size(384, 171);
-            base.Controls.Add(this.attemptsBox);
-            base.Controls.Add(this.label3);
-            base.Controls.Add(this.insertButton);
-            base.Controls.Add(this.label2);
-            base.Controls.Add(this.titleBox);
-            base.Controls.Add(this.txtGoal);
-            base.Controls.Add(this.lblGoal);
-            base.Controls.Add(this.offsetButton);
-            base.Controls.Add(this.label1);
-            base.Controls.Add(this.oldOffset);
-            base.Controls.Add(this.resetButton);
-            base.Controls.Add(this.discardButton);
-            base.Controls.Add(this.saveButton);
-            base.Controls.Add(this.runView);
-            base.Controls.Add(this.buttonAutoFillBests);
-            base.Controls.Add(this.buttonImport);
-            base.FormBorderStyle = FormBorderStyle.FixedDialog;
-            base.MaximizeBox = false;
-            base.MinimizeBox = false;
-            this.MinimumSize = new Size(390, 120);
-            base.Name = "RunEditorDialog";
-            this.Text = "Run Editor";
-            base.Shown += new EventHandler(this.RunEditor_Shown);
-            ((ISupportInitialize)this.runView).EndInit();
-            base.ResumeLayout(false);
-            base.PerformLayout();
         }
 
         private void menuItemImportSplitterZ_Click(object sender, EventArgs e)
@@ -557,7 +628,7 @@
                         // The only remaining thing in the file should be the window height and width for Llanfair usage.
                         // We don't need to extract it.
 
-                        
+
 
                         this.populateList(segmentList);
                         this.titleBox.Text = strTitle;
@@ -592,7 +663,7 @@
             }
             else
             {
-                MessageBox.Show("The import from livesplit has failed.");
+                MessageBox.Show("Livesplitからのインポートに失敗しました。");
             }
         }
 
@@ -615,7 +686,7 @@
 
         private void buttonAutoFillBests_Click(object sender, EventArgs e)
         {
-            if (MessageBoxEx.Show(this, "Are you sure?", "Auto-fill best segments", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBoxEx.Show(this, "実行しますか？", "自動入力", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 List<Segment> splitList = new List<Segment>();
                 this.FillSplitList(ref splitList);
@@ -743,7 +814,7 @@
             if ((e.ColumnIndex == 5) && (e.RowIndex >= 0))
             {
                 if (this.runView.Rows[e.RowIndex].Cells[0].Value != null)
-                    this.openIconDialog.Title = "Set Icon for " + this.runView.Rows[e.RowIndex].Cells[0].Value.ToString() + "...";
+                    this.openIconDialog.Title = "区間" + this.runView.Rows[e.RowIndex].Cells[0].Value.ToString() + "のアイコン設定";
                 else
                     this.openIconDialog.Title = "Set Icon...";
 

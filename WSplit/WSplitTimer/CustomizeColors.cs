@@ -569,7 +569,7 @@
             base.MaximizeBox = false;
             base.MinimizeBox = false;
             base.Name = "CustomizeColors";
-            this.Text = "Set colors...";
+            this.Text = "色設定";
 
             // ----------------------------------------
             // Setting up globale controls:
@@ -581,7 +581,7 @@
             this.labelPreview.Name = "labelPreview";
             this.labelPreview.Size = new Size(0x2d, 13);
             this.labelPreview.TabIndex = 2;
-            this.labelPreview.Text = "Preview";
+            this.labelPreview.Text = "プレビュー";
             //
             // picBoxPreview
             //
@@ -599,7 +599,7 @@
             this.checkBoxPlainBg.Name = "checkBoxPlainBg";
             this.checkBoxPlainBg.Size = new Size(0x6c, 0x11);
             this.checkBoxPlainBg.TabIndex = 6;
-            this.checkBoxPlainBg.Text = "Preview Plain BG";
+            this.checkBoxPlainBg.Text = "単色背景プレビュー";
             this.checkBoxPlainBg.UseVisualStyleBackColor = true;
             this.checkBoxPlainBg.CheckedChanged += this.plainBg_CheckedChanged;
 
@@ -610,7 +610,7 @@
             this.buttonDefaultColors.Name = "buttonDefaultColors";
             this.buttonDefaultColors.Size = new Size(0x7c, 0x17);
             this.buttonDefaultColors.TabIndex = 5;
-            this.buttonDefaultColors.Text = "Restore Defaults";
+            this.buttonDefaultColors.Text = "初期設定に戻す";
             this.buttonDefaultColors.UseVisualStyleBackColor = true;
             this.buttonDefaultColors.Click += this.buttonDefaultColors_Click;
             //
@@ -620,7 +620,7 @@
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new Size(0x3b, 0x17);
             this.buttonSave.TabIndex = 7;
-            this.buttonSave.Text = "Save";
+            this.buttonSave.Text = "保存";
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += this.buttonSave_Click;
             //
@@ -630,7 +630,7 @@
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new Size(0x3b, 0x17);
             this.buttonLoad.TabIndex = 8;
-            this.buttonLoad.Text = "Load";
+            this.buttonLoad.Text = "読込";
             this.buttonLoad.UseVisualStyleBackColor = true;
             this.buttonLoad.Click += this.buttonLoad_Click;
             //
@@ -651,7 +651,7 @@
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new Size(0x3b, 0x17);
             this.buttonCancel.TabIndex = 4;
-            this.buttonCancel.Text = "Cancel";
+            this.buttonCancel.Text = "取消";
             this.buttonCancel.UseVisualStyleBackColor = true;
 
             // ----------------------------------------
@@ -672,7 +672,7 @@
             //
             this.tabPageClockColors.Controls.AddRange(new Control[]
             {
-                this.labelColumnFore, this.groupBoxBackground,                    
+                this.labelColumnFore, this.groupBoxBackground,
                 this.labelAhead, this.picBoxAheadFore,
                 this.labelAheadLosing, this.picBoxAheadLosingFore,
                 this.labelBehind, this.picBoxBehindFore,
@@ -689,7 +689,7 @@
             this.tabPageClockColors.Name = "tabPageClockColors";
             this.tabPageClockColors.Padding = new Padding(3);
             this.tabPageClockColors.TabIndex = 0;
-            this.tabPageClockColors.Text = "Clock/Status";
+            this.tabPageClockColors.Text = "タイマー";
             this.tabPageClockColors.UseVisualStyleBackColor = true;
             //
             // tabPageSegColors
@@ -715,7 +715,7 @@
             this.tabPageSegColors.Name = "segColorTab";
             this.tabPageSegColors.Padding = new Padding(3);
             this.tabPageSegColors.TabIndex = 1;
-            this.tabPageSegColors.Text = "Segments";
+            this.tabPageSegColors.Text = "区間";
             this.tabPageSegColors.UseVisualStyleBackColor = true;
             //
             // tabPageDetailedView
@@ -730,7 +730,7 @@
             this.tabPageDetailedViewColors.Name = "tabPageDetailedView";
             this.tabPageDetailedViewColors.Padding = new Padding(3);
             this.tabPageDetailedViewColors.TabIndex = 2;
-            this.tabPageDetailedViewColors.Text = "Detailed View";
+            this.tabPageDetailedViewColors.Text = "詳細";
             this.tabPageDetailedViewColors.UseVisualStyleBackColor = true;
 
             // ----------------------------------------
@@ -739,20 +739,20 @@
             // labelColumnFore
             //
             this.labelColumnFore.AutoSize = true;
-            this.labelColumnFore.Location = new Point(0x6d, 0x16);
+            this.labelColumnFore.Location = new Point(0x61, 0x16);
             this.labelColumnFore.Name = "labelColumnFore";
             this.labelColumnFore.Size = new Size(0x1c, 13);
-            this.labelColumnFore.Text = "Fore";
+            this.labelColumnFore.Text = "テキスト";
             this.labelColumnColors.AutoSize = true;
-            this.labelColumnColors.Location = new Point(0x11, 0x10);
+            this.labelColumnColors.Location = new Point(0x0D, 0x10);
             this.labelColumnColors.Name = "labelColumnColors";
             this.labelColumnColors.Size = new Size(0x24, 13);
-            this.labelColumnColors.Text = "Colors";
+            this.labelColumnColors.Text = "色";
             this.labelColumnPlain.AutoSize = true;
             this.labelColumnPlain.Location = new Point(0x43, 0x10);
             this.labelColumnPlain.Name = "labelColumnPlain";
             this.labelColumnPlain.Size = new Size(30, 13);
-            this.labelColumnPlain.Text = "Plain";
+            this.labelColumnPlain.Text = "単色";
             //
             // groupBoxBackground
             //
@@ -774,7 +774,7 @@
             this.groupBoxBackground.Name = "groupBoxBackground";
             this.groupBoxBackground.Size = new Size(0x68, 0x15d);
             this.groupBoxBackground.TabStop = false;
-            this.groupBoxBackground.Text = "Background";
+            this.groupBoxBackground.Text = "背景";
 
             //
             // labelAhead
@@ -784,7 +784,7 @@
             this.labelAhead.Location = new Point(7, 0x26);
             this.labelAhead.MinimumSize = new Size(100, 20);
             this.labelAhead.Name = "labelAhead";
-            this.labelAhead.Text = "Ahead";
+            this.labelAhead.Text = "貯金";
             this.labelAhead.TextAlign = ContentAlignment.MiddleRight;
             this.labelAhead.Click += this.labelAhead_Click;
             //
@@ -836,7 +836,7 @@
             this.labelAheadLosing.Location = new Point(7, 0x40);
             this.labelAheadLosing.MinimumSize = new Size(100, 20);
             this.labelAheadLosing.Name = "labelAheadLosing";
-            this.labelAheadLosing.Text = "Ahead (losing time)";
+            this.labelAheadLosing.Text = "貯金減";
             this.labelAheadLosing.TextAlign = ContentAlignment.MiddleRight;
             this.labelAheadLosing.Click += this.labelAheadLosing_Click;
             //
@@ -888,7 +888,7 @@
             this.labelBehind.Location = new Point(7, 90);
             this.labelBehind.MinimumSize = new Size(100, 20);
             this.labelBehind.Name = "labelBehind";
-            this.labelBehind.Text = "Behind";
+            this.labelBehind.Text = "借金";
             this.labelBehind.TextAlign = ContentAlignment.MiddleRight;
             this.labelBehind.Click += this.labelBehind_Click;
             //
@@ -940,7 +940,7 @@
             this.labelBehindLosing.Location = new Point(7, 0x74);
             this.labelBehindLosing.MinimumSize = new Size(100, 20);
             this.labelBehindLosing.Name = "labelBehindLosing";
-            this.labelBehindLosing.Text = "Behind (losing time)";
+            this.labelBehindLosing.Text = "借金増";
             this.labelBehindLosing.TextAlign = ContentAlignment.MiddleRight;
             this.labelBehindLosing.Click += this.labelBehindLosing_Click;
             //
@@ -992,7 +992,7 @@
             this.labelNoLoaded.Location = new Point(7, 0x8e);
             this.labelNoLoaded.MinimumSize = new Size(100, 20);
             this.labelNoLoaded.Name = "labelNoLoaded";
-            this.labelNoLoaded.Text = "No run loaded";
+            this.labelNoLoaded.Text = "スプリット未使用";
             this.labelNoLoaded.TextAlign = ContentAlignment.MiddleRight;
             this.labelNoLoaded.Click += this.labelNoLoaded_Click;
             //
@@ -1044,7 +1044,7 @@
             this.labelFinished.Location = new Point(7, 0xa8);
             this.labelFinished.MinimumSize = new Size(100, 20);
             this.labelFinished.Name = "labelFinished";
-            this.labelFinished.Text = "Finished";
+            this.labelFinished.Text = "完走";
             this.labelFinished.TextAlign = ContentAlignment.MiddleRight;
             this.labelFinished.Click += this.labelFinished_Click;
             //
@@ -1096,7 +1096,7 @@
             this.labelRecord.Location = new Point(7, 0xc2);
             this.labelRecord.MinimumSize = new Size(100, 20);
             this.labelRecord.Name = "labelRecord";
-            this.labelRecord.Text = "New record";
+            this.labelRecord.Text = "新記録";
             this.labelRecord.TextAlign = ContentAlignment.MiddleRight;
             this.labelRecord.Click += this.labelRecord_Click;
             //
@@ -1148,7 +1148,7 @@
             this.labelDelay.Location = new Point(7, 220);
             this.labelDelay.MinimumSize = new Size(100, 20);
             this.labelDelay.Name = "labelDelay";
-            this.labelDelay.Text = "Delay";
+            this.labelDelay.Text = "遅延開始";
             this.labelDelay.TextAlign = ContentAlignment.MiddleRight;
             this.labelDelay.Click += this.labelDelay_Click;
             //
@@ -1200,7 +1200,7 @@
             this.labelPaused.Location = new Point(7, 0xf6);
             this.labelPaused.MinimumSize = new Size(100, 20);
             this.labelPaused.Name = "labelPaused";
-            this.labelPaused.Text = "Paused";
+            this.labelPaused.Text = "一時停止";
             this.labelPaused.TextAlign = ContentAlignment.MiddleRight;
             this.labelPaused.Click += this.labelPaused_Click;
             //
@@ -1222,7 +1222,7 @@
             this.labelFlash.Location = new Point(7, 0x110);
             this.labelFlash.MinimumSize = new Size(100, 20);
             this.labelFlash.Name = "labelFlash";
-            this.labelFlash.Text = "Split flash";
+            this.labelFlash.Text = "スプリット時ハイライト";
             this.labelFlash.TextAlign = ContentAlignment.MiddleRight;
             this.labelFlash.Click += this.labelFlash_Click;
             //
@@ -1243,7 +1243,7 @@
             this.labelStatusBar.Location = new Point(7, 0x12a);
             this.labelStatusBar.MinimumSize = new Size(100, 20);
             this.labelStatusBar.Name = "labelStatusBar";
-            this.labelStatusBar.Text = "Status bar";
+            this.labelStatusBar.Text = "区間ステータス";
             this.labelStatusBar.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxStatusBarFore
@@ -1293,7 +1293,7 @@
             this.labelRunTitle.Location = new Point(7, 0x144);
             this.labelRunTitle.MinimumSize = new Size(100, 20);
             this.labelRunTitle.Name = "labelRunTitle";
-            this.labelRunTitle.Text = "Run title";
+            this.labelRunTitle.Text = "タイトル";
             this.labelRunTitle.TextAlign = ContentAlignment.MiddleRight;
             this.picBoxRunTitleFore.BorderStyle = BorderStyle.FixedSingle;
             //
@@ -1345,15 +1345,15 @@
             this.labelColumnSegColor.Location = new Point(0x8d, 3);
             this.labelColumnSegColor.Name = "labelColumnSegColor";
             this.labelColumnSegColor.Size = new Size(0x1f, 13);
-            this.labelColumnSegColor.Text = "Color";
+            this.labelColumnSegColor.Text = "色";
             //
             // labelColumnSegColor2
             //
             this.labelColumnSegColor2.AutoSize = true;
-            this.labelColumnSegColor2.Location = new Point(0xac, 3);
+            this.labelColumnSegColor2.Location = new Point(0xB2, 3);
             this.labelColumnSegColor2.Name = "labelColumnSegColor2";
             this.labelColumnSegColor2.Size = new Size(0x25, 13);
-            this.labelColumnSegColor2.Text = "Color2";
+            this.labelColumnSegColor2.Text = "色2";
             //
             // labelColumnSegPlain
             //
@@ -1361,7 +1361,7 @@
             this.labelColumnSegPlain.Location = new Point(0xd1, 3);
             this.labelColumnSegPlain.Name = "labelColumnSegPlain";
             this.labelColumnSegPlain.Size = new Size(30, 13);
-            this.labelColumnSegPlain.Text = "Plain";
+            this.labelColumnSegPlain.Text = "単色";
 
             //
             // labelSegBackground
@@ -1370,7 +1370,7 @@
             this.labelSegBackground.Location = new Point(12, 0x13);
             this.labelSegBackground.MinimumSize = new Size(0x80, 20);
             this.labelSegBackground.Name = "labelSegBackground";
-            this.labelSegBackground.Text = "Background";
+            this.labelSegBackground.Text = "背景";
             this.labelSegBackground.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegBackground
@@ -1410,7 +1410,7 @@
             this.labelSegHighlight.Location = new Point(12, 0x2d);
             this.labelSegHighlight.MinimumSize = new Size(0x80, 20);
             this.labelSegHighlight.Name = "labelSegHighlight";
-            this.labelSegHighlight.Text = "Current Highlight";
+            this.labelSegHighlight.Text = "区間ハイライト";
             this.labelSegHighlight.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegHighlight
@@ -1450,7 +1450,7 @@
             this.labelSegHighlightBorder.Location = new Point(12, 0x47);
             this.labelSegHighlightBorder.MinimumSize = new Size(0x80, 20);
             this.labelSegHighlightBorder.Name = "labelSegHighlightBorder";
-            this.labelSegHighlightBorder.Text = "Current Highlight Border";
+            this.labelSegHighlightBorder.Text = "ハイライトの上下線";
             this.labelSegHighlightBorder.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegHighlightBorder
@@ -1470,7 +1470,7 @@
             this.labelSegPastText.Location = new Point(12, 0x61);
             this.labelSegPastText.MinimumSize = new Size(0x80, 20);
             this.labelSegPastText.Name = "labelSegPastText";
-            this.labelSegPastText.Text = "Past Segment Text";
+            this.labelSegPastText.Text = "過去区間";
             this.labelSegPastText.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegPastText
@@ -1490,7 +1490,7 @@
             this.labelSegLiveText.Location = new Point(12, 0x7b);
             this.labelSegLiveText.MinimumSize = new Size(0x80, 20);
             this.labelSegLiveText.Name = "labelSegLiveText";
-            this.labelSegLiveText.Text = "Live Segment Text";
+            this.labelSegLiveText.Text = "現区間";
             this.labelSegLiveText.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegLiveText
@@ -1510,7 +1510,7 @@
             this.labelSegFutureText.Location = new Point(12, 0x95);
             this.labelSegFutureText.MinimumSize = new Size(0x80, 20);
             this.labelSegFutureText.Name = "labelSegFutureText";
-            this.labelSegFutureText.Text = "Future Segment Title";
+            this.labelSegFutureText.Text = "未来区間名";
             this.labelSegFutureText.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegFutureText
@@ -1530,7 +1530,7 @@
             this.labelSegFutureTime.Location = new Point(12, 0xaf);
             this.labelSegFutureTime.MinimumSize = new Size(0x80, 20);
             this.labelSegFutureTime.Name = "labelSegFutureTime";
-            this.labelSegFutureTime.Text = "Future Segment Time";
+            this.labelSegFutureTime.Text = "未来区間タイム";
             this.labelSegFutureTime.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegFutureTime
@@ -1550,7 +1550,7 @@
             this.labelSegNewTime.Location = new Point(12, 0xc9);
             this.labelSegNewTime.MinimumSize = new Size(0x80, 20);
             this.labelSegNewTime.Name = "labelSegNewTime";
-            this.labelSegNewTime.Text = "New Time";
+            this.labelSegNewTime.Text = "新規タイム";
             this.labelSegNewTime.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegNewTime
@@ -1570,7 +1570,7 @@
             this.labelSegMissing.Location = new Point(12, 0xe3);
             this.labelSegMissing.MinimumSize = new Size(0x80, 20);
             this.labelSegMissing.Name = "labelSegMissing";
-            this.labelSegMissing.Text = "Missing Time/Delta";
+            this.labelSegMissing.Text = "区間タイムなし";
             this.labelSegMissing.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegMissing
@@ -1590,7 +1590,7 @@
             this.labelSegBestSegment.Location = new Point(12, 0xfd);
             this.labelSegBestSegment.MinimumSize = new Size(0x80, 20);
             this.labelSegBestSegment.Name = "labelSegBestSegment";
-            this.labelSegBestSegment.Text = "New Best Segment";
+            this.labelSegBestSegment.Text = "区間新記録";
             this.labelSegBestSegment.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegBestSegment
@@ -1610,7 +1610,7 @@
             this.labelSegAheadGain.Location = new Point(12, 0x117);
             this.labelSegAheadGain.MinimumSize = new Size(0x80, 20);
             this.labelSegAheadGain.Name = "labelSegAheadGain";
-            this.labelSegAheadGain.Text = "Ahead (gained time)";
+            this.labelSegAheadGain.Text = "貯金増";
             this.labelSegAheadGain.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegAheadGain
@@ -1630,7 +1630,7 @@
             this.labelSegAheadLoss.Location = new Point(12, 0x131);
             this.labelSegAheadLoss.MinimumSize = new Size(0x80, 20);
             this.labelSegAheadLoss.Name = "labelSegAheadLoss";
-            this.labelSegAheadLoss.Text = "Ahead (lost time)";
+            this.labelSegAheadLoss.Text = "貯金減";
             this.labelSegAheadLoss.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegAheadLoss
@@ -1650,7 +1650,7 @@
             this.labelSegBehindGain.Location = new Point(12, 0x14b);
             this.labelSegBehindGain.MinimumSize = new Size(0x80, 20);
             this.labelSegBehindGain.Name = "labelSegBehindGain";
-            this.labelSegBehindGain.Text = "Behind (gained time)";
+            this.labelSegBehindGain.Text = "借金減";
             this.labelSegBehindGain.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegBehindGain
@@ -1670,7 +1670,7 @@
             this.labelSegBehindLoss.Location = new Point(12, 0x165);
             this.labelSegBehindLoss.MinimumSize = new Size(0x80, 20);
             this.labelSegBehindLoss.Name = "labelSegBehindLoss";
-            this.labelSegBehindLoss.Text = "Behind (lost time)";
+            this.labelSegBehindLoss.Text = "借金増";
             this.labelSegBehindLoss.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxSegBehindLoss
@@ -1692,7 +1692,7 @@
             this.checkBoxDViewUsePrimary.Location = new Point(12, 10);
             this.checkBoxDViewUsePrimary.MinimumSize = new Size(128, 20);
             this.checkBoxDViewUsePrimary.Name = "checkBoxDViewUsePrimary";
-            this.checkBoxDViewUsePrimary.Text = "Use colors from primary window";
+            this.checkBoxDViewUsePrimary.Text = "本タイマーの色設定を使う";
             this.checkBoxDViewUsePrimary.TextAlign = ContentAlignment.BottomLeft;
             this.checkBoxDViewUsePrimary.CheckedChanged += checkBoxDViewUsePrimary_CheckedChanged;
 
@@ -1711,7 +1711,7 @@
             this.groupBoxDViewClock.Name = "groupBoxDViewClock";
             this.groupBoxDViewClock.Size = new Size(237, 148);
             this.groupBoxDViewClock.TabStop = false;
-            this.groupBoxDViewClock.Text = "Clock colors";
+            this.groupBoxDViewClock.Text = "タイムの色";
             //
             // groupBoxDViewSegments
             //
@@ -1727,7 +1727,7 @@
             this.groupBoxDViewSegments.Name = "groupBoxDViewSegments";
             this.groupBoxDViewSegments.Size = new Size(237, 148);
             this.groupBoxDViewSegments.TabStop = false;
-            this.groupBoxDViewSegments.Text = "Segments colors";
+            this.groupBoxDViewSegments.Text = "区間の色";
             //
             // groupBoxGraph
             //
@@ -1739,7 +1739,7 @@
             this.groupBoxGraph.Name = "groupBoxGraph";
             this.groupBoxGraph.Size = new Size(237, 44);
             this.groupBoxGraph.TabStop = false;
-            this.groupBoxGraph.Text = "Graph";
+            this.groupBoxGraph.Text = "グラフ";
 
             //
             // labelDViewAhead
@@ -1748,7 +1748,7 @@
             this.labelDViewAhead.Location = new Point(5, 15);
             this.labelDViewAhead.MinimumSize = new Size(84, 20);
             this.labelDViewAhead.Name = "labelDViewAhead";
-            this.labelDViewAhead.Text = "Ahead (gaining)";
+            this.labelDViewAhead.Text = "貯金増";
             this.labelDViewAhead.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewAhead
@@ -1768,7 +1768,7 @@
             this.labelDViewAheadLosing.Location = new Point(148, 15);
             this.labelDViewAheadLosing.MinimumSize = new Size(84, 20);
             this.labelDViewAheadLosing.Name = "labelDViewAheadLosing";
-            this.labelDViewAheadLosing.Text = "Ahead (losing)";
+            this.labelDViewAheadLosing.Text = "貯金減";
             this.labelDViewAheadLosing.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewAheadLosing
@@ -1788,7 +1788,7 @@
             this.labelDViewBehind.Location = new Point(5, 41);
             this.labelDViewBehind.MinimumSize = new Size(84, 20);
             this.labelDViewBehind.Name = "labelDViewBehind";
-            this.labelDViewBehind.Text = "Behind (gaining)";
+            this.labelDViewBehind.Text = "借金減";
             this.labelDViewBehind.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewBehind
@@ -1808,7 +1808,7 @@
             this.labelDViewBehindLosing.Location = new Point(148, 41);
             this.labelDViewBehindLosing.MinimumSize = new Size(84, 20);
             this.labelDViewBehindLosing.Name = "labelDViewBehindLosing";
-            this.labelDViewBehindLosing.Text = "Behind (losing)";
+            this.labelDViewBehindLosing.Text = "借金増";
             this.labelDViewBehindLosing.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewBehindLosing
@@ -1828,7 +1828,7 @@
             this.labelDViewFinished.Location = new Point(5, 67);
             this.labelDViewFinished.MinimumSize = new Size(84, 20);
             this.labelDViewFinished.Name = "labelDViewFinished";
-            this.labelDViewFinished.Text = "Finished";
+            this.labelDViewFinished.Text = "完走";
             this.labelDViewFinished.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewFinished
@@ -1848,7 +1848,7 @@
             this.labelDViewRecord.Location = new Point(148, 67);
             this.labelDViewRecord.MinimumSize = new Size(84, 20);
             this.labelDViewRecord.Name = "labelDViewRecord";
-            this.labelDViewRecord.Text = "New Record";
+            this.labelDViewRecord.Text = "新記録";
             this.labelDViewRecord.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewRecord
@@ -1868,7 +1868,7 @@
             this.labelDViewDelay.Location = new Point(5, 93);
             this.labelDViewDelay.MinimumSize = new Size(84, 20);
             this.labelDViewDelay.Name = "labelDViewDelay";
-            this.labelDViewDelay.Text = "Delay";
+            this.labelDViewDelay.Text = "遅延開始";
             this.labelDViewDelay.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewDelay
@@ -1888,7 +1888,7 @@
             this.labelDViewPaused.Location = new Point(148, 93);
             this.labelDViewPaused.MinimumSize = new Size(84, 20);
             this.labelDViewPaused.Name = "labelDViewPaused";
-            this.labelDViewPaused.Text = "Paused";
+            this.labelDViewPaused.Text = "一時停止";
             this.labelDViewPaused.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewPaused
@@ -1905,10 +1905,10 @@
             // labelDViewFlash
             //
             this.labelDViewFlash.AutoSize = true;
-            this.labelDViewFlash.Location = new Point(5, 119);
+            this.labelDViewFlash.Location = new Point(122, 119);
             this.labelDViewFlash.MinimumSize = new Size(84, 20);
             this.labelDViewFlash.Name = "labelDViewFlash";
-            this.labelDViewFlash.Text = "Flashing";
+            this.labelDViewFlash.Text = "スプリット時ハイライト";
             this.labelDViewFlash.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewFlash
@@ -1928,7 +1928,7 @@
             this.labelDViewSegCurrentText.Location = new Point(5, 15);
             this.labelDViewSegCurrentText.MinimumSize = new Size(84, 20);
             this.labelDViewSegCurrentText.Name = "labelDViewSegCurrentText";
-            this.labelDViewSegCurrentText.Text = "Comparison text";
+            this.labelDViewSegCurrentText.Text = "比較対象";
             this.labelDViewSegCurrentText.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewSegCurrentText
@@ -1948,7 +1948,7 @@
             this.labelDViewSegDefaultText.Location = new Point(148, 15);
             this.labelDViewSegDefaultText.MinimumSize = new Size(84, 20);
             this.labelDViewSegDefaultText.Name = "labelDViewSegDefaultText";
-            this.labelDViewSegDefaultText.Text = "Default text";
+            this.labelDViewSegDefaultText.Text = "デフォルト";
             this.labelDViewSegDefaultText.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewSegDefaultText
@@ -1968,7 +1968,7 @@
             this.labelDViewSegMissingTime.Location = new Point(5, 41);
             this.labelDViewSegMissingTime.MinimumSize = new Size(84, 20);
             this.labelDViewSegMissingTime.Name = "labelDViewSegMissingTime";
-            this.labelDViewSegMissingTime.Text = "Missing time";
+            this.labelDViewSegMissingTime.Text = "記録なし";
             this.labelDViewSegMissingTime.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewSegMissingTime
@@ -1988,7 +1988,7 @@
             this.labelDViewSegBestSegment.Location = new Point(148, 41);
             this.labelDViewSegBestSegment.MinimumSize = new Size(84, 20);
             this.labelDViewSegBestSegment.Name = "labelDViewSegBestSegment";
-            this.labelDViewSegBestSegment.Text = "Best segment";
+            this.labelDViewSegBestSegment.Text = "新記録";
             this.labelDViewSegBestSegment.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewSegBestSegment
@@ -2008,7 +2008,7 @@
             this.labelDViewSegAheadGain.Location = new Point(5, 67);
             this.labelDViewSegAheadGain.MinimumSize = new Size(84, 20);
             this.labelDViewSegAheadGain.Name = "labelDViewSegAheadGain";
-            this.labelDViewSegAheadGain.Text = "Ahead (gained)";
+            this.labelDViewSegAheadGain.Text = "貯金増";
             this.labelDViewSegAheadGain.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewSegAheadGain
@@ -2028,7 +2028,7 @@
             this.labelDViewSegAheadLoss.Location = new Point(148, 67);
             this.labelDViewSegAheadLoss.MinimumSize = new Size(84, 20);
             this.labelDViewSegAheadLoss.Name = "labelDViewSegAheadLoss";
-            this.labelDViewSegAheadLoss.Text = "Ahead (lost)";
+            this.labelDViewSegAheadLoss.Text = "貯金減";
             this.labelDViewSegAheadLoss.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewSegAheadLoss
@@ -2048,7 +2048,7 @@
             this.labelDViewSegBehindGain.Location = new Point(5, 93);
             this.labelDViewSegBehindGain.MinimumSize = new Size(84, 20);
             this.labelDViewSegBehindGain.Name = "labelDViewSegBehindGain";
-            this.labelDViewSegBehindGain.Text = "Behind (gained)";
+            this.labelDViewSegBehindGain.Text = "借金減";
             this.labelDViewSegBehindGain.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewSegBehindGain
@@ -2068,7 +2068,7 @@
             this.labelDViewSegBehindLoss.Location = new Point(148, 93);
             this.labelDViewSegBehindLoss.MinimumSize = new Size(84, 20);
             this.labelDViewSegBehindLoss.Name = "labelDViewSegBehindLoss";
-            this.labelDViewSegBehindLoss.Text = "Behind (lost)";
+            this.labelDViewSegBehindLoss.Text = "借金増";
             this.labelDViewSegBehindLoss.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxDViewSegBehindLoss
@@ -2088,7 +2088,7 @@
             this.labelDViewSegHighlight.Location = new Point(5, 119);
             this.labelDViewSegHighlight.MinimumSize = new Size(84, 20);
             this.labelDViewSegHighlight.Name = "labelDViewSegHighlight";
-            this.labelDViewSegHighlight.Text = "Current highlight";
+            this.labelDViewSegHighlight.Text = "現区間ハイライト";
             this.labelDViewSegHighlight.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxDViewSegHighlight
@@ -2108,7 +2108,7 @@
             this.labelGraphAhead.Location = new Point(5, 15);
             this.labelGraphAhead.MinimumSize = new Size(84, 20);
             this.labelGraphAhead.Name = "labelGraphAhead";
-            this.labelGraphAhead.Text = "Ahead";
+            this.labelGraphAhead.Text = "貯金";
             this.labelGraphAhead.TextAlign = ContentAlignment.MiddleRight;
             //
             // picBoxGraphAhead
@@ -2128,7 +2128,7 @@
             this.labelGraphBehind.Location = new Point(148, 15);
             this.labelGraphBehind.MinimumSize = new Size(84, 20);
             this.labelGraphBehind.Name = "labelGraphBehind";
-            this.labelGraphBehind.Text = "Behind";
+            this.labelGraphBehind.Text = "借金";
             this.labelGraphBehind.TextAlign = ContentAlignment.MiddleLeft;
             //
             // picBoxGraphBehind
@@ -2262,7 +2262,7 @@
 
         private void PopulateSettings()
         {
-            this.ColorSettings.AddRange(new SettingPair[] 
+            this.ColorSettings.AddRange(new SettingPair[]
             {
                 new SettingPair("AheadFore", this.picBoxAheadFore),
                 new SettingPair("AheadBack", this.picBoxAheadBack),
@@ -2273,9 +2273,9 @@
                 new SettingPair("AheadLosingBack2", this.picBoxAheadLosingBack2),
                 new SettingPair("AheadLosingBackPlain", this.picBoxAheadLosingBackPlain),
                 new SettingPair("BehindFore", this.picBoxBehindFore),
-                new SettingPair("BehindBack", this.picBoxBehindBack), 
-                new SettingPair("BehindBack2", this.picBoxBehindBack2), 
-                new SettingPair("BehindBackPlain", this.picBoxBehindBackPlain), 
+                new SettingPair("BehindBack", this.picBoxBehindBack),
+                new SettingPair("BehindBack2", this.picBoxBehindBack2),
+                new SettingPair("BehindBackPlain", this.picBoxBehindBackPlain),
                 new SettingPair("BehindLosingFore", this.picBoxBehindLosingFore),
                 new SettingPair("BehindLosingBack", this.picBoxBehindLosingBack),
                 new SettingPair("BehindLosingBack2", this.picBoxBehindLosingBack2),
@@ -2513,7 +2513,7 @@
 
         private void buttonDefaultColors_Click(object sender, EventArgs e)
         {
-            if (MessageBoxEx.Show(this, "Are you sure?", "Restore Defaults", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBoxEx.Show(this, "本当に初期化しますか？", "設定初期化", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 bool flag = false;
                 foreach (SettingsPropertyValue v in Properties.ColorSettings.Profile.PropertyValues)
@@ -2534,7 +2534,7 @@
                 }
 
                 if (flag)
-                    MessageBoxEx.Show(this, "A problem was encountered while attempting to restore color defaults.");
+                    MessageBoxEx.Show(this, "設定初期化中にエラーが発生しました。");
 
                 this.checkBoxDViewUsePrimary.Checked = Properties.ColorSettings.Profile.DViewUsePrimary;
                 this.picBoxPreview.Invalidate();
@@ -2703,8 +2703,8 @@
                 Trimming = StringTrimming.EllipsisCharacter
             };
             graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            graphics.DrawString("segment delta", this.displayFont, new SolidBrush(this.picBoxStatusBarFore.BackColor), rectangle5, format4);
-            graphics.DrawString("Run Title", this.displayFont, new SolidBrush(this.picBoxRunTitleFore.BackColor), new Rectangle(0, 1, this.picBoxPreview.Width, 0x11), format2);
+            graphics.DrawString("区間差", this.displayFont, new SolidBrush(this.picBoxStatusBarFore.BackColor), rectangle5, format4);
+            graphics.DrawString("タイトル", this.displayFont, new SolidBrush(this.picBoxRunTitleFore.BackColor), new Rectangle(0, 1, this.picBoxPreview.Width, 0x11), format2);
             graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
             graphics.DrawString("-8:88", this.timeFont, new SolidBrush(this.picBoxSegAheadGain.BackColor), rectangle5, format3);
             int y = 0x12;
@@ -2730,7 +2730,7 @@
                 Alignment = StringAlignment.Far
             };
             Rectangle rectangle7 = new Rectangle(0, 0, 0, 1);
-            string[] strArray = new string[] { "Past Segment", "Best Segment", "Ahead, gained", "Ahead, lost", "Behind, gained", "Behind, lost", "New time", "Live segment", "Missing time", "Future segment", "Future segment", "Future segment" };
+            string[] strArray = new string[] { "過去区間", "区間新", "貯金増", "貯金減", "借金減", "借金減", "新タイム", "現区間", "タイムなし", "未来区間", "未来区間", "未来区間" };
             string[] strArray2 = new string[] { "17:17", "-88.8", "-88.8", "-88.8", "+88.8", "+88.8", "8:88", "-", "8:88.8", "8:88", "8:88", "8:88" };
             Color[] colorArray = new Color[] { this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegPastText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor, this.picBoxSegFutureText.BackColor };
             Color[] colorArray2 = new Color[] { this.picturebox1.BackColor, this.picBoxSegBestSegment.BackColor, this.picBoxSegAheadGain.BackColor, this.picBoxSegAheadLoss.BackColor, this.picBoxSegBehindGain.BackColor, this.picBoxSegBehindLoss.BackColor, this.picBoxSegNewTime.BackColor, this.picBoxSegLiveText.BackColor, this.picBoxSegMissing.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor, this.picBoxSegFutureTime.BackColor };
