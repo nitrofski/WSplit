@@ -268,14 +268,14 @@
             //
             this.menuItemSelectColumns.Name = "menuItemSelectColumns";
             this.menuItemSelectColumns.Size = new Size(280, 24);
-            this.menuItemSelectColumns.Text = "Select columns...";
+            this.menuItemSelectColumns.Text = "列設定";
             this.menuItemSelectColumns.Click += this.menuItemSelectColumns_Click;
             //
             //
             //
             this.menuItemSetColors.Name = "menuItemSetColors";
             this.menuItemSetColors.Size = new Size(280, 24);
-            this.menuItemSetColors.Text = "Set colors...";
+            this.menuItemSetColors.Text = "色設定";
             this.menuItemSetColors.Click += this.menuItemSetColors_Click;
             //
             // toolStripSeparator1
@@ -287,21 +287,21 @@
             //
             this.menuItemShowSegs.Name = "menuItemShowSegs";
             this.menuItemShowSegs.Size = new Size(280, 24);
-            this.menuItemShowSegs.Text = "Show segment times";
+            this.menuItemShowSegs.Text = "区間毎タイムを表示";
             this.menuItemShowSegs.Click += this.menuItemShowSegs_Click;
             //
             // menuItemMarkSegments
             //
             this.menuItemMarkSegments.Name = "menuItemMarkSegments";
             this.menuItemMarkSegments.Size = new Size(280, 24);
-            this.menuItemMarkSegments.Text = "Mark segments on delta graph";
+            this.menuItemMarkSegments.Text = "グラフ上に区間点をつける";
             this.menuItemMarkSegments.Click += this.menuItemMarkSegments_Click;
             //
             // menuItemAlwaysOnTop
             //
             this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
             this.menuItemAlwaysOnTop.Size = new Size(280, 24);
-            this.menuItemAlwaysOnTop.Text = "Always on top";
+            this.menuItemAlwaysOnTop.Text = "常に最前面表示";
             this.menuItemAlwaysOnTop.Click += this.menuItemAlwaysOnTop_Click;
             //
             // toolStripSeparator2
@@ -313,7 +313,7 @@
             //
             this.menuItemClose.Name = "menuItemClose";
             this.menuItemClose.Size = new Size(280, 24);
-            this.menuItemClose.Text = "Close";
+            this.menuItemClose.Text = "閉じる";
             this.menuItemClose.Click += this.menuItemClose_click;
 
             this.segs.AllowUserToAddRows = false;

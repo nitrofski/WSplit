@@ -284,185 +284,246 @@
 
         private void InitializeComponent()
         {
-            this.paletteBox = new PictureBox();
-            this.hueSlider = new PictureBox();
-            this.hueArrow = new PictureBox();
-            this.hueArrow2 = new PictureBox();
-            this.colorRbox = new NumericUpDown();
-            this.label1 = new Label();
-            this.label2 = new Label();
-            this.label3 = new Label();
-            this.colorGbox = new NumericUpDown();
-            this.colorBbox = new NumericUpDown();
-            this.colorBox = new PictureBox();
-            this.button1 = new Button();
-            this.button2 = new Button();
-            this.hexBox = new TextBox();
-            this.label4 = new Label();
-            ((ISupportInitialize)this.paletteBox).BeginInit();
-            ((ISupportInitialize)this.hueSlider).BeginInit();
-            ((ISupportInitialize)this.hueArrow).BeginInit();
-            ((ISupportInitialize)this.hueArrow2).BeginInit();
-            this.colorRbox.BeginInit();
-            this.colorGbox.BeginInit();
-            this.colorBbox.BeginInit();
-            ((ISupportInitialize)this.colorBox).BeginInit();
-            base.SuspendLayout();
-            this.paletteBox.BorderStyle = BorderStyle.FixedSingle;
-            this.paletteBox.Location = new Point(12, 12);
+            this.paletteBox = new System.Windows.Forms.PictureBox();
+            this.hueSlider = new System.Windows.Forms.PictureBox();
+            this.hueArrow = new System.Windows.Forms.PictureBox();
+            this.hueArrow2 = new System.Windows.Forms.PictureBox();
+            this.colorRbox = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.colorGbox = new System.Windows.Forms.NumericUpDown();
+            this.colorBbox = new System.Windows.Forms.NumericUpDown();
+            this.colorBox = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.hexBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.paletteBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueArrow)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueArrow2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorRbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorGbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBbox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBox)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // paletteBox
+            // 
+            this.paletteBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.paletteBox.Location = new System.Drawing.Point(12, 11);
             this.paletteBox.Name = "paletteBox";
-            this.paletteBox.Size = new Size(0x100, 0x100);
+            this.paletteBox.Size = new System.Drawing.Size(256, 236);
             this.paletteBox.TabIndex = 0;
             this.paletteBox.TabStop = false;
-            this.paletteBox.Paint += new PaintEventHandler(this.paletteBox_Paint);
-            this.paletteBox.MouseDown += new MouseEventHandler(this.paletteBox_MouseDown);
-            this.paletteBox.MouseMove += new MouseEventHandler(this.paletteBox_MouseMove);
-            this.hueSlider.BorderStyle = BorderStyle.FixedSingle;
-            this.hueSlider.Location = new Point(0x116, 12);
+            this.paletteBox.Paint += new System.Windows.Forms.PaintEventHandler(this.paletteBox_Paint);
+            this.paletteBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.paletteBox_MouseDown);
+            this.paletteBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.paletteBox_MouseMove);
+            // 
+            // hueSlider
+            // 
+            this.hueSlider.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.hueSlider.Location = new System.Drawing.Point(278, 11);
             this.hueSlider.Name = "hueSlider";
-            this.hueSlider.Size = new Size(0x12, 0x100);
+            this.hueSlider.Size = new System.Drawing.Size(18, 236);
             this.hueSlider.TabIndex = 1;
             this.hueSlider.TabStop = false;
-            this.hueSlider.MouseDown += new MouseEventHandler(this.hueSlider_MouseDown);
-            this.hueSlider.MouseMove += new MouseEventHandler(this.hueSlider_MouseMove);
-            this.hueArrow.Location = new Point(0x111, 7);
+            this.hueSlider.MouseDown += new System.Windows.Forms.MouseEventHandler(this.hueSlider_MouseDown);
+            this.hueSlider.MouseMove += new System.Windows.Forms.MouseEventHandler(this.hueSlider_MouseMove);
+            // 
+            // hueArrow
+            // 
+            this.hueArrow.Location = new System.Drawing.Point(273, 6);
             this.hueArrow.Name = "hueArrow";
-            this.hueArrow.Size = new Size(5, 0x10a);
+            this.hueArrow.Size = new System.Drawing.Size(5, 246);
             this.hueArrow.TabIndex = 3;
             this.hueArrow.TabStop = false;
-            this.hueArrow.Paint += new PaintEventHandler(this.hueArrow_Paint);
-            this.hueArrow2.Location = new Point(0x128, 7);
+            this.hueArrow.Paint += new System.Windows.Forms.PaintEventHandler(this.hueArrow_Paint);
+            // 
+            // hueArrow2
+            // 
+            this.hueArrow2.Location = new System.Drawing.Point(296, 6);
             this.hueArrow2.Name = "hueArrow2";
-            this.hueArrow2.Size = new Size(5, 0x10a);
+            this.hueArrow2.Size = new System.Drawing.Size(5, 246);
             this.hueArrow2.TabIndex = 4;
             this.hueArrow2.TabStop = false;
-            this.hueArrow2.Paint += new PaintEventHandler(this.hueArrow2_Paint);
-            this.colorRbox.Location = new Point(0x147, 0x30);
-            int[] bits = new int[4];
-            bits[0] = 0xff;
-            this.colorRbox.Maximum = new decimal(bits);
+            this.hueArrow2.Paint += new System.Windows.Forms.PaintEventHandler(this.hueArrow2_Paint);
+            // 
+            // colorRbox
+            // 
+            this.colorRbox.Location = new System.Drawing.Point(327, 44);
+            this.colorRbox.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             this.colorRbox.Name = "colorRbox";
-            this.colorRbox.Size = new Size(40, 20);
+            this.colorRbox.Size = new System.Drawing.Size(40, 19);
             this.colorRbox.TabIndex = 5;
-            int[] numArray2 = new int[4];
-            numArray2[0] = 0xff;
-            this.colorRbox.Value = new decimal(numArray2);
-            this.colorRbox.ValueChanged += new EventHandler(this.colorRbox_ValueChanged);
+            this.colorRbox.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.colorRbox.ValueChanged += new System.EventHandler(this.colorRbox_ValueChanged);
+            // 
+            // label1
+            // 
             this.label1.AutoSize = true;
-            this.label1.Location = new Point(0x132, 0x30);
-            this.label1.MinimumSize = new Size(0, 20);
+            this.label1.Location = new System.Drawing.Point(306, 44);
+            this.label1.MinimumSize = new System.Drawing.Size(0, 18);
             this.label1.Name = "label1";
-            this.label1.Size = new Size(15, 20);
+            this.label1.Size = new System.Drawing.Size(13, 18);
             this.label1.TabIndex = 6;
             this.label1.Text = "R";
-            this.label1.TextAlign = ContentAlignment.MiddleRight;
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label2
+            // 
             this.label2.AutoSize = true;
-            this.label2.Location = new Point(0x132, 0x4a);
-            this.label2.MinimumSize = new Size(0, 20);
+            this.label2.Location = new System.Drawing.Point(306, 68);
+            this.label2.MinimumSize = new System.Drawing.Size(0, 18);
             this.label2.Name = "label2";
-            this.label2.Size = new Size(15, 20);
+            this.label2.Size = new System.Drawing.Size(13, 18);
             this.label2.TabIndex = 7;
             this.label2.Text = "G";
-            this.label2.TextAlign = ContentAlignment.MiddleRight;
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label3
+            // 
             this.label3.AutoSize = true;
-            this.label3.Location = new Point(0x133, 100);
-            this.label3.MinimumSize = new Size(0, 20);
+            this.label3.Location = new System.Drawing.Point(307, 92);
+            this.label3.MinimumSize = new System.Drawing.Size(0, 18);
             this.label3.Name = "label3";
-            this.label3.Size = new Size(14, 20);
+            this.label3.Size = new System.Drawing.Size(13, 18);
             this.label3.TabIndex = 8;
             this.label3.Text = "B";
-            this.label3.TextAlign = ContentAlignment.MiddleRight;
-            this.colorGbox.Location = new Point(0x147, 0x4a);
-            int[] numArray3 = new int[4];
-            numArray3[0] = 0xff;
-            this.colorGbox.Maximum = new decimal(numArray3);
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // colorGbox
+            // 
+            this.colorGbox.Location = new System.Drawing.Point(327, 68);
+            this.colorGbox.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             this.colorGbox.Name = "colorGbox";
-            this.colorGbox.Size = new Size(40, 20);
+            this.colorGbox.Size = new System.Drawing.Size(40, 19);
             this.colorGbox.TabIndex = 9;
-            int[] numArray4 = new int[4];
-            numArray4[0] = 0xff;
-            this.colorGbox.Value = new decimal(numArray4);
-            this.colorGbox.ValueChanged += new EventHandler(this.colorGbox_ValueChanged);
-            this.colorBbox.Location = new Point(0x147, 100);
-            int[] numArray5 = new int[4];
-            numArray5[0] = 0xff;
-            this.colorBbox.Maximum = new decimal(numArray5);
+            this.colorGbox.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.colorGbox.ValueChanged += new System.EventHandler(this.colorGbox_ValueChanged);
+            // 
+            // colorBbox
+            // 
+            this.colorBbox.Location = new System.Drawing.Point(327, 92);
+            this.colorBbox.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
             this.colorBbox.Name = "colorBbox";
-            this.colorBbox.Size = new Size(40, 20);
+            this.colorBbox.Size = new System.Drawing.Size(40, 19);
             this.colorBbox.TabIndex = 10;
-            int[] numArray6 = new int[4];
-            numArray6[0] = 0xff;
-            this.colorBbox.Value = new decimal(numArray6);
-            this.colorBbox.ValueChanged += new EventHandler(this.colorBbox_ValueChanged);
-            this.colorBox.BorderStyle = BorderStyle.FixedSingle;
-            this.colorBox.Location = new Point(0x132, 12);
+            this.colorBbox.Value = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.colorBbox.ValueChanged += new System.EventHandler(this.colorBbox_ValueChanged);
+            // 
+            // colorBox
+            // 
+            this.colorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.colorBox.Location = new System.Drawing.Point(306, 11);
             this.colorBox.Name = "colorBox";
-            this.colorBox.Size = new Size(0x3d, 30);
+            this.colorBox.Size = new System.Drawing.Size(61, 28);
             this.colorBox.TabIndex = 11;
             this.colorBox.TabStop = false;
-            this.button1.DialogResult = DialogResult.OK;
-            this.button1.Location = new Point(0x132, 0xd8);
+            // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(306, 199);
             this.button1.Name = "button1";
-            this.button1.Size = new Size(0x3d, 0x17);
+            this.button1.Size = new System.Drawing.Size(61, 21);
             this.button1.TabIndex = 13;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
-            this.button2.DialogResult = DialogResult.Cancel;
-            this.button2.Location = new Point(0x132, 0xf5);
+            // 
+            // button2
+            // 
+            this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.button2.Location = new System.Drawing.Point(306, 226);
             this.button2.Name = "button2";
-            this.button2.Size = new Size(0x3d, 0x17);
+            this.button2.Size = new System.Drawing.Size(61, 21);
             this.button2.TabIndex = 14;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;
-            this.hexBox.Location = new Point(0x132, 0xa5);
+            // 
+            // hexBox
+            // 
+            this.hexBox.Location = new System.Drawing.Point(306, 152);
             this.hexBox.MaxLength = 6;
             this.hexBox.Name = "hexBox";
-            this.hexBox.Size = new Size(0x3d, 20);
+            this.hexBox.Size = new System.Drawing.Size(61, 19);
             this.hexBox.TabIndex = 12;
             this.hexBox.Text = "FFFFFF";
-            this.hexBox.TextChanged += new EventHandler(this.hexBox_TextChanged);
-            this.hexBox.KeyDown += new KeyEventHandler(this.hexBox_KeyDown);
-            this.hexBox.KeyPress += new KeyPressEventHandler(this.hexBox_KeyPress);
-            this.hexBox.Leave += new EventHandler(this.hexBox_Leave);
+            this.hexBox.TextChanged += new System.EventHandler(this.hexBox_TextChanged);
+            this.hexBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.hexBox_KeyDown);
+            this.hexBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.hexBox_KeyPress);
+            this.hexBox.Leave += new System.EventHandler(this.hexBox_Leave);
+            // 
+            // label4
+            // 
             this.label4.AutoSize = true;
-            this.label4.Location = new Point(0x12f, 0x95);
+            this.label4.Location = new System.Drawing.Point(303, 138);
             this.label4.Name = "label4";
-            this.label4.Size = new Size(0x1a, 13);
+            this.label4.Size = new System.Drawing.Size(41, 12);
             this.label4.TabIndex = 15;
-            this.label4.Text = "Hex";
-            base.AutoScaleDimensions = new SizeF(6f, 13f);
-            base.AutoScaleMode = AutoScaleMode.Font;
-            base.ClientSize = new Size(0x17b, 280);
-            base.Controls.Add(this.label4);
-            base.Controls.Add(this.hexBox);
-            base.Controls.Add(this.button2);
-            base.Controls.Add(this.button1);
-            base.Controls.Add(this.colorBox);
-            base.Controls.Add(this.colorBbox);
-            base.Controls.Add(this.colorGbox);
-            base.Controls.Add(this.label3);
-            base.Controls.Add(this.label2);
-            base.Controls.Add(this.label1);
-            base.Controls.Add(this.colorRbox);
-            base.Controls.Add(this.hueArrow2);
-            base.Controls.Add(this.hueArrow);
-            base.Controls.Add(this.hueSlider);
-            base.Controls.Add(this.paletteBox);
-            base.FormBorderStyle = FormBorderStyle.FixedDialog;
-            base.MaximizeBox = false;
-            base.MinimizeBox = false;
-            base.Name = "ColorPicker";
-            this.Text = "Choose color...";
-            ((ISupportInitialize)this.paletteBox).EndInit();
-            ((ISupportInitialize)this.hueSlider).EndInit();
-            ((ISupportInitialize)this.hueArrow).EndInit();
-            ((ISupportInitialize)this.hueArrow2).EndInit();
-            this.colorRbox.EndInit();
-            this.colorGbox.EndInit();
-            this.colorBbox.EndInit();
-            ((ISupportInitialize)this.colorBox).EndInit();
-            base.ResumeLayout(false);
-            base.PerformLayout();
+            this.label4.Text = "16進数";
+            // 
+            // ColorPicker
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(379, 258);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.hexBox);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.colorBox);
+            this.Controls.Add(this.colorBbox);
+            this.Controls.Add(this.colorGbox);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.colorRbox);
+            this.Controls.Add(this.hueArrow2);
+            this.Controls.Add(this.hueArrow);
+            this.Controls.Add(this.hueSlider);
+            this.Controls.Add(this.paletteBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "ColorPicker";
+            this.Text = "色選択";
+            ((System.ComponentModel.ISupportInitialize)(this.paletteBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueArrow)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hueArrow2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorRbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorGbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBbox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBox)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         private void paletteBox_MouseDown(object sender, MouseEventArgs e)

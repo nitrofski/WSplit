@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BackgroundImageDialog));
             this.groupBoxImageBg = new System.Windows.Forms.GroupBox();
             this.linkLabelHelp = new System.Windows.Forms.LinkLabel();
             this.buttonAutoSelect = new System.Windows.Forms.Button();
@@ -74,18 +73,18 @@
             this.groupBoxImageBg.Controls.Add(this.buttonBrowse);
             this.groupBoxImageBg.Controls.Add(this.textBoxImagePath);
             this.groupBoxImageBg.Enabled = false;
-            this.groupBoxImageBg.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxImageBg.Location = new System.Drawing.Point(12, 11);
             this.groupBoxImageBg.Name = "groupBoxImageBg";
-            this.groupBoxImageBg.Size = new System.Drawing.Size(466, 458);
+            this.groupBoxImageBg.Size = new System.Drawing.Size(466, 423);
             this.groupBoxImageBg.TabIndex = 0;
             this.groupBoxImageBg.TabStop = false;
             // 
             // linkLabelHelp
             // 
             this.linkLabelHelp.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.linkLabelHelp.Location = new System.Drawing.Point(6, 410);
+            this.linkLabelHelp.Location = new System.Drawing.Point(6, 378);
             this.linkLabelHelp.Name = "linkLabelHelp";
-            this.linkLabelHelp.Size = new System.Drawing.Size(48, 13);
+            this.linkLabelHelp.Size = new System.Drawing.Size(48, 12);
             this.linkLabelHelp.TabIndex = 11;
             this.linkLabelHelp.TabStop = true;
             this.linkLabelHelp.Text = "Help...";
@@ -95,9 +94,9 @@
             // buttonAutoSelect
             // 
             this.buttonAutoSelect.Enabled = false;
-            this.buttonAutoSelect.Location = new System.Drawing.Point(6, 355);
+            this.buttonAutoSelect.Location = new System.Drawing.Point(6, 328);
             this.buttonAutoSelect.Name = "buttonAutoSelect";
-            this.buttonAutoSelect.Size = new System.Drawing.Size(48, 23);
+            this.buttonAutoSelect.Size = new System.Drawing.Size(48, 21);
             this.buttonAutoSelect.TabIndex = 10;
             this.buttonAutoSelect.Text = "Auto";
             this.buttonAutoSelect.UseVisualStyleBackColor = true;
@@ -106,9 +105,9 @@
             // labelZoomDisplay
             // 
             this.labelZoomDisplay.Enabled = false;
-            this.labelZoomDisplay.Location = new System.Drawing.Point(8, 36);
+            this.labelZoomDisplay.Location = new System.Drawing.Point(8, 33);
             this.labelZoomDisplay.Name = "labelZoomDisplay";
-            this.labelZoomDisplay.Size = new System.Drawing.Size(46, 13);
+            this.labelZoomDisplay.Size = new System.Drawing.Size(46, 12);
             this.labelZoomDisplay.TabIndex = 9;
             this.labelZoomDisplay.Text = "100%";
             this.labelZoomDisplay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -117,18 +116,18 @@
             // 
             this.labelZoom.AutoSize = true;
             this.labelZoom.Enabled = false;
-            this.labelZoom.Location = new System.Drawing.Point(6, 23);
+            this.labelZoom.Location = new System.Drawing.Point(6, 21);
             this.labelZoom.Name = "labelZoom";
-            this.labelZoom.Size = new System.Drawing.Size(37, 13);
+            this.labelZoom.Size = new System.Drawing.Size(35, 12);
             this.labelZoom.TabIndex = 8;
             this.labelZoom.Text = "Zoom:";
             // 
             // buttonZoomFit
             // 
             this.buttonZoomFit.Enabled = false;
-            this.buttonZoomFit.Location = new System.Drawing.Point(6, 326);
+            this.buttonZoomFit.Location = new System.Drawing.Point(6, 301);
             this.buttonZoomFit.Name = "buttonZoomFit";
-            this.buttonZoomFit.Size = new System.Drawing.Size(48, 23);
+            this.buttonZoomFit.Size = new System.Drawing.Size(48, 21);
             this.buttonZoomFit.TabIndex = 7;
             this.buttonZoomFit.Text = "Fit";
             this.buttonZoomFit.UseVisualStyleBackColor = true;
@@ -137,9 +136,9 @@
             // buttonResetSelect
             // 
             this.buttonResetSelect.Enabled = false;
-            this.buttonResetSelect.Location = new System.Drawing.Point(6, 384);
+            this.buttonResetSelect.Location = new System.Drawing.Point(6, 354);
             this.buttonResetSelect.Name = "buttonResetSelect";
-            this.buttonResetSelect.Size = new System.Drawing.Size(48, 23);
+            this.buttonResetSelect.Size = new System.Drawing.Size(48, 21);
             this.buttonResetSelect.TabIndex = 6;
             this.buttonResetSelect.Text = "Reset";
             this.buttonResetSelect.UseVisualStyleBackColor = true;
@@ -149,12 +148,12 @@
             // 
             this.trackBarZoom.Enabled = false;
             this.trackBarZoom.LargeChange = 10;
-            this.trackBarZoom.Location = new System.Drawing.Point(9, 52);
+            this.trackBarZoom.Location = new System.Drawing.Point(9, 48);
             this.trackBarZoom.Maximum = 200;
             this.trackBarZoom.Minimum = 5;
             this.trackBarZoom.Name = "trackBarZoom";
             this.trackBarZoom.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBarZoom.Size = new System.Drawing.Size(45, 268);
+            this.trackBarZoom.Size = new System.Drawing.Size(45, 247);
             this.trackBarZoom.SmallChange = 5;
             this.trackBarZoom.TabIndex = 5;
             this.trackBarZoom.TickFrequency = 5;
@@ -167,9 +166,9 @@
             this.picBoxImageSelectionModifier.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picBoxImageSelectionModifier.Enabled = false;
             this.picBoxImageSelectionModifier.InitialImage = null;
-            this.picBoxImageSelectionModifier.Location = new System.Drawing.Point(60, 23);
+            this.picBoxImageSelectionModifier.Location = new System.Drawing.Point(60, 21);
             this.picBoxImageSelectionModifier.Name = "picBoxImageSelectionModifier";
-            this.picBoxImageSelectionModifier.Size = new System.Drawing.Size(400, 400);
+            this.picBoxImageSelectionModifier.Size = new System.Drawing.Size(400, 369);
             this.picBoxImageSelectionModifier.TabIndex = 3;
             this.picBoxImageSelectionModifier.TabStop = false;
             this.picBoxImageSelectionModifier.Paint += new System.Windows.Forms.PaintEventHandler(this.picBoxImageSelectionModifier_Paint);
@@ -181,9 +180,9 @@
             // 
             // buttonBrowse
             // 
-            this.buttonBrowse.Location = new System.Drawing.Point(385, 429);
+            this.buttonBrowse.Location = new System.Drawing.Point(385, 396);
             this.buttonBrowse.Name = "buttonBrowse";
-            this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
+            this.buttonBrowse.Size = new System.Drawing.Size(75, 21);
             this.buttonBrowse.TabIndex = 2;
             this.buttonBrowse.Text = "Browse...";
             this.buttonBrowse.UseVisualStyleBackColor = true;
@@ -193,10 +192,10 @@
             // 
             this.textBoxImagePath.BackColor = System.Drawing.SystemColors.Control;
             this.textBoxImagePath.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxImagePath.Location = new System.Drawing.Point(6, 434);
+            this.textBoxImagePath.Location = new System.Drawing.Point(6, 401);
             this.textBoxImagePath.Name = "textBoxImagePath";
             this.textBoxImagePath.ReadOnly = true;
-            this.textBoxImagePath.Size = new System.Drawing.Size(373, 13);
+            this.textBoxImagePath.Size = new System.Drawing.Size(373, 12);
             this.textBoxImagePath.TabIndex = 1;
             this.textBoxImagePath.Text = "No image selected";
             // 
@@ -204,9 +203,9 @@
             // 
             this.checkBoxUseImageBg.AutoSize = true;
             this.checkBoxUseImageBg.Enabled = false;
-            this.checkBoxUseImageBg.Location = new System.Drawing.Point(18, 12);
+            this.checkBoxUseImageBg.Location = new System.Drawing.Point(18, 11);
             this.checkBoxUseImageBg.Name = "checkBoxUseImageBg";
-            this.checkBoxUseImageBg.Size = new System.Drawing.Size(136, 17);
+            this.checkBoxUseImageBg.Size = new System.Drawing.Size(140, 16);
             this.checkBoxUseImageBg.TabIndex = 0;
             this.checkBoxUseImageBg.Text = "Use background image";
             this.checkBoxUseImageBg.UseVisualStyleBackColor = true;
@@ -225,19 +224,19 @@
             this.groupBoxTopLayer.Controls.Add(this.radioButtonDefault);
             this.groupBoxTopLayer.Controls.Add(this.labelOpacity);
             this.groupBoxTopLayer.Controls.Add(this.trackBarOpacity);
-            this.groupBoxTopLayer.Location = new System.Drawing.Point(12, 476);
+            this.groupBoxTopLayer.Location = new System.Drawing.Point(12, 439);
             this.groupBoxTopLayer.Name = "groupBoxTopLayer";
-            this.groupBoxTopLayer.Size = new System.Drawing.Size(466, 95);
+            this.groupBoxTopLayer.Size = new System.Drawing.Size(466, 88);
             this.groupBoxTopLayer.TabIndex = 4;
             this.groupBoxTopLayer.TabStop = false;
-            this.groupBoxTopLayer.Text = "Top layer";
+            this.groupBoxTopLayer.Text = "レイヤー";
             // 
             // labelOpacityDisplay
             // 
             this.labelOpacityDisplay.Enabled = false;
-            this.labelOpacityDisplay.Location = new System.Drawing.Point(55, 16);
+            this.labelOpacityDisplay.Location = new System.Drawing.Point(55, 15);
             this.labelOpacityDisplay.Name = "labelOpacityDisplay";
-            this.labelOpacityDisplay.Size = new System.Drawing.Size(405, 13);
+            this.labelOpacityDisplay.Size = new System.Drawing.Size(405, 12);
             this.labelOpacityDisplay.TabIndex = 5;
             this.labelOpacityDisplay.Text = "100%";
             this.labelOpacityDisplay.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -245,50 +244,50 @@
             // radioButtonBlack
             // 
             this.radioButtonBlack.AutoSize = true;
-            this.radioButtonBlack.Location = new System.Drawing.Point(348, 72);
+            this.radioButtonBlack.Location = new System.Drawing.Point(348, 66);
             this.radioButtonBlack.Name = "radioButtonBlack";
-            this.radioButtonBlack.Size = new System.Drawing.Size(112, 17);
+            this.radioButtonBlack.Size = new System.Drawing.Size(35, 16);
             this.radioButtonBlack.TabIndex = 4;
             this.radioButtonBlack.TabStop = true;
-            this.radioButtonBlack.Text = "Black background";
+            this.radioButtonBlack.Text = "黒";
             this.radioButtonBlack.UseVisualStyleBackColor = true;
             // 
             // radioButtonPlain
             // 
             this.radioButtonPlain.AutoSize = true;
-            this.radioButtonPlain.Location = new System.Drawing.Point(177, 72);
+            this.radioButtonPlain.Location = new System.Drawing.Point(177, 66);
             this.radioButtonPlain.Name = "radioButtonPlain";
-            this.radioButtonPlain.Size = new System.Drawing.Size(108, 17);
+            this.radioButtonPlain.Size = new System.Drawing.Size(47, 16);
             this.radioButtonPlain.TabIndex = 3;
             this.radioButtonPlain.TabStop = true;
-            this.radioButtonPlain.Text = "Plain background";
+            this.radioButtonPlain.Text = "単色";
             this.radioButtonPlain.UseVisualStyleBackColor = true;
             // 
             // radioButtonDefault
             // 
             this.radioButtonDefault.AutoSize = true;
-            this.radioButtonDefault.Location = new System.Drawing.Point(6, 72);
+            this.radioButtonDefault.Location = new System.Drawing.Point(6, 66);
             this.radioButtonDefault.Name = "radioButtonDefault";
-            this.radioButtonDefault.Size = new System.Drawing.Size(119, 17);
+            this.radioButtonDefault.Size = new System.Drawing.Size(67, 16);
             this.radioButtonDefault.TabIndex = 2;
             this.radioButtonDefault.TabStop = true;
-            this.radioButtonDefault.Text = "Default background";
+            this.radioButtonDefault.Text = "デフォルト";
             this.radioButtonDefault.UseVisualStyleBackColor = true;
             // 
             // labelOpacity
             // 
             this.labelOpacity.AutoSize = true;
             this.labelOpacity.Enabled = false;
-            this.labelOpacity.Location = new System.Drawing.Point(6, 16);
+            this.labelOpacity.Location = new System.Drawing.Point(6, 15);
             this.labelOpacity.Name = "labelOpacity";
-            this.labelOpacity.Size = new System.Drawing.Size(46, 13);
+            this.labelOpacity.Size = new System.Drawing.Size(41, 12);
             this.labelOpacity.TabIndex = 1;
-            this.labelOpacity.Text = "Opacity:";
+            this.labelOpacity.Text = "透明度";
             // 
             // trackBarOpacity
             // 
             this.trackBarOpacity.Enabled = false;
-            this.trackBarOpacity.Location = new System.Drawing.Point(6, 32);
+            this.trackBarOpacity.Location = new System.Drawing.Point(6, 30);
             this.trackBarOpacity.Maximum = 100;
             this.trackBarOpacity.Name = "trackBarOpacity";
             this.trackBarOpacity.Size = new System.Drawing.Size(454, 45);
@@ -301,9 +300,9 @@
             // buttonOk
             // 
             this.buttonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOk.Location = new System.Drawing.Point(322, 577);
+            this.buttonOk.Location = new System.Drawing.Point(322, 533);
             this.buttonOk.Name = "buttonOk";
-            this.buttonOk.Size = new System.Drawing.Size(75, 23);
+            this.buttonOk.Size = new System.Drawing.Size(75, 21);
             this.buttonOk.TabIndex = 5;
             this.buttonOk.Text = "OK";
             this.buttonOk.UseVisualStyleBackColor = true;
@@ -311,9 +310,9 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(403, 577);
+            this.buttonCancel.Location = new System.Drawing.Point(403, 533);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancel.Size = new System.Drawing.Size(75, 21);
             this.buttonCancel.TabIndex = 6;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -321,27 +320,28 @@
             // panelHideSettings
             // 
             this.panelHideSettings.Controls.Add(this.linkLabelGithub);
-            this.panelHideSettings.Location = new System.Drawing.Point(12, 12);
+            this.panelHideSettings.Location = new System.Drawing.Point(12, 11);
             this.panelHideSettings.Name = "panelHideSettings";
-            this.panelHideSettings.Size = new System.Drawing.Size(466, 458);
+            this.panelHideSettings.Size = new System.Drawing.Size(466, 423);
             this.panelHideSettings.TabIndex = 12;
             // 
             // linkLabelGithub
             // 
-            this.linkLabelGithub.Location = new System.Drawing.Point(7, 16);
+            this.linkLabelGithub.Location = new System.Drawing.Point(7, 15);
             this.linkLabelGithub.Name = "linkLabelGithub";
-            this.linkLabelGithub.Size = new System.Drawing.Size(453, 439);
+            this.linkLabelGithub.Size = new System.Drawing.Size(453, 405);
             this.linkLabelGithub.TabIndex = 0;
             this.linkLabelGithub.TabStop = true;
-            this.linkLabelGithub.Text = resources.GetString("linkLabelGithub.Text");
+            this.linkLabelGithub.Text = "この機能はまだ作られていません。\r\nもし協力したいのであれば、\r\n以下のページを訪れてみてください。\r\nhttps://github.com/Nitrofski/" +
+    "WSplit";
             this.linkLabelGithub.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelGithub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelGithub_LinkClicked);
             // 
             // BackgroundImageDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(490, 612);
+            this.ClientSize = new System.Drawing.Size(490, 565);
             this.Controls.Add(this.panelHideSettings);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
@@ -354,7 +354,7 @@
             this.Name = "BackgroundImageDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Background image";
+            this.Text = "背景画像選択";
             this.groupBoxImageBg.ResumeLayout(false);
             this.groupBoxImageBg.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarZoom)).EndInit();

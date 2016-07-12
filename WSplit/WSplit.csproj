@@ -151,6 +151,9 @@
     <EmbeddedResource Include="WSplitTimer\BackgroundImageDialog.resx">
       <DependentUpon>BackgroundImageDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WSplitTimer\ColorPicker.resx">
+      <DependentUpon>ColorPicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WSplitTimer\CustomizeColors.resx">
       <DependentUpon>CustomizeColors.cs</DependentUpon>
     </EmbeddedResource>
@@ -169,6 +172,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="WSplitTimer\StartAtDialog.resx">
       <DependentUpon>StartAtDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSplitTimer\WSplit.resx">
+      <DependentUpon>WSplit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
