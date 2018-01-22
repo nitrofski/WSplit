@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("一般", 0);
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("ホットキー", 1);
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("フォント", 2);
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("画面表示", 3);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("一般", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("ホットキー", 1);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("フォント", 2);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("画面表示", 3);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("開始・スプリット");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("一時停止・再開");
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("停止");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("リセット");
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("前スプリット移動");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("次スプリット移動");
-            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("比較方法変更");
-            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("キー有効無効切り替え");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("開始・スプリット");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("一時停止・再開");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("停止");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("リセット");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("前スプリット移動");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("次スプリット移動");
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("比較方法変更");
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("キー有効無効切り替え");
             this.buttonDefaults = new System.Windows.Forms.Button();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
@@ -160,10 +160,10 @@
             this.listViewPanelSelector.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.listViewPanelSelector.HideSelection = false;
             this.listViewPanelSelector.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4});
             this.listViewPanelSelector.LargeImageList = this.imageListPageIcons;
             this.listViewPanelSelector.Location = new System.Drawing.Point(12, 11);
             this.listViewPanelSelector.MultiSelect = false;
@@ -309,9 +309,9 @@
             this.comboBoxFallback.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxFallback.FormattingEnabled = true;
             this.comboBoxFallback.Items.AddRange(new object[] {
-            "未使用、不正確さ無視",
-            "未使用、不正確さでたら知らせる",
-            "大きくずれたら自動で利用",
+            "未使用、時間がずれても無視",
+            "未使用、時間がずれたら知らせる",
+            "大きくずれたら自動で使用",
             "常に使用"});
             this.comboBoxFallback.Location = new System.Drawing.Point(6, 160);
             this.comboBoxFallback.Name = "comboBoxFallback";
@@ -334,7 +334,7 @@
             this.labelRefreshInterval.Name = "labelRefreshInterval";
             this.labelRefreshInterval.Size = new System.Drawing.Size(65, 12);
             this.labelRefreshInterval.TabIndex = 4;
-            this.labelRefreshInterval.Text = "再描画感覚";
+            this.labelRefreshInterval.Text = "再描画間隔";
             // 
             // labelDoubleTap
             // 
@@ -343,7 +343,7 @@
             this.labelDoubleTap.Name = "labelDoubleTap";
             this.labelDoubleTap.Size = new System.Drawing.Size(92, 12);
             this.labelDoubleTap.TabIndex = 3;
-            this.labelDoubleTap.Text = "2度押し間隔時間";
+            this.labelDoubleTap.Text = "2度押し最小間隔";
             // 
             // trackBarRefreshInterval
             // 
@@ -434,14 +434,14 @@
             this.listViewHotkeys.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewHotkeys.HideSelection = false;
             this.listViewHotkeys.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem17,
-            listViewItem18,
-            listViewItem19,
-            listViewItem20});
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12});
             this.listViewHotkeys.Location = new System.Drawing.Point(6, 27);
             this.listViewHotkeys.MultiSelect = false;
             this.listViewHotkeys.Name = "listViewHotkeys";
