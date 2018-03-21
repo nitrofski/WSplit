@@ -165,14 +165,14 @@ namespace WSplitTimer
 
         [DllImport("gdi32.dll")]
         private static extern IntPtr AddFontMemResourceEx(byte[] pbFont, int cbFont, IntPtr pdv, out uint pcFonts);
-        [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, KeyModifiers fsModifiers, uint vk);
-        [DllImport("user32.dll")]
-        public static extern bool ReleaseCapture();
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [DllImport("user32.dll")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        //[DllImport("user32.dll")]
+        //public static extern bool RegisterHotKey(IntPtr hWnd, int id, KeyModifiers fsModifiers, uint vk);
+        //[DllImport("user32.dll")]
+        //public static extern bool ReleaseCapture();
+        //[DllImport("user32.dll")]
+        //public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        //[DllImport("user32.dll")]
+        //public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         // If the Settings Dialog has not been created yet, this property will take care of creating it:
         // It has for a purpose to try and speed up the startup by not loading the window yet,
@@ -276,8 +276,9 @@ namespace WSplitTimer
 
         private void clearHotkeys()
         {
-            for (int i = 0; i < 7; i++)
-                UnregisterHotKey(base.Handle, 0x9d82 + i);
+            // TODO: Replace for Xamarin.mac alternative.
+            //for (int i = 0; i < 7; i++)
+            //    UnregisterHotKey(base.Handle, 0x9d82 + i);
         }
 
         private void clockAccent_Click(object sender, EventArgs e)
@@ -1820,18 +1821,19 @@ namespace WSplitTimer
 
         private void setHotkeys()
         {
+            // TODO: Replace with Xamarin.mac alternative
             this.clearHotkeys();
             if (Settings.Profile.EnabledHotkeys)
             {
-                RegisterHotKey(base.Handle, 0x9d82, this.keyMods(Settings.Profile.SplitKey), this.stripkeyMods(Settings.Profile.SplitKey));
-                RegisterHotKey(base.Handle, 0x9d83, this.keyMods(Settings.Profile.PauseKey), this.stripkeyMods(Settings.Profile.PauseKey));
-                RegisterHotKey(base.Handle, 0x9d84, this.keyMods(Settings.Profile.StopKey), this.stripkeyMods(Settings.Profile.StopKey));
-                RegisterHotKey(base.Handle, 0x9d85, this.keyMods(Settings.Profile.ResetKey), this.stripkeyMods(Settings.Profile.ResetKey));
-                RegisterHotKey(base.Handle, 0x9d86, this.keyMods(Settings.Profile.PrevKey), this.stripkeyMods(Settings.Profile.PrevKey));
-                RegisterHotKey(base.Handle, 0x9d87, this.keyMods(Settings.Profile.NextKey), this.stripkeyMods(Settings.Profile.NextKey));
-                RegisterHotKey(base.Handle, 0x9d88, this.keyMods(Settings.Profile.CompTypeKey), this.stripkeyMods(Settings.Profile.CompTypeKey));
+                //RegisterHotKey(base.Handle, 0x9d82, this.keyMods(Settings.Profile.SplitKey), this.stripkeyMods(Settings.Profile.SplitKey));
+                //RegisterHotKey(base.Handle, 0x9d83, this.keyMods(Settings.Profile.PauseKey), this.stripkeyMods(Settings.Profile.PauseKey));
+                //RegisterHotKey(base.Handle, 0x9d84, this.keyMods(Settings.Profile.StopKey), this.stripkeyMods(Settings.Profile.StopKey));
+                //RegisterHotKey(base.Handle, 0x9d85, this.keyMods(Settings.Profile.ResetKey), this.stripkeyMods(Settings.Profile.ResetKey));
+                //RegisterHotKey(base.Handle, 0x9d86, this.keyMods(Settings.Profile.PrevKey), this.stripkeyMods(Settings.Profile.PrevKey));
+                //RegisterHotKey(base.Handle, 0x9d87, this.keyMods(Settings.Profile.NextKey), this.stripkeyMods(Settings.Profile.NextKey));
+                //RegisterHotKey(base.Handle, 0x9d88, this.keyMods(Settings.Profile.CompTypeKey), this.stripkeyMods(Settings.Profile.CompTypeKey));
             }
-            RegisterHotKey(base.Handle, 0x9d89, this.keyMods(Settings.Profile.HotkeyToggleKey), this.stripkeyMods(Settings.Profile.HotkeyToggleKey));
+            //RegisterHotKey(base.Handle, 0x9d89, this.keyMods(Settings.Profile.HotkeyToggleKey), this.stripkeyMods(Settings.Profile.HotkeyToggleKey));
         }
 
         private void showAttemptCount_Click(object sender, EventArgs e)
@@ -2583,8 +2585,9 @@ namespace WSplitTimer
 
                 if (wParam > 0)
                 {
-                    ReleaseCapture();
-                    SendMessage(base.Handle, 0xa1, wParam, 0);
+                    // TODO: Replace with Xamarin.mac alternative
+                    //ReleaseCapture();
+                    //SendMessage(base.Handle, 0xa1, wParam, 0);
                 }
             }
             base.OnMouseDown(e);

@@ -306,12 +306,13 @@ namespace WSplitTimer
             this.wsplit.Opacity = trackBarOpacity.Value / 100.0;
         }
 
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        //[DllImport("user32.dll")]
+        //public static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         public void ListView_SetItemSpacing(ListView listView, short leftPadding, short topPadding)
         {
-            SendMessage(listView.Handle, 0x1035, IntPtr.Zero, (IntPtr)(((ushort)leftPadding) | (uint)(topPadding << 16)));
+            // If I remember correctly, this call's purpose was to avoid spawning scrollbars in the left panel of the settings window.
+            //SendMessage(listView.Handle, 0x1035, IntPtr.Zero, (IntPtr)(((ushort)leftPadding) | (uint)(topPadding << 16)));
         }
 
         private void listViewPanelSelector_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)

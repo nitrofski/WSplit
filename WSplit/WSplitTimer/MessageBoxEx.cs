@@ -112,35 +112,32 @@ namespace WSplitTimer
             HCBT_SETFOCUS = 9
         }
 
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
+        //[DllImport("user32.dll")]
+        //private static extern bool GetWindowRect(IntPtr hWnd, ref Rectangle lpRect);
 
-        [DllImport("user32.dll")]
-        private static extern int MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        //[DllImport("user32.dll")]
+        //private static extern int MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
-        [DllImport("User32.dll")]
-        public static extern UIntPtr SetTimer(IntPtr hWnd, UIntPtr nIDEvent, uint uElapse, TimerProc lpTimerFunc);
+        //[DllImport("User32.dll")]
+        //public static extern UIntPtr SetTimer(IntPtr hWnd, UIntPtr nIDEvent, uint uElapse, TimerProc lpTimerFunc);
 
-        [DllImport("User32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        //[DllImport("User32.dll")]
+        //public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+        //[DllImport("user32.dll")]
+        //public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
 
-        [DllImport("user32.dll")]
-        public static extern int UnhookWindowsHookEx(IntPtr idHook);
+        //[DllImport("user32.dll")]
+        //public static extern int UnhookWindowsHookEx(IntPtr idHook);
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+        //[DllImport("user32.dll")]
+        //public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+        
+        //[DllImport("user32.dll")]
+        //public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int maxLength);
 
-        [DllImport("user32.dll")]
-        public static extern int GetWindowTextLength(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int maxLength);
-
-        [DllImport("user32.dll")]
-        public static extern int EndDialog(IntPtr hDlg, IntPtr nResult);
+        //[DllImport("user32.dll")]
+        //public static extern int EndDialog(IntPtr hDlg, IntPtr nResult);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct CWPRETSTRUCT
@@ -154,7 +151,8 @@ namespace WSplitTimer
 
         static MessageBoxEx()
         {
-            _hookProc = new HookProc(MessageBoxHookProc);
+            // TODO: Replace with Xamarin.mac alternative
+            //_hookProc = new HookProc(MessageBoxHookProc);
             _hHook = IntPtr.Zero;
         }
 
@@ -168,16 +166,20 @@ namespace WSplitTimer
             if (_owner != null)
             {
 #pragma warning disable
-                _hHook = SetWindowsHookEx(WH_CALLWNDPROCRET, _hookProc, IntPtr.Zero, AppDomain.GetCurrentThreadId());
+                // TODO: Replace with Xamarin.mac alternative
+                //_hHook = SetWindowsHookEx(WH_CALLWNDPROCRET, _hookProc, IntPtr.Zero, AppDomain.GetCurrentThreadId());
 #pragma warnign restore
             }
         }
 
+        // TODO: Replace with Xamarin.mac alternative
+#if false
         private static IntPtr MessageBoxHookProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode < 0)
             {
-                return CallNextHookEx(_hHook, nCode, wParam, lParam);
+                // TODO: Replace with Xamarin alternative
+                //return CallNextHookEx(_hHook, nCode, wParam, lParam);
             }
 
             CWPRETSTRUCT msg = (CWPRETSTRUCT)Marshal.PtrToStructure(lParam, typeof(CWPRETSTRUCT));
@@ -191,24 +193,28 @@ namespace WSplitTimer
                 }
                 finally
                 {
-                    UnhookWindowsHookEx(_hHook);
+                    // TODO: Replace with Xamarin alternative
+                    //UnhookWindowsHookEx(_hHook);
                     _hHook = IntPtr.Zero;
                 }
             }
 
             return CallNextHookEx(hook, nCode, wParam, lParam);
         }
+#endif
 
         private static void CenterWindow(IntPtr hChildWnd)
         {
+            // TODO: Replace all with Xamarin.mac alternative
+
             Rectangle recChild = new Rectangle(0, 0, 0, 0);
-            bool success = GetWindowRect(hChildWnd, ref recChild);
+            //bool success = GetWindowRect(hChildWnd, ref recChild);
 
             int width = recChild.Width - recChild.X;
             int height = recChild.Height - recChild.Y;
 
             Rectangle recParent = new Rectangle(0, 0, 0, 0);
-            success = GetWindowRect(_owner.Handle, ref recParent);
+            //success = GetWindowRect(_owner.Handle, ref recParent);
 
             Point ptCenter = new Point(0, 0);
             ptCenter.X = recParent.X + ((recParent.Width - recParent.X) / 2);
@@ -222,8 +228,8 @@ namespace WSplitTimer
             ptStart.X = (ptStart.X < 0) ? 0 : ptStart.X;
             ptStart.Y = (ptStart.Y < 0) ? 0 : ptStart.Y;
 
-            int result = MoveWindow(hChildWnd, ptStart.X, ptStart.Y, width,
-                                    height, false);
+            //int result = MoveWindow(hChildWnd, ptStart.X, ptStart.Y, width,
+            //                        height, false);
         }
     }
 }
